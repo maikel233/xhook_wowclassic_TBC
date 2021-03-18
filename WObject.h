@@ -47,16 +47,6 @@ public: //Dont use corpse has to been in los else it crashes!
 }; //Size: 0x029C
 static_assert(sizeof(WCorpse) == 0x29C);
 
-// Created with Steam 1.3 by Gabe
-
-// Created with Steam 1.3 by Gabe
-// Created with Steam 1.3 by Gabe
-
-// Created with Steam 1.3 by Gabe
-
-// Created with Steam 1.3 by Gabe
-
-// Created with Steam 1.3 by Gabe
 
 class WObject
 {
