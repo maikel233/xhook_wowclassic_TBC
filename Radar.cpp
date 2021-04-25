@@ -165,7 +165,7 @@ void Radar::RenderWindow()
 						shape = EntityShape_t::SHAPE_CIRCLE;
 
 					//Fix arrow direction
-					Vector3 forward; /*Math::AngleVectors(*player->GetEyeAngles(), forward);*/
+					Vector3 forward = player->direction;
 
 					Vector3 dirArrowVec = playerPos + (forward * 2 * Settings::Drawing::Radar::zoom * scale);
 					Vector2D dirArrowPos = WorldToRadar(dirArrowVec, localplayer->GetUnitPosition(), Player_rotation, winsize.x, Settings::Drawing::Radar::zoom);
