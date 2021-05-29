@@ -68,44 +68,46 @@ class WObject
 {
 public:
 
-	char pad_0008[8]; //0x0008
+char pad_0008[8]; //0x0008
 	class UnitField* sUnitField; //0x0010
 	char pad_0018[8]; //0x0018
 	TypeId Type; //0x0020
 	char pad_0021[55]; //0x0021
 	WGuid Guid; //0x0058
-	char pad_0060[5536]; //0x0060  // 0x0066
-	Vector3 GetUnitPositionModify; //0x1600
-	char pad_160C[52]; //0x160C
-	Vector3 anchor_position; //0x1640 *UnitPos2
-	float anchor_facing; //0x164C
-	float anchor_pitch; //0x1650
-	uint32_t MoveTime; //0x1658
-	Vector3 direction; //0x165C <== Wo
-	Vector2 direction_2d; //0x1668 
-	float Unk; //0x1654
-	float cos_anchor_pitch;  // 0x70
-	float sin_anchor_pitch;  // 0x74
-	uint32_t StopFall; //0x1678
-	float fall_start_elev_1; // 0x7C
-	float fall_start_elev_2; // 0x80
-	float CurrentSpeed; //0x1684
-	float WalkSpeed; //0x1688
-	float RunForwardSpeed; //0x168C
-	float RunBackwardsSpeed; //0x1690
-	float SwimmingSpeed; //0x1694
-	float SwimBackwardsSpeed; //0x1698
-	float FlyForwardSpeed; //0x169C 
-	float FlyBackwardsSpeed2; //0x16A0 
-	float Player_rotationspeed; //0x16A4
-	char pad_16A8[8]; //0x16A8
-	float JumpHeight; //0x16B0
-	char pad_16B4[44]; //0x16B4
-	uint32_t Collision_StateHack; //0x16E0
-	char pad_16E4[316]; //0x16E4
-	float Player_scale; //0x1820
-	char pad_1824[2156]; //0x1824
+	char pad_0060[5464]; //0x0060
+	Vector3 GetUnitPositionModify; //0x1600   TBC 15B8  48bytes dif
+	char pad_160C[44]; //0x1610g
+	Vector3 anchor_position; //0x1640 *UnitPos2  TBC 15F8 48bytes dif
+	float anchor_facing; 
+	float anchor_pitch; 
+	uint32_t MoveTime;
+	C3Vector direction; 
+	Vector2 direction_2d; 
+	float unk01;
+	float unk02;
+	float unk03;
+	uint32_t StopFall; 
+	float fall_start_elev_1; //DC
+	//float fall_start_elev_2; 
 
+	float CurrentSpeed; 
+	float WalkSpeed;         
+	float RunForwardSpeed; 
+	float RunBackwardsSpeed; 
+	float SwimmingSpeed; 
+	float SwimBackwardsSpeed; 
+	float FlyForwardSpeed; 
+	float FlyBackwardsSpeed2; 
+	float Player_rotationspeed;
+	//m_collisionBoxHalfDepth? 
+	//m_collisionBoxHeight?    
+	char pad_16A8[8]; 
+	float JumpHeight; 
+	char pad_16B4[44]; //0x16B4
+	uint32_t Collision_StateHack; 
+	char pad_16E4[316]; 
+	float Player_scale; 
+	char pad_1824[2156]; 
 
 	virtual ~WObject() = default;
 	virtual void Function1();
