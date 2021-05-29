@@ -1,97 +1,110 @@
 #pragma once
 #include "stdafx.h"
 #include "Constants.h"
+
 namespace Offsets
 {
 	////////////////////////
-	//     1.13.7.38386  //
+	//     2.5.1.38835 //
 	////////////////////////
 
 	// base address
 	static inline uintptr_t Base = reinterpret_cast<uintptr_t>(GetModuleHandle(NULL));
 
 	// framescript
-	static inline uintptr_t FrameScriptExecute = 0x13FC5FE; // Unsure of this one  
-	static inline uintptr_t FrameScriptGetText = 0x3A3750;	// 
-	static inline uintptr_t FrameScriptRegister = 0x3AB350;	// 
+	static inline uintptr_t FrameScriptExecute = 0x80ABF0; // Unsure of this one  
+	static inline uintptr_t FrameScriptGetText = 0x80ABF0;	// Unsure of this one  
+	static inline uintptr_t FrameScriptRegister = 0x8074B0;	// Unsure of this one  
+	static inline uintptr_t FrameScript_RegisterFunctionNamespaceWithCount = 0x807500;	// Unsure of this one  
+	//FrameScript::RegisterEvent at: 0x807D20; FrameScript::GetContext at: 0x805A40; // Unsure of this one  
 
-	// lua
-	static inline uintptr_t lua_PushNil = 0x198AF30;			
-	static inline uintptr_t lua_PushGuid = 0x3AFEE0;			
-	static inline uintptr_t lua_PushNumber = 0x198AF50;			
-	static inline uintptr_t lua_PushInteger = 0x198AE60;
-	static inline uintptr_t lua_PushBoolean = 0x198ABD0;
-	static inline uintptr_t lua_PushClosure = 0x0;				
-	static inline uintptr_t lua_PushString = 0x198AF70;			
-	static inline uintptr_t lua_pushboolean = 0x1976C20;	
+	// Lua 
+	inline static uintptr_t lua_createtable = Base; /*+ 0x19E5CC0;*/
+	inline static uintptr_t luaL_error = Base + 0x462450;
+	inline static uintptr_t lua_getfield = Base + 0x460000;
+	inline static uintptr_t lua_gettable = Base + 0x4600F0;
+	inline static uintptr_t lua_gettop = Base + 0x460120;
+	inline static uintptr_t lua_insert = Base + 0x4602A0;
+	inline static uintptr_t lua_isguid = Base + 0x80DAE0;
+	inline static uintptr_t lua_isnumber = Base + 0x460420;
+	inline static uintptr_t lua_isstring = Base + 0x460450;
+	inline static uintptr_t lua_isuserdata = Base + 0x460490;
+	inline static uintptr_t lua_newthread = Base; /*+ 0x19E69E0;*/
+	inline static uintptr_t lua_pcall = Base + 0x460790;
+	inline static uintptr_t lua_pushboolean = Base + 0x19E6C80;
+	inline static uintptr_t lua_pushcclosure = Base + 0x19E6CB0;
+	inline static uintptr_t lua_pushguid = Base + 0x80DC40;
+	inline static uintptr_t lua_pushinteger = Base + 0x460A20;
+	inline static uintptr_t lua_pushlightuserdata = Base + 0x19E6F40;
+	inline static uintptr_t lua_pushnil = Base + 0x460AF0;
+	inline static uintptr_t lua_pushnumber = Base + 0x460B10;
+	inline static uintptr_t lua_pushstring = Base + 0x460B30;
+	inline static uintptr_t lua_rawget = Base + 0x460D60; // _lua_rawgeti 0x460E10
+	inline static uintptr_t lua_rawset = Base + 0x460ED0;
+	inline static uintptr_t lua_remove = Base + 0x4610B0;
+	inline static uintptr_t lua_setfield = Base + 0x4613D0;
+	inline static uintptr_t lua_settable = Base + 0x461520;
+	inline static uintptr_t lua_settop = Base + 0x461570;
+	inline static uintptr_t lua_toboolean = Base + 0x461770;
+	inline static uintptr_t lua_toguid = Base + 0x80DD00;
+	inline static uintptr_t lua_tointeger = Base + 0x4617D0;
+	inline static uintptr_t lua_tolstring = Base + 0x461850;
+	inline static uintptr_t lua_tonumber = Base + 0x4618F0;
+	inline static uintptr_t lua_type = Base + 0x461A00;
+	inline static uintptr_t luaL_loadfile = Base + 0x19E94F0;
+	inline static uintptr_t luaL_ref = Base; /*0x19E9CB0*/
+	// DUMP: _lua_getstack 0x0464C30; 
 
-	static inline uintptr_t lua_ToLString = 0x198C0D0;			
-	static inline uintptr_t lua_ToInteger = 0x195A7B0;
-	static inline uintptr_t lua_ToNumber = 0x198C050;		
-	static inline uintptr_t lua_gettop = 0x1974FD0;			
-	static inline uintptr_t lua_settop = 0x198BDF0;			
-	static inline uintptr_t lua_createtable = 0x0;			
-	static inline uintptr_t lua_GetTable = 0x198A370;
-
-	static inline uintptr_t lua_LoadFile = 0x0;		
-	static inline uintptr_t lua_PCall = 0x0;
-	static inline uintptr_t lua_State = 0x25C29E8;									
-	static inline uintptr_t lua_type = 0x198C280;
-
-	static inline uintptr_t lua_isNumber = 0x198A700;
-	static inline uintptr_t lua_isstring = 0x198A730;		
-	static inline uintptr_t luaL_error = 0x195B450;			// 
-	
-	// State
-	static inline uintptr_t InGame = 0x28A26A4;
-	static inline uintptr_t LoadingScreen = 0x2586630;
+	// Pointers
+	static inline uintptr_t InGame = Base + 0x00;
+	static inline uintptr_t InWorld = Base + 0x00;
+	static inline uintptr_t CGGameUI_s_inWorld = Base + 0x2F584D4; //   NotInitialized = 0, LoadingScreen1 = 3, LoadingScreen2 = 2, InGame = 4
 
 	// object manager
-	static inline uintptr_t ClntObjMgrEnumVisibleObjectsPtr = 0xD5A590;
-	static inline uintptr_t ClntObjMgrGetMapId = 0xA62820;
-	static inline uintptr_t J_ClntObjMgrGetMapId = 0x5AD30;
-	static inline uintptr_t ClntObjMgrIsValid = 0xD5B3F0;
-	static inline uintptr_t ClntObjMgrLocalPlayerGUID = 0x299A8E0;
-	static inline uintptr_t ClntObjMgrTargetGUID = 0x24F3900;
-	static inline uintptr_t ClntObjMgrPetGUID = 0x28CA66C;
-	 
+	static inline uintptr_t ClntObjMgrEnumVisibleObjectsPtr = Base + 0x13046A0;
+	static inline uintptr_t ClntObjMgrGetMapId = Base + 0x1307750;
+	static inline uintptr_t ClntObjMgrIsValid = Base + 0x1307EC0;
+
 	//CTM
-	static inline uintptr_t ClickToMove = 0xACE6A0;
+	static inline uintptr_t ClickToMove = 0x00; //
 
+	static inline uintptr_t FaceTo = 0x1167360; // Bindiffed.
 	// pointers
-	static inline uintptr_t InvalidPtrCheckMin = 0x2600D78;
-	static inline uintptr_t InvalidPtrCheckMax = 0x2600D80;
-	static inline uintptr_t CanPerformAction = 0x00; 
-	static inline uintptr_t HardwareEventPtr = 0x25D95C0;
+	static inline uintptr_t InvalidPtrCheckMin = Base + 0x2CDFE80;
+	static inline uintptr_t InvalidPtrCheckMax = Base + 0x2CDFE88;
+	static inline uintptr_t HardwareEventPtr = Base + 0x2CB7CD8;
+	static inline uintptr_t CanPerformAction = 0x00;
 
-	static inline uintptr_t Int3 = 0xFEADC;		// CC CC CC CC
+	// Register
+	inline static uintptr_t Int3 = Base + 0x2BCC3C;
 
 	// Unit struct
+	static inline uint8_t Type = 0x20;
 	static inline uint16_t Guid = 0x58;
 	static inline uint16_t AnimationStatus = 0x14C;
+	inline static uint16_t	GatherStatus = 0x6B0;
+	static inline uint16_t DisplayID = 0x003C;
 	static inline uint16_t Owner = 0x534;
-	static inline uint8_t Type = 0x20;
 
 	//cast  
-	static inline uintptr_t castSpell = 0xFF0610;
-	static inline uintptr_t isSpellKnown = 0xFFA800;
-	static inline uintptr_t isSpellInRange = 0xFE02D0;
-	static inline uintptr_t iscurrentspell = 0x990BE0;
-	static inline uintptr_t findSlotBySpellId = 0xFF2920;
+	static inline uintptr_t Spell_C_GetMinMaxRange = Base + 0xF5E440;/*0xF043C0;*/ // Unsure about this one...
+	static inline uintptr_t Spell_C_GetSpellCoolDown = Base + 0xF60F10;
+	static inline uintptr_t castSpell = Base + 0x1578B40;
+	static inline uintptr_t isSpellKnown = Base + 0x1582470;
+	static inline uintptr_t findSlotBySpellId = Base + 0x157AEC0;
+
+	static inline uintptr_t s_spellHistory = Base + 0x2CCFB80;
 
 	//Globals
-	static inline uintptr_t LootWindow = 0x28CB0A0;
-	static inline uintptr_t GetPlayerName = 0x299A8F8;
-	static inline uintptr_t GetRealmName = 0x2807650;
+	static inline uintptr_t GetPlayerName = Base + 0x2C45AA8; //0x29F8918;
+		
+	static inline uintptr_t CorpseMapID = Base + 0x2B4E070;
+	static inline uintptr_t Corpsex = Base + 0x00;  // float x,y,z is gone Decompile -> 0x14FA330
+	static inline uintptr_t Corpsey = Corpsex + 0x4;
+	static inline uintptr_t Corpsez = Corpsex + 0x8;
 
-	//Corpse 
-	static inline uintptr_t Corpsex = 0x24EB800;
-	static inline uintptr_t Corpsey = 0x24EB804;
-	static inline uintptr_t Corpsez = 0x24EB808;
-
-	//Camera 
-	static inline  uintptr_t CameraMgr = 0x28BC230;
-	static inline  uintptr_t CameraPtr = 0x3330;		
+	//Camera WorldFrame::GetActiveCamera
+	static inline  uintptr_t CameraMgr = Base + 0x303C590; // //wowclassic 0x291A250;
+	static inline  uintptr_t CameraPtr = 0x38D8; // wowclassic 0x3330;
 
 };
-
