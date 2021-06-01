@@ -1,5 +1,5 @@
 # xhook_wowclassic
-A world of warcraft classic multihack supported patch: 1.13.5.36325
+A world of warcraft classic multihack supported patch: 2.5.1.38835
 
 This wont work anymore. Use Pcall/loadstate for a bypass
 
