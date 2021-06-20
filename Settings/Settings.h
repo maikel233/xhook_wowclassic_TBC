@@ -45,8 +45,6 @@ public:
 	}
 };
 
-
-
 class HealthColorVar : public ColorVar
 {
 public:
@@ -78,6 +76,8 @@ enum class PlayerState : int
 	FallingSlow,
 	CanFly,
 	DisableCollision,
+	Root,
+	Loggedoff,
 	DisableGravity
 };
 
@@ -118,6 +118,21 @@ namespace Settings
 		extern std::string actMapName;
 	}
 
+	namespace bot
+	{
+		extern bool Refresh;
+
+		namespace Grinding
+		{
+			extern bool Enabled;
+		}
+		namespace fishing
+		{
+			extern bool Enabled;
+			extern bool IsFishing;
+			extern bool PoolDetection;
+		}
+	}
 
 	namespace EntityViewer
 	{
@@ -134,9 +149,10 @@ namespace Settings
 
 	namespace Drawing
 	{
+		extern bool ClassColor;
 		extern bool Ally, Enemy;
 		extern bool Player, LocalPlayer, Unit, Corpse, Object, GameObject, DynamicObject, Race, Horde, Alliance, DrawDeadEntity;
-		extern bool Enabled, Lines, Names, Lvl, Health, Energy, Distance;
+		extern bool Enabled, Lines, Names, Lvl, Health, EnergyAndMana, Distance;
 		extern int MaxLvl, MinLvl;
 		extern float FOVX, FOVY, MultiPly;
 		extern bool W2S_SKIP;
@@ -168,14 +184,6 @@ namespace Settings
 		}
 	}
 
-
-	namespace UnitHelper
-	{
-		extern std::vector<UnitInfo> UnitInfos;
-	}
-
-
-
 	namespace Objectmanager
 	{
 		extern bool ObjMgrisdone, LoopObj;
@@ -201,39 +209,34 @@ namespace Settings
 			extern bool enabled;
 			extern bool TogglePlayerState;
 			extern PlayerState CurrentPlayerState;
-			extern bool CTM;
-			
+			extern bool CTM;		
 			extern bool TeleportBack;
-			extern Vector3 NextPos;
-			extern Vector3 PrevPos;
-
-		
-
-			extern float Current_Groundspeed; 
-			extern float max_walkspeed; 
-			extern float max_runspeed; 
-			extern float max_walkingbackspeed; 
-			extern float Current_Swimmingspeed;
-			extern float max_walkspeed2; 
-			extern float max_something2; 
-			extern float player_rotationspeed;
-			extern int max_jumpstate;
+			extern bool Toggleplayerstate;
 			extern bool JumpState, SuperSlowFall;
 			extern bool JumpStatev2;
-		
+			extern bool Teleport;
+			extern bool test, SuperFly, Infintejump, NoFallDamage, AntiJump, AntiMove, AntiRoot, Gravity, MovementFacing, TeleportBack, TeleporttoCorpse, TeleportMenu, SetCurrentXYZ, MovementNoClip, MovementJumpStartingHeight, MovementCameraspeed, MovementSwimmingspeed, MovementWalkingspeed, MovementRunningspeed, MovementTurnspeed, Lootpatch;
+			extern int SuperSlowSleepTime;
+
+			extern int max_jumpstate;	
 			extern int MovementType, NoClip; //BYTE
+			extern int MAPID;
+
+			extern float max_walkspeed, max_runspeed, max_walkingbackspeed, Current_Groundspeed, Current_Swimmingspeed;
+			extern float max_walkspeed2;
+			extern float max_something2;
+			extern float player_rotationspeed;
 			extern float Cameraspeed, Jumpstartingheight, Swimmingspeed, Walkingspeed, Runningspeed, Turnspeed, Facing;
 			extern float SomethingJump;
 			extern float jumpHeight;
 			extern float jumpHeightwaterspeed;
 			extern float Movementspeed;
 			extern float Fallingspeed;
-			extern bool Toggleplayerstate;
 			extern float WallClimb;
-			extern bool Teleport;
-			extern bool test, SuperFly, Infintejump, NoFallDamage, AntiJump, AntiMove, AntiRoot, Gravity, MovementFacing, TeleportBack, TeleporttoCorpse, TeleportMenu, SetCurrentXYZ, MovementNoClip, MovementJumpStartingHeight, MovementCameraspeed, MovementSwimmingspeed, MovementWalkingspeed, MovementRunningspeed, MovementTurnspeed, Lootpatch;
 			extern float single;
-			extern int MAPID;
+
+			extern C3Vector NextPos, PrevPos;
+		
 		}
 
 	}
