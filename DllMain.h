@@ -41,6 +41,8 @@
 #include "Singleton.h"
 #include "Offsets.h"
 
+#include "bot/FishingBot.h"
+
 
 
 
