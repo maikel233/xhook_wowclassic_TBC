@@ -3,20 +3,32 @@
 #include "Lua/LuaBase.h"
 #include "Lua/LuaScript.h"
 #include "Lua/GameMethods.h"
-using namespace std;
+
 
 namespace Utils
 {
+
+	bool approxEqual(float v1, float v2);
+
 	long GetEpochTime();
 	ImColor GetRainbowColor(float speed);
+	ImColor GetClassColor(WObject* entity);
+	ImColor GetFactionColor(WObject* entity);
 	Color GetHealthColor(int hp);
 	Color GetHealthColor(WObject* player);
+	
 	bool IsEntityAlive(WObject* entity);
 	int IsFriendlyOrEnemy(WObject* player);
 	std::string IsHordeOrAlliance(WObject* player);
 	std::string GetRace(WObject* entity);
-	std::string GetObjType(int TypeID);
+	std::string GetClass(WObject* entity);
+	std::string GetObjType(WObject* entity);
 	std::string GetHealth(WObject* entity);
+	std::string GetEnergyOrMana(WObject* entity);
 	int filterException(int code, PEXCEPTION_POINTERS ex);
+	bool ValidCoord(WObject* entity);
+	float GetDistance(C3Vector Pos);
+	float GetDistance2D(float fLocation2X, float fLocation1X, float fLocation2Y, float fLocation1Y);
 
 }
+
