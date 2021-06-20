@@ -1,9 +1,7 @@
 // DllMain.cpp : Defines the exported functions for the DLL application.
 
-#include "Radar.h"
-#include "EntityList.h"
-#include "Camera.h"
 #include "DllMain.h"
+
 // Detours imports
 #include "detours.h"
 // DX11 imports
@@ -144,6 +142,7 @@ LRESULT CALLBACK hWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		return true;
 	}
+
 	return CallWindowProc(OriginalWndProcHandler, hWnd, uMsg, wParam, lParam);
 }
 
@@ -184,8 +183,6 @@ HRESULT __fastcall Present(IDXGISwapChain *pChain, UINT SyncInterval, UINT Flags
 		ImGui_ImplWin32_Init(window);
 		ImGui_ImplDX11_Init(pDevice, pContext);
 		ImGui::GetIO().ImeWindowHandle = window;
-
-
 		
 		ID3D11Texture2D* pBackBuffer;
 
@@ -279,7 +276,7 @@ HRESULT __fastcall Present(IDXGISwapChain *pChain, UINT SyncInterval, UINT Flags
 		style.Colors[ImGuiCol_PlotHistogramHovered] = mainColorHovered;
 		style.Colors[ImGuiCol_TextSelectedBg] = mainColorHovered;
 		style.Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(0.0f, 0.0f, 0.0f, 0.75f);
-	//	Executeonce = true; // If you want static colors
+	//	Executeonce = true; // If you want static colors 
 	}
 
 	Radar::RenderWindow();
@@ -406,211 +403,6 @@ void * Device[40];
 void * Context[108];
 
 
-//SlowFall, NoFallDmg & Unlimited jumps
-void FreezeJump()
-{
-
-	if (!Settings::Hacks::Movement::JumpState)
-		return;
-			
-		float ZAxis = LuaScript::ActivePlayer->GetUnitPosition().z;
-
-		if (Settings::Hacks::Movement::SuperSlowFall)
-		{
-			Sleep(20); // Some users will dc on 20ms try a higher number but this will decrease your in air time. I should probably check in jump state + max jump alt?
-			LuaScript::ActivePlayer->StopFall = 824;		
-			return;
-		}
-
-		  if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-		  {
-			  Sleep(50); 
-	
-			  if (LuaScript::ActivePlayer->GetUnitPosition().z == ZAxis)
-				  return;
-
-			  if (LuaScript::ActivePlayer->GetUnitPosition().z != ZAxis)
-			  {
-				  Sleep(600); 
-				  LuaScript::ActivePlayer->StopFall = 824;
-			  }
-		  }
-	  
-}
-
-void ModifyJumpHeight()
-{
-	//Useless dc at jump...
-	if (!Settings::Hacks::Movement::JumpStatev2)
-		return;
-
-	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-	{
-		LuaScript::ActivePlayer->JumpHeight = Settings::Hacks::Movement::jumpHeight;
-	}
-}
-
-void C2M_Test(bool Go, Vector3 destination)
-{
-	if (!Go)
-		return;
-
-	WObject* LocalPlayer = LuaScript::ActivePlayer;
-
-	//Vector destination = Unit->GetUnitPosition();
-	GameMethods::ClickToMove(LocalPlayer->Ptr(), destination);
-	
-	LuaScript::SetHardwareEvent();
-}
-namespace WoW
-{
-	bool Funcs::IsGhost(Vector3 Corpse)
-	{
-		if (Corpse.x != 0 || Corpse.y != 0 || Corpse.z != 0)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool Funcs::IsEntityAlive(WObject* entity)
-	{
-		int TypeID = entity->GetType();
-
-		if (TypeID == CGPlayer || TypeID == CGUnit || TypeID == CGActivePlayer)
-		{
-			if (entity->sUnitField->Health > 0)
-				return false;
-		}
-		return true;
-	}
-
-	bool Funcs::InRangeOf(WObject* Entity, const Vector3& v, float distance)
-	{
-		return Entity->GetUnitPosition().Distance(v) <= distance;
-	}
-
-	void Funcs::ReleaseSpirit()
-	{
-		GameMethods::Execute("RepopMe()");
-
-	}
-
-	void Funcs::ReviveAtCorpse()
-	{
-		GameMethods::Execute("RetrieveCorpse()");
-	}
-}
-
-void StartQualityOfLife()
-{
-
-	if (!Settings::Hacks::Movement::CTM)
-		return;
-
-	if (!LuaScript::ActivePlayer)
-		return;
-
-	__try
-	{
-		WObject* LocalPlayer = (WObject*)LuaScript::ActivePlayer;
-
-
-		if (WoW::Funcs::IsEntityAlive(LocalPlayer))
-		{
-			Sleep(1250);	
-			printf("[+] Releasing Spirit!\n");
-			WoW::Funcs::ReleaseSpirit(); //Spamming this will crash your game.
-		}
-
-
-		Vector3 Corpse;
-		Corpse.x = *reinterpret_cast<float*>(Offsets::Base + 0x21F67B0);
-		Corpse.y = *reinterpret_cast<float*>(Offsets::Base + 0x21F67B4);
-		Corpse.z = *reinterpret_cast<float*>(Offsets::Base + 0x21F67B8);
-		if (Corpse.x != 0 && Corpse.y != 0 && Corpse.z != 0)
-		{
-			if (WoW::Funcs::IsGhost(Corpse))
-			{
-				if (WoW::Funcs::InRangeOf(LocalPlayer, Corpse, 20.0))
-				{
-					Sleep(1250);
-					printf("[+] Reviving!\n");
-					WoW::Funcs::ReviveAtCorpse();
-					C2M_Test(false, Corpse);
-				}
-				else
-				{
-					printf("[+] Walking to Corpse\n");
-					C2M_Test(true, Corpse);
-				}
-			}
-		}
-		else
-		{
-			//Continue...
-		}
-	}
-	__except (Utils::filterException(GetExceptionCode(), GetExceptionInformation())) {
-		printf("[!] Auto Mode Exception Caught!\n");
-		LuaScript::ReInitObjMgr(true);
-	}
-}
-
-void GExecute_IGFunctions()
-{
-	static bool once;
-
-	if (!GameMethods::ObjMgrIsValid(0))
-		return;
-
-	FreezeJump();
-	ModifyJumpHeight();
-	StartQualityOfLife();
-	//C2M_Test();
-
-	if (Settings::Hacks::Movement::TogglePlayerState) {
-		once = true;
-
-
-		if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Ground)
-			LuaScript::ActivePlayer->Collision_StateHack = 0x3F8000003FEE38E4;								//Yes
-		else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Swimming)
-			LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_SWIMMING;			//Yes
-		else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::UnderWaterWalking)
-			LuaScript::ActivePlayer->Collision_StateHack = 0x15DDDBE549C238E4;								//Yes
-		else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::WaterWalking)
-			LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_WATERWALKING;		//Disconnect
-		else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::FallingSlow)
-			LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_FALLING_SLOW;		//Nope
-		else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::CanFly)
-			LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_CAN_FLY;				//Nope
-		else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::DisableCollision)
-			LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_DISABLE_COLLISION; // Nope
-		else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Root)
-			LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_ROOT;
-		else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Loggedoff)
-			LuaScript::ActivePlayer->Collision_StateHack = 0x00000C;
-		else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::DisableGravity)
-			LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_DISABLE_GRAVITY; } // Nope
-
-	else {
-		if (once)
-			LuaScript::ActivePlayer->Collision_StateHack = 0x3F8000003FEE38E4; // Walking state
-			once = false;
-		 }
-}
-
-void LoopFuncs()
-{
-	while (true)
-	{ if (Settings::Objectmanager::ObjMgrisdone) {
-			GExecute_IGFunctions(); } }
-}
-
 void ConsoleSetup()
 {
 	// With this trick we'll be able to print content to the console, and if we have luck we could get information printed by the game.
@@ -620,6 +412,16 @@ void ConsoleSetup()
 	freopen("CONOUT$", "w", stderr);
 	freopen("CONIN$", "r", stdin);
 }
+
+
+void LoopFuncs()
+{
+	while (true)
+	{
+		WoW::Hacks::GExecute_IGFunctions();		
+	}
+}
+
 
 int WINAPI main()
 {

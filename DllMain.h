@@ -40,22 +40,12 @@
 #include "Renderer.h"
 #include "Singleton.h"
 #include "Offsets.h"
-
+#include "Radar.h"
+#include "Hacks.h"
+#include "EntityList.h"
+#include "Camera.h"
 #include "bot/FishingBot.h"
-
-
-
-
-namespace WoW
-{
-	namespace Funcs
-	{
-
-		bool IsEntityAlive(WObject* entity);
-		bool IsGhost(Vector3 Corpse);
-		bool InRangeOf(WObject* Entity, const Vector3& v, float distance);
-		static void ReleaseSpirit();
-		static void ReviveAtCorpse();
-
-	};
-}
+#include "bot/GrindBot.h"
+#include "WoWTypes.h"
+#include "Location.hpp"
+#include "Globals.h"

@@ -16,9 +16,7 @@
 #include "Settings/Color.h"
 #include "Configs.h"
 #include "stdafx.h"
-#include "FindPattern.h"
 #include "offsets.h"
 
 
-using namespace std;
 

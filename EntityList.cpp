@@ -1,36 +1,50 @@
 #include "EntityList.h"
-
-std::string Race, UnitHealth, ObjType, Faction;
+#include <xutility>
+std::string Race, Class, UnitHealth, ObjType, Faction;
 const char* cRace;
+const char* cClass;
 const char* cUnitHealth;
 const char* cObjType;
 const char* cFaction;
-
+ImColor ClassColor, FactionColor;
 void ShowEntityList::GetObjectInfo(WObject* entity)
 {
 	if (!entity || !entity->Ptr())
 		return;
 
+	ClassColor = Utils::GetClassColor(entity);
+	FactionColor = Utils::GetFactionColor(entity);
+
 	Race = Utils::GetRace(entity);
 	cRace = Race.c_str();
+
+	Class = Utils::GetClass(entity);
+	cClass = Class.c_str();
 
 	UnitHealth = Utils::GetHealth(entity);
 	cUnitHealth = UnitHealth.c_str();
 
-	ObjType = Utils::GetObjType(entity->GetType());
+	ObjType = Utils::GetObjType(entity);
 	cObjType = ObjType.c_str();
 
 	Faction = Utils::IsHordeOrAlliance(entity).c_str();
 	cFaction = Faction.c_str();
 }
-
+static int currentPlayer = -1;
 void ShowEntityList::RenderWindow()
 {
+
+	if (!Settings::Drawing::Enabled)
+		return;
+
 	if (!Settings::EntityViewer::Enabled)
 		return;
 
-	if (Settings::UnitHelper::UnitInfos.empty())
+	if (LuaScript::Objects.empty())
 		return;
+
+	//if (LuaScript::InGame())
+	//	return;
 
 	__try
 	{
@@ -40,7 +54,7 @@ void ShowEntityList::RenderWindow()
 
 		if (ImGui::Begin(XorStr("EntityViewer"), &Settings::EntityViewer::Enabled, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))
 		{
-			ImGui::Columns(7);
+			ImGui::Columns(9);
 			ImGui::Separator();
 
 			ImGui::Text(XorStr("Type"));
@@ -58,10 +72,16 @@ void ShowEntityList::RenderWindow()
 			ImGui::Text(XorStr("Coords"));
 			ImGui::NextColumn();
 
+			ImGui::Text(XorStr("Class"));
+			ImGui::NextColumn();
+
 			ImGui::Text(XorStr("Race:"));
 			ImGui::NextColumn();
 
 			ImGui::Text(XorStr("Faction:"));
+			ImGui::NextColumn();
+
+			ImGui::Text(XorStr("Ptr"));
 			ImGui::NextColumn();
 
 			WObject* localplayer = (WObject*)LuaScript::ActivePlayer;
@@ -71,76 +91,71 @@ void ShowEntityList::RenderWindow()
 				return;
 			}
 
-			for (int i = 0; i < Settings::UnitHelper::UnitInfos.size(); i++)
+			for (auto& Object : LuaScript::Objects)
 			{
-
-				if (!Settings::UnitHelper::UnitInfos.at(i).Entity)
+				if (!Object)
 					continue;
 
-				WObject* Object = (WObject*)Settings::UnitHelper::UnitInfos.at(i).Entity;
-				uintptr_t TypeID = *reinterpret_cast<TypeId*>(Object->Ptr() + Offsets::Type);
+		/*		if (Object == localplayer)
+					continue;*/
 
-				if (!Object || !Object->Ptr())
+				if (!Object->isValid())
 					continue;
 
+
+				int TypeID = (int)Object->GetType();
 				if (!TypeID)
 					continue;
 
-				if (!TypeID == CGUnit || !TypeID == CGPlayer || !TypeID == CGActivePlayer || !TypeID == CGGameObject || !TypeID == CGCorpse)
+				if (!TypeID == (int)TypeId::CGUnit || !TypeID == (int)TypeId::CGPlayer || !TypeID == (int)TypeId::CGActivePlayer || !TypeID == (int)TypeId::CGGameObject)
 					continue;
 
-				if (!Object->GetUnitPosition().x < -10000000.000000 || !Object->GetUnitPosition().y < -10000000.000000 || !Object->GetUnitPosition().z < -10000000.000000)
-				{
-					printf("[!] Invalid player coordinates!\n");
-					LuaScript::ReInitObjMgr(true);
-					continue;
-				}
-
-				WObject* entity = Object;
-
-				if (!entity)
+				if (!Utils::ValidCoord(Object))
 					continue;
 
-				if (entity == localplayer)
+				if (Utils::IsEntityAlive(Object))
 					continue;
 
-				if (!TypeID == CGUnit || !TypeID == CGPlayer || !TypeID == CGActivePlayer || !TypeID == CGGameObject)
+				if (Utils::IsFriendlyOrEnemy(Object) == Utils::IsFriendlyOrEnemy(localplayer) && !Settings::Drawing::Ally)
 					continue;
 
-				if (Utils::IsEntityAlive(entity))
+				if (Utils::IsFriendlyOrEnemy(Object) != Utils::IsFriendlyOrEnemy(localplayer) && !Settings::Drawing::Enemy)
 					continue;
 
-				if (Utils::IsFriendlyOrEnemy(entity) == Utils::IsFriendlyOrEnemy(localplayer) && !Settings::Drawing::Ally)
-					continue;
+				WObject* Obj = (WObject*)Object;
 
-				if (Utils::IsFriendlyOrEnemy(entity) != Utils::IsFriendlyOrEnemy(localplayer) && !Settings::Drawing::Enemy)
-					continue;
-
-				//A bypass for the Try/catch func
-				GetObjectInfo(entity);
+				GetObjectInfo(Obj);
 
 				ImGui::Separator();
 
 				ImGui::Text("%s", cObjType);
 				ImGui::NextColumn();
 
-				ImGui::Text("%s", entity->GetObjectName());
+				ImGui::Text("%s", Obj->GetObjectName());
 				ImGui::NextColumn();
 
-				ImGui::Text("%i", entity->GetUnitLevel(1));
+				ImGui::Text("%i", Obj->GetUnitLevel(1));
 				ImGui::NextColumn();
 
 				ImGui::Text("%s", cUnitHealth);
 				ImGui::NextColumn();
 
-				ImGui::Text("X: %f Y: %f Z: %f R: %f", entity->GetUnitPosition().x, entity->GetUnitPosition().y, entity->GetUnitPosition().z, entity->GetFacing());
+				ImGui::Text("X:%fY:%fZ:%fR:%f", Obj->GetUnitPosition().x, Obj->GetUnitPosition().y, Obj->GetUnitPosition().z, Obj->GetFacing());
 				ImGui::NextColumn();
 
-				ImGui::Text("%s", cRace);
+				ImGui::TextColored(ClassColor, "%s", cClass);
 				ImGui::NextColumn();
 
-				ImGui::Text("%s", cFaction);
+				ImGui::TextColored(FactionColor, "%s", cRace);
 				ImGui::NextColumn();
+
+				ImGui::TextColored(FactionColor, "%s", cFaction);
+				ImGui::NextColumn();
+
+				ImGui::Text("%p\n", Obj->Ptr());
+
+				ImGui::NextColumn();
+
 			}
 			ImGui::Columns(1);
 			ImGui::Separator();
@@ -149,7 +164,7 @@ void ShowEntityList::RenderWindow()
 	}
 	__except (Utils::filterException(GetExceptionCode(), GetExceptionInformation())) {
 		printf("[!] EntityList Exception Caught!\n");
-		LuaScript::ReInitObjMgr(true);
+		Settings::bot::Refresh = true;
 		ImGui::End();
 	}
 }
