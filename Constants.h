@@ -5,91 +5,46 @@
 #include <string>
 #include <iostream>
 
-using namespace std;
+//using namespace std;
 
-enum MovementFlags : uint32_t
+typedef int64_t int64;
+typedef int32_t int32;
+typedef int16_t int16;
+typedef int8_t int8;
+typedef uint64_t uint64;
+typedef uint32_t uint32;
+typedef uint16_t uint16;
+typedef uint8_t uint8;
+
+
+
+enum CGGameUI_isinworldID : uint8_t
 {
-    MOVEMENTFLAG_NONE = 0x00000000,
-    MOVEMENTFLAG_FORWARD = 0x00000001,
-    MOVEMENTFLAG_BACKWARD = 0x00000002,
-    MOVEMENTFLAG_STRAFE_LEFT = 0x00000004,
-    MOVEMENTFLAG_STRAFE_RIGHT = 0x00000008,
-    MOVEMENTFLAG_LEFT = 0x00000010,
-    MOVEMENTFLAG_RIGHT = 0x00000020,
-    MOVEMENTFLAG_PITCH_UP = 0x00000040,
-    MOVEMENTFLAG_PITCH_DOWN = 0x00000080,
-    MOVEMENTFLAG_WALKING = 0x00000100,               // Walking
-    MOVEMENTFLAG_DISABLE_GRAVITY = 0x00000200,               // Former MOVEMENTFLAG_LEVITATING. This is used when walking is not possible.
-    MOVEMENTFLAG_ROOT = 0x00000400,               // Must not be set along with MOVEMENTFLAG_MASK_MOVING
-    MOVEMENTFLAG_FALLING = 0x00000800,               // damage dealt on that type of falling
-    MOVEMENTFLAG_FALLING_FAR = 0x00001000,
-    MOVEMENTFLAG_PENDING_STOP = 0x00002000,
-    MOVEMENTFLAG_PENDING_STRAFE_STOP = 0x00004000,
-    MOVEMENTFLAG_PENDING_FORWARD = 0x00008000,
-    MOVEMENTFLAG_PENDING_BACKWARD = 0x00010000,
-    MOVEMENTFLAG_PENDING_STRAFE_LEFT = 0x00020000,
-    MOVEMENTFLAG_PENDING_STRAFE_RIGHT = 0x00040000,
-    MOVEMENTFLAG_PENDING_ROOT = 0x00080000,
-    MOVEMENTFLAG_SWIMMING = 0x00100000,               // appears with fly flag also
-    MOVEMENTFLAG_ASCENDING = 0x00200000,               // press "space" when flying
-    MOVEMENTFLAG_DESCENDING = 0x00400000,
-    MOVEMENTFLAG_CAN_FLY = 0x00800000,               // Appears when unit can fly AND also walk
-    MOVEMENTFLAG_FLYING = 0x01000000,               // unit is actually flying. pretty sure this is only used for players. creatures use disable_gravity
-    MOVEMENTFLAG_SPLINE_ELEVATION = 0x02000000,               // used for flight paths
-    MOVEMENTFLAG_WATERWALKING = 0x04000000,               // prevent unit from falling through water
-    MOVEMENTFLAG_FALLING_SLOW = 0x08000000,               // active rogue safe fall spell (passive)
-    MOVEMENTFLAG_HOVER = 0x10000000,               // hover, cannot jump
-    MOVEMENTFLAG_DISABLE_COLLISION = 0x20000000,
-
-    MOVEMENTFLAG_MASK_MOVING =
-    MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_BACKWARD | MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_STRAFE_RIGHT |
-    MOVEMENTFLAG_FALLING | MOVEMENTFLAG_ASCENDING | MOVEMENTFLAG_DESCENDING,
-
-    MOVEMENTFLAG_MASK_TURNING =
-    MOVEMENTFLAG_LEFT | MOVEMENTFLAG_RIGHT | MOVEMENTFLAG_PITCH_UP | MOVEMENTFLAG_PITCH_DOWN,
-
-    MOVEMENTFLAG_MASK_MOVING_FLY =
-    MOVEMENTFLAG_FLYING | MOVEMENTFLAG_ASCENDING | MOVEMENTFLAG_DESCENDING,
-
-    // Movement flags allowed for creature in CreateObject - we need to keep all other enabled serverside
-    // to properly calculate all movement
-    MOVEMENTFLAG_MASK_CREATURE_ALLOWED =
-    MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_DISABLE_GRAVITY | MOVEMENTFLAG_ROOT | MOVEMENTFLAG_SWIMMING |
-    MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_WATERWALKING | MOVEMENTFLAG_FALLING_SLOW | MOVEMENTFLAG_HOVER | MOVEMENTFLAG_DISABLE_COLLISION,
-
-    /// @todo if needed: add more flags to this masks that are exclusive to players
-    MOVEMENTFLAG_MASK_PLAYER_ONLY =
-    MOVEMENTFLAG_FLYING,
-
-    /// Movement flags that have change status opcodes associated for players
-    MOVEMENTFLAG_MASK_HAS_PLAYER_STATUS_OPCODE = MOVEMENTFLAG_DISABLE_GRAVITY | MOVEMENTFLAG_ROOT |
-    MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_WATERWALKING | MOVEMENTFLAG_FALLING_SLOW | MOVEMENTFLAG_HOVER | MOVEMENTFLAG_DISABLE_COLLISION
+   NotInitialized = 0x0000000,
+   LoadingScreen1 = 0x1000003,
+   LoadingScreen2 = 0x1000002,
+   Loaded = 0x1010004
 };
 
-enum CGGameUI_isinworldID : uint32_t
-{
-    CGGameUI_isinworld_NotInitialized = 0x0000000,
-    CGGameUI_isinworld_LoadingScreen1 = 0x1000003,
-    CGGameUI_isinworld_LoadingScreen2 = 0x1000002,
-    CGGameUI_isinworld_Yes = 0x1010004
-};
 
-enum TypeId : uint8_t
+enum class TypeId : uint8_t
 {
     CGObject = 0,
     CGItem = 1,
     CGContainer = 2,
-    CGAzeriteEmpoweredItem = 3,
-    CGAzeriteItem = 4,
-    CGUnit = 5,
-    CGPlayer = 6,
-    CGActivePlayer = 7,
-    CGGameObject = 8,
-    CGDynamicObject = 9,
-    CGCorpse = 10,
-    CGAreaTrigger = 11,
-    CGSceneObject = 12,
-    CGConversation = 13
+    CGUnit = 3,
+    CGPlayer = 4,
+    CGActivePlayer = 5,
+    CGGameObject = 6,
+    CGDynamicObject = 7,
+    CGCorpse = 8,
+    CGAreaTrigger = 9,
+    CGSceneObject = 10,
+    CGConversation = 11,
+	AIGroup = 12,
+    Scenario = 13,
+    Loot = 14,
+    Invalid = 15// 17
 };
 
 enum WoWClass : uint8_t
@@ -115,15 +70,211 @@ enum WoWRace : uint8_t
     NightElf,
     Undead,
     Tauren,
-    Gnome,
-    Troll,
-    Goblin,
+    Gnome = 115,
+    TrollFemale = 116,
+    Troll = 158,
+    Goblin = 8,
     BloodElf,
     Draenei,
     FelOrc,
     Naga,
     Broken,
     Skeleton = 15,
+    Draeneis = 1629,
+    BloodElfs = 1610,
+};
+
+enum class SPELL_FAILED_REASON : uint8_t
+{
+	Success = 0,
+	AffectingCombat = 1,
+	AlreadyAtFullHealth = 2,
+	AlreadyAtFullMana = 3,
+	AlreadyAtFullPower = 4,
+	AlreadyBeingTamed = 5,
+	AlreadyHaveCharm = 6,
+	AlreadyHaveSummon = 7,
+	AlreadyOpen = 8,
+	AuraBounced = 9,
+	AutotrackInterrupted = 10,
+	BadImplicitTargets = 11,
+	BadTargets = 12,
+	CantBeCharmed = 13,
+	CantBeDisenchanted = 14,
+	CantBeDisenchantedSkill = 15,
+	CantBeMilled = 16,
+	CantBeProspected = 17,
+	CantCastOnTapped = 18,
+	CantDuelWhileInvisible = 19,
+	CantDuelWhileStealthed = 20,
+	CantStealth = 21,
+	CasterAurastate = 22,
+	CasterDead = 23,
+	Charmed = 24,
+	ChestInUse = 25,
+	Confused = 26,
+	DontReport = 27,
+	EquippedItem = 28,
+	EquippedItemClass = 29,
+	EquippedItemClassMainhand = 30,
+	EquippedItemClassOffhand = 31,
+	Error = 32,
+	Fizzle = 33,
+	Fleeing = 34,
+	FoodLowlevel = 35,
+	Highlevel = 36,
+	HungerSatiated = 37,
+	Immune = 38,
+	IncorrectArea = 39,
+	Interrupted = 40,
+	InterruptedCombat = 41,
+	ItemAlreadyEnchanted = 42,
+	ItemGone = 43,
+	ItemNotFound = 44,
+	ItemNotReady = 45,
+	LevelRequirement = 46,
+	LineOfSight = 47,
+	TargetLowlevel = 48,
+	LowCastlevel = 49,
+	MainhandEmpty = 50,
+	Moving = 51,
+	NeedAmmo = 52,
+	NeedAmmoPouch = 53,
+	NeedExoticAmmo = 54,
+	NeedMoreItems = 55,
+	Nopath = 56,
+	NotBehind = 57,
+	NotFishable = 58,
+	NotFlying = 59,
+	NotHere = 60,
+	NotInfront = 61,
+	NotInControl = 62,
+	NotKnown = 63,
+	NotMounted = 64,
+	NotOnTaxi = 65,
+	NotOnTransport = 66,
+	NotReady = 67,
+	NotShapeshift = 68,
+	NotStanding = 69,
+	NotTradeable = 70,
+	NotTrading = 71,
+	NotUnsheathed = 72,
+	NotWhileGhost = 73,
+	NotWhileLooting = 74,
+	NoAmmo = 75,
+	NoChargesRemain = 76,
+	NoChampion = 77,
+	NoComboPoints = 78,
+	NoDueling = 79,
+	NoEndurance = 80,
+	NoFish = 81,
+	NoItemsWhileShapeshifted = 82,
+	NoMountsAllowed = 83,
+	NoPet = 84,
+	NoPower = 85,
+	NothingToDispel = 86,
+	NothingToSteal = 87,
+	OnlyAbovewater = 88,
+	OnlyDaytime = 89,
+	OnlyIndoors = 90,
+	OnlyMounted = 91,
+	OnlyNighttime = 92,
+	OnlyOutdoors = 93,
+	OnlyShapeshift = 94,
+	OnlyStealthed = 95,
+	OnlyUnderwater = 96,
+	OutOfRange = 97,
+	Pacified = 98,
+	Possessed = 99,
+	Reagents = 100,
+	RequiresArea = 101,
+	RequiresSpellFocus = 102,
+	Rooted = 103,
+	Silenced = 104,
+	SpellInProgress = 105,
+	SpellLearned = 106,
+	SpellUnavailable = 107,
+	Stunned = 108,
+	TargetsDead = 109,
+	TargetAffectingCombat = 110,
+	TargetAurastate = 111,
+	TargetDueling = 112,
+	TargetEnemy = 113,
+	TargetEnraged = 114,
+	TargetFriendly = 115,
+	TargetInCombat = 116,
+	TargetIsPlayer = 117,
+	TargetIsPlayerControlled = 118,
+	TargetNotDead = 119,
+	TargetNotInParty = 120,
+	TargetNotLooted = 121,
+	TargetNotPlayer = 122,
+	TargetNoPockets = 123,
+	TargetNoWeapons = 124,
+	TargetNoRangedWeapons = 125,
+	TargetUnskinnable = 126,
+	ThirstSatiated = 127,
+	TooClose = 128,
+	TooManyOfItem = 129,
+	TotemCategory = 130,
+	Totems = 131,
+	TryAgain = 132,
+	UnitNotBehind = 133,
+	UnitNotInfront = 134,
+	WrongPetFood = 135,
+	NotWhileFatigued = 136,
+	TargetNotInInstance = 137,
+	NotWhileTrading = 138,
+	TargetNotInRaid = 139,
+	TargetFreeforall = 140,
+	NoEdibleCorpses = 141,
+	OnlyBattlegrounds = 142,
+	TargetNotGhost = 143,
+	TransformUnusable = 144,
+	WrongWeather = 145,
+	DamageImmune = 146,
+	PreventedByMechanic = 147,
+	PlayTime = 148,
+	Reputation = 149,
+	MinSkill = 150,
+	NotInArena = 151,
+	NotOnShapeshift = 152,
+	NotOnStealthed = 153,
+	NotOnDamageImmune = 154,
+	NotOnMounted = 155,
+	TooShallow = 156,
+	TargetNotInSanctuary = 157,
+	TargetIsTrivial = 158,
+	BmOrInvisgod = 159,
+	ExpertRidingRequirement = 160,
+	ArtisanRidingRequirement = 161,
+	NotIdle = 162,
+	NotInactive = 163,
+	PartialPlaytime = 164,
+	NoPlaytime = 165,
+	NotInBattleground = 166,
+	NotInRaidInstance = 167,
+	OnlyInArena = 168,
+	TargetLockedToRaidInstance = 169,
+	OnUseEnchant = 170,
+	NotOnGround = 171,
+	CustomError = 172,
+	TooManySockets = 173,
+	CantDoThatRightNow = 173,
+	InvalidGlyph = 175,
+	UniqueGlyph = 176,
+	GlyphSocketLocked = 177,
+	NoValidTargets = 178,
+	ItemAtMaxCharges = 179,
+	NotInBarbershop = 180,
+	FishingTooLow = 181,
+	ItemEnchantTradeWindow = 182,
+	SummonPending = 183,
+	MaxSockets = 184,
+	PetCanRename = 185,
+	TargetCannotBeResurrected = 186,
+	Unknown = 187,
+	Ok = 0xFF
 };
 
 struct WGuid
@@ -131,46 +282,7 @@ struct WGuid
     uint64_t High;
     uint64_t Low;
 
-    WGuid() { High = 0; Low = 0; }
-
-    WGuid(const uintptr_t base)
-    {
-        High = *reinterpret_cast<uint64_t*>(base);
-        Low = *reinterpret_cast<uint64_t*>(base + 0x8);
+    bool operator==(const WGuid& rhs) const {
+        return (High == rhs.High && Low == rhs.Low);
     }
-};
-
-const float PI = 3.14159265358979323846f;
-template<class T>
-struct Point2D
-{
-    T X;
-    T Y;
-    Point2D() :X(0), Y(0) {}
-    Point2D(T x, T y) :X(x), Y(y) {}
-    bool operator==(const Point2D& right)
-    {
-        return (this->X == right.X && this->Y == right.Y);
-    }
-    bool operator!=(const Point2D& right)
-    {
-        return (this->X != right.X || this->Y != right.Y);
-    }
-    Point2D operator -(const Point2D& right)
-    {
-        return Point2D(this->X - right.X, this->Y - right.Y);
-    }
-    Point2D operator +(const Point2D& right)
-    {
-        return Point2D(this->X + right.X, this->Y + right.Y);
-    }
-    Point2D operator -=(const Point2D& right)
-    {
-        return Point2D(this->X - right.X, this->Y - right.Y);
-    }
-    Point2D operator +=(const Point2D& right)
-    {
-        return Point2D(this->X + right.X, this->Y + right.Y);
-    }
-
 };

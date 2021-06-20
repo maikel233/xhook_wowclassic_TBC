@@ -12,9 +12,6 @@
     <Filter Include="Header Files\Detours">
       <UniqueIdentifier>{d3fd460c-a95c-4179-a7d2-c896e0a73858}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\ImGui">
-      <UniqueIdentifier>{53e57d90-ad36-45e1-85f8-420cea3d6ddb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\ImGui">
       <UniqueIdentifier>{4918e271-8e5c-4ca2-b134-d07ef9f65c8f}</UniqueIdentifier>
     </Filter>
@@ -57,6 +54,24 @@
     <Filter Include="Source Files\Funcs">
       <UniqueIdentifier>{29c74896-3bc1-4d7f-9fbb-2dfcacdc46c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Funcs\ImGui">
+      <UniqueIdentifier>{53e57d90-ad36-45e1-85f8-420cea3d6ddb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\WoW\More WoW Stuff">
+      <UniqueIdentifier>{a18d4f4e-e960-4146-9e3e-37781e026e2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\WoW\Nav">
+      <UniqueIdentifier>{a8570205-bdc8-4d41-a22f-0991a377d2a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\WoW\Navigation">
+      <UniqueIdentifier>{2bbece26-c266-4d98-86c0-d5200394eddf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\WoW\Bot">
+      <UniqueIdentifier>{323308c3-c007-4cbb-816a-d07c18130628}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\WoW\Global">
+      <UniqueIdentifier>{cf2acba9-cffb-478e-a1fc-79872d4c52b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -68,9 +83,6 @@
     <ClInclude Include="detours.h">
       <Filter>Header Files\Detours</Filter>
     </ClInclude>
-    <ClInclude Include="FindPattern.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IncludeHeaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -78,28 +90,28 @@
       <Filter>Header Files\WoW</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imconfig.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\Funcs\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imgui.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\Funcs\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imgui_impl_dx11.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\Funcs\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imgui_impl_win32.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\Funcs\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imgui_internal.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\Funcs\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imstb_rectpack.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\Funcs\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imstb_textedit.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\Funcs\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imstb_truetype.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\Funcs\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="Menu.h">
       <Filter>Header Files\Menu</Filter>
@@ -137,9 +149,6 @@
     <ClInclude Include="EntityList.h">
       <Filter>Source Files\Menu\Drawing</Filter>
     </ClInclude>
-    <ClInclude Include="Constants.h">
-      <Filter>Header Files\WoW\LUA</Filter>
-    </ClInclude>
     <ClInclude Include="Lua\GameMethods.h">
       <Filter>Header Files\WoW\LUA</Filter>
     </ClInclude>
@@ -155,17 +164,35 @@
     <ClInclude Include="DllMain.h">
       <Filter>Source Files\WoW</Filter>
     </ClInclude>
-    <ClInclude Include="Utilsss.h">
-      <Filter>Header Files\Funcs</Filter>
-    </ClInclude>
     <ClInclude Include="Utils.h">
       <Filter>Source Files\Funcs</Filter>
     </ClInclude>
     <ClInclude Include="icons.h">
       <Filter>Header Files\Settings</Filter>
     </ClInclude>
-    <ClInclude Include="TeleportMenu.h">
-      <Filter>Source Files\Menu\Drawing</Filter>
+    <ClInclude Include="Hacks.h">
+      <Filter>Source Files\WoW</Filter>
+    </ClInclude>
+    <ClInclude Include="WoWTypes.h">
+      <Filter>Header Files\WoW\More WoW Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedDefines.h">
+      <Filter>Header Files\WoW\More WoW Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="Location.hpp">
+      <Filter>Header Files\WoW\More WoW Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="bot\FishingBot.h">
+      <Filter>Header Files\WoW\Bot</Filter>
+    </ClInclude>
+    <ClInclude Include="bot\GrindBot.h">
+      <Filter>Header Files\WoW\Bot</Filter>
+    </ClInclude>
+    <ClInclude Include="Globals.h">
+      <Filter>Header Files\WoW\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files\WoW\LUA</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -189,9 +216,6 @@
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files\WoW</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Header Files\WoW\Camera</Filter>
     </ClCompile>
     <ClCompile Include="INonCopyable.h">
       <Filter>Header Files</Filter>
@@ -217,9 +241,6 @@
     <ClCompile Include="Settings\Color.cpp">
       <Filter>Source Files\Settings</Filter>
     </ClCompile>
-    <ClCompile Include="FindPattern.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Configs.cpp">
       <Filter>Source Files\Menu</Filter>
     </ClCompile>
@@ -235,8 +256,20 @@
     <ClCompile Include="Lua\LuaScript.cpp">
       <Filter>Header Files\WoW\LUA</Filter>
     </ClCompile>
-    <ClCompile Include="TeleportMenu.cpp">
-      <Filter>Source Files\Menu\Drawing</Filter>
+    <ClCompile Include="Hacks.cpp">
+      <Filter>Source Files\WoW</Filter>
     </ClCompile>
+    <ClCompile Include="bot\FishingBot.cpp">
+      <Filter>Header Files\WoW\Bot</Filter>
+    </ClCompile>
+    <ClCompile Include="bot\GrindBot.cpp">
+      <Filter>Header Files\WoW\Bot</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Header Files\WoW\Camera</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="struct.txt" />
   </ItemGroup>
 </Project>

@@ -4,40 +4,29 @@
 //#include <D3DX11.h>
 //#include <DirectXMath.h>
 
-namespace wow
+namespace WoW
 {
+	//Camera init
+	CameraMgr* camera::GCamera = nullptr;
 
-	/*
-	void camera::GetMatrix(float* out)
+	bool InitCamera = false;
+	void camera::Init()
 	{
-		uintptr_t CameraPtr = Offsets::Base + Offsets::CameraMgr;
-		uintptr_t ptr = *reinterpret_cast<uintptr_t*>(CameraPtr);
-		uintptr_t CameraBase = *reinterpret_cast<uintptr_t*>(ptr + Offsets::CameraPtr);
-		float* CameraMatrix = reinterpret_cast<float*>(CameraBase + 0x1C);
-		memcpy(out, CameraMatrix, 36);
+		if (!InitCamera)
+		{
+			uintptr_t Camera = *reinterpret_cast<uintptr_t*>(Offsets::CameraMgr);
+			auto* Camerasec = reinterpret_cast<CameraMgr*>(Camera);
+			GCamera = Camerasec;
+
+			std::cout << "[+] Camera addr:" << std::hex << Camerasec << std::endl;
+			InitCamera = true;
+		}
 	}
 
-	void camera::GetPosition(float* out)
+	Vector2 camera::WorldToScreenv2(C3Vector pos)
 	{
-		uintptr_t CameraPtr = Offsets::Base + Offsets::CameraMgr;
-		uintptr_t ptr = *reinterpret_cast<uintptr_t*>(CameraPtr);
-		uintptr_t CameraBase = *reinterpret_cast<uintptr_t*>(ptr + Offsets::CameraPtr);
-		float* CameraOrigin = reinterpret_cast<float*>(CameraBase + 0x10);
-		memcpy(out, CameraOrigin, 3 * sizeof(float));
-	}
-
-	float camera::GetFieldOfView(void)
-	{
-		uintptr_t CameraPtr = Offsets::Base + Offsets::CameraMgr;
-		uintptr_t ptr = *reinterpret_cast<uintptr_t*>(CameraPtr);
-		uintptr_t CameraBase = *reinterpret_cast<uintptr_t*>(ptr + Offsets::CameraPtr);
-		return *reinterpret_cast<float*>(CameraBase + 0x40);
-	}
-	*/
-
-	Vector2 camera::WorldToScreenv2(Vector3 pos)
-	{
-		CameraMgr* pCameraBase = *reinterpret_cast<CameraMgr**>(Offsets::Base + Offsets::CameraMgr);
+		if (camera::GCamera == nullptr) camera::Init();
+		CameraMgr* pCameraBase = *reinterpret_cast<CameraMgr**>(Offsets::CameraMgr);
 		if (pCameraBase == nullptr || pCameraBase->cameraptr == nullptr) return Vector2{ 0,0 };
 		auto pCamera = pCameraBase->cameraptr;
 
