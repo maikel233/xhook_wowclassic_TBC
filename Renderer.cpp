@@ -4,6 +4,7 @@
 #include <imgui_internal.h>
 #include <inttypes.h>
 #include "Radar.h"
+#include "Hacks.h"
 
 namespace Draw
 {
@@ -18,13 +19,37 @@ namespace Draw
 	void Renderer::Initialize()
 	{
 		if (!InitFont)
-		{
+		{ 
 			ImGuiIO& io = ImGui::GetIO();
-
 			m_pFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Tahoma.ttf", 13);
-			printf("Drawing font: Arial.ttf\n");
 			InitFont = true;
 		}
+	}
+
+	bool Wireframe(bool state)
+	{
+		DWORD currentFlag = NULL, newFlag = NULL;
+
+		DWORD RenderFlag = 0x1018D50;
+		
+
+		//if (IsWardenLoaded()) return FALSE;
+		RenderFlag, &currentFlag, sizeof(currentFlag);
+
+		if (state) // Enable Wireframe rendering.
+		{
+			newFlag = currentFlag | (1 << 29);
+			newFlag = newFlag ^ (1 << 26);
+		}
+
+		else // Disable Wireframe rendering.
+		{
+			newFlag = currentFlag ^ (1 << 29);
+			newFlag = newFlag | (1 << 26);
+		}
+
+		RenderFlag, &newFlag, sizeof(newFlag);
+		return newFlag == currentFlag; // If no change has occured, return false.
 	}
 
 	void Renderer::BeginScene()
@@ -40,118 +65,128 @@ namespace Draw
 		ImGui::SetWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y), ImGuiCond_Always);
 	}
 
-	void Renderer::DrawObjects(WObject* Entity, HealthColorVar Color)
+
+	void Renderer::DrawObjects(WObject* entity, HealthColorVar Colors)
 	{
 		ImGuiWindow* window = ImGui::GetCurrentWindow();
 		if (window)
 		{
-			Vector2 OPPos = wow::camera::WorldToScreenv2(Entity->GetUnitPosition());
-			Vector2 LPPos = wow::camera::WorldToScreenv2(LuaScript::ActivePlayer->GetUnitPosition());
+			Vector2 OPPos = WoW::camera::WorldToScreenv2(entity->GetUnitPosition());
+			Vector2 LPPos = WoW::camera::WorldToScreenv2(LuaScript::ActivePlayer->GetUnitPosition());
 
 			if ((OPPos.x == NULL && OPPos.y == NULL) || LPPos.x == NULL && LPPos.y == NULL)
 				return;
 
-			int TypeID = Entity->GetType();
+			int TypeID = (int)entity->GetType();
 
+			//Give Players made objects a color.
+			if (*entity->GetOwner() == *LuaScript::ActivePlayer->GetGuid())
+			{
+				Colors = ImColor(1.4f, 0.1f, 0.0f, 1.0f);
+				window->DrawList->AddCircle(ImVec2(OPPos.x, OPPos.y), 10, Colors.color, 12, 1.0);
+			}
+
+			if (LuaScript::ActivePlayer->sUnitField->Target == *entity->GetGuid())
+			{
+				Colors = ImColor(1.4f, 0.1f, 0.0f, 1.0f);
+				window->DrawList->AddCircle(ImVec2(OPPos.x, OPPos.y), 10, Colors.color, 12, 1.0);
+			}
+		
 			if (Settings::Drawing::Lines)
 			{
-				window->DrawList->AddLine(ImVec2(LPPos.x, LPPos.y), ImVec2(OPPos.x, OPPos.y), Color.color, 1);
+				window->DrawList->AddLine(ImVec2(LPPos.x, LPPos.y), ImVec2(OPPos.x, OPPos.y), Colors.color, 1);
+			}
+
+			if (Settings::Drawing::Distance)
+			{
+				float Distance = LuaScript::ActivePlayer->GetUnitPosition().DistanceTo(entity->GetUnitPosition());
+				string Distancestr = "Meters: " + std::to_string(Distance);
+				const char* cDistancestr = Distancestr.c_str();
+				window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y - 10.f), Colors.color, cDistancestr);
 			}
 
 			if (Settings::Drawing::Names)
-			{
-				if ((TypeID == CGUnit) || TypeID == CGPlayer || TypeID == CGGameObject)
+			{		
+				if (entity->GetType() == TypeId::CGPlayer || TypeID == (int)TypeId::CGActivePlayer)
 				{
-					window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y - 40.f), Color.color, Entity->GetObjectName());
+					window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y - 40.f), Utils::GetClassColor(entity), entity->GetObjectName());				
+				}
+				else if (TypeID == (int)TypeId::CGUnit || TypeID == (int)TypeId::CGGameObject)
+				{ 
+					window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y - 40.f), Colors.color, entity->GetObjectName());
 				}
 			}
 
-			if ((TypeID == CGUnit) || TypeID == CGPlayer)
+			if ((TypeID == (int)TypeId::CGUnit) || TypeID == (int)TypeId::CGPlayer)
 			{
-				if (Settings::Drawing::Distance)
-				{
-					float Distance = LuaScript::ActivePlayer->GetUnitPosition().Distance(Entity->GetUnitPosition());
-					string Distancestr = "Meters: " + std::to_string(Distance);
-					const char* cDistancestr = Distancestr.c_str();
-					window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y - 10.f), Color.color, cDistancestr);
-				}
-
+	
 				if (Settings::Drawing::Race)
 				{
-					string Race = Utils::GetRace(Entity);
+					string Race = Utils::GetRace(entity);
 					const char* cRace = Race.c_str();
-					window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y), Color.color, cRace);
+					window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y), Colors.color, cRace);
 				}
 
 				if (Settings::Drawing::Health)
 				{
-					string UnitHealthstr2 = "HP:" + Utils::GetHealth(Entity);
+					string UnitHealthstr2 = "HP:" + Utils::GetHealth(entity);
 					const char* cUnitHealthstr = UnitHealthstr2.c_str();
-					window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y - 30.f), Color.color, cUnitHealthstr);
+					window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y - 30.f), Colors.color, cUnitHealthstr);
 				}
+				if (Settings::Drawing::EnergyAndMana)
+				{
+					if (TypeID == (int)TypeId::CGPlayer)
+					{
+						std::string UnitClass;
+						int RACEID = entity->sUnitField->RaceID;
+						if (RACEID == WoWClass::Rogue)	{ UnitClass = "Energy:"; }
+						else if (RACEID == WoWClass::Warrior) { UnitClass = "Rage:"; }
+						else { "Mana:"; }
+						string UnitEnergyAndManaStr = UnitClass + Utils::GetEnergyOrMana(entity);
+						const char* cUnitEnergyAndManaStr = UnitEnergyAndManaStr.c_str();
+						window->DrawList->AddText(ImVec2(OPPos.x + 100, OPPos.y - 30.f), Colors.color, cUnitEnergyAndManaStr);
+					}
+				}
+
 				if (Settings::Drawing::Lvl)
 				{
-					string UnitLevelstr = "LVL: " + std::to_string(Entity->GetUnitLevel(1));
+					string UnitLevelstr = "LVL:" + std::to_string(entity->GetUnitLevel(1));
 					const char* cUnitLevelstr = UnitLevelstr.c_str();
-					window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y - 20.f), Color.color, cUnitLevelstr);
+					window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y - 20.f), Colors.color, cUnitLevelstr);
 				}
 			}
-
 		}
 	}
 
-
 	void Renderer::InitBeforeDrawing()
 	{
+			// Draw World through ImGui
 		__try
 		{
-			// Draw World through ImGui
-
-			if (!Settings::Objectmanager::ObjMgrisdone)
-				return;
-
+		
 			if (!Settings::Drawing::Enabled)
 				return;
 
-			if (Settings::UnitHelper::UnitInfos.empty())
+			if (!LuaScript::ActivePlayer)
 				return;
 
-			for (int i = 0; i < Settings::UnitHelper::UnitInfos.size(); i++)
+			for (auto& Object : LuaScript::Objects)
 			{
-				if (!Settings::UnitHelper::UnitInfos.at(i).Entity)
-				{
-					printf("[!] Invalid obj Ptr!\n");
-					LuaScript::ReInitObjMgr(true);
-					continue;
-				}
 
-				WObject* Object = (WObject*)Settings::UnitHelper::UnitInfos.at(i).Entity;
-				uintptr_t TypeID = *reinterpret_cast<TypeId*>(Object->Ptr() + Offsets::Type);
-
-				if (!Object)
+				if (!Object->isValid())
 					continue;
 
-				if (!Object->Ptr())
-				{
-					printf("[!] Invalid Player Ptr!\n");
-					LuaScript::ReInitObjMgr(true);
-					continue;
-				}
-
+				int TypeID = (int)Object->GetType();
 				if (!TypeID)
 					continue;
 
-				if (!TypeID == CGUnit || !TypeID == CGPlayer || !TypeID == CGActivePlayer || !TypeID == CGGameObject || !TypeID == CGCorpse)
+				if (!TypeID == (int)TypeId::CGUnit || !TypeID == (int)TypeId::CGPlayer || !TypeID == (int)TypeId::CGActivePlayer || !TypeID == (int)TypeId::CGGameObject || !TypeID == (int)TypeId::CGCorpse)
 					continue;
 
-				if (!Object->GetUnitPosition().x < -10000000.000000 || !Object->GetUnitPosition().y < -10000000.000000 || !Object->GetUnitPosition().z < -10000000.000000)
-				{
-					printf("[!] Invalid Player coordinates!\n");
-					LuaScript::ReInitObjMgr(true);
+				if (!Utils::ValidCoord(Object))
 					continue;
-				}
 
-				if (TypeID == CGUnit || TypeID == CGPlayer || TypeID == CGActivePlayer)
+				if (TypeID == (int)TypeId::CGUnit || TypeID == (int)TypeId::CGPlayer || TypeID == (int)TypeId::CGActivePlayer)
 				{
 					if (!Object->sUnitField->Health > 0 && !Settings::Drawing::DrawDeadEntity)
 						continue;
@@ -160,68 +195,82 @@ namespace Draw
 					if (Utils::IsFriendlyOrEnemy(Object) != Utils::IsFriendlyOrEnemy(LuaScript::ActivePlayer) && !Settings::Drawing::Enemy)
 						continue;
 				}
-				if (TypeID == CGCorpse && Settings::Drawing::Corpse)
+				if (TypeID == (int)TypeId::CGUnit && Settings::Drawing::Unit)
 				{
-					Renderer::DrawObjects(Object, Settings::Drawing::CorpseColor.color);
+					ImColor UnitColor;
+					if (!Object->sUnitField->Health > 0 && !Settings::Drawing::DrawDeadEntity) {
+						UnitColor = Settings::Drawing::CorpseColor.Color();
+					}
+					else {
+						UnitColor = Settings::Drawing::UnitColor.Color(Object);
+					}
+					Renderer::DrawObjects(Object, UnitColor);
 				}
-				else if (TypeID == CGActivePlayer && Settings::Drawing::LocalPlayer)
-				{
-					ImColor LocalplayerColor;
-					LocalplayerColor = Settings::Drawing::LocalPlayerColor.Color(Object);
-					Renderer::DrawObjects(Object, LocalplayerColor);
-				}
-				else if (TypeID == CGPlayer && Settings::Drawing::Player)
+				else if (TypeID == (int)TypeId::CGPlayer && Settings::Drawing::Player)
 				{
 					ImColor PlayerColor;
 					PlayerColor = Settings::Drawing::PlayerColor.Color(Object);
 					Renderer::DrawObjects(Object, PlayerColor);
 				}
-				else if (TypeID == CGUnit && Settings::Drawing::Unit)
+				else if (TypeID == (int)TypeId::CGActivePlayer && Settings::Drawing::LocalPlayer)
 				{
-					ImColor UnitColor;
-					if (!Object->sUnitField->Health > 0 && !Settings::Drawing::DrawDeadEntity)
-					{
-						UnitColor = Settings::Drawing::CorpseColor.Color();
-					}
-					else
-					{
-						UnitColor = Settings::Drawing::UnitColor.Color(Object);
-					}
-
-					Renderer::DrawObjects(Object, UnitColor);
+					ImColor LocalplayerColor;
+					LocalplayerColor = Settings::Drawing::LocalPlayerColor.Color(Object);
+					Renderer::DrawObjects(Object, LocalplayerColor);
 				}
-				else if (TypeID == CGGameObject && Settings::Drawing::GameObject)
+				else if (TypeID == (int)TypeId::CGGameObject && Settings::Drawing::GameObject)
 				{
 					Renderer::DrawObjects(Object, Settings::Drawing::GameObjectColor.color);
+				}
+				else if (TypeID == (int)TypeId::CGCorpse && Settings::Drawing::Corpse)
+				{
+					ImColor UnitColor;
+					if (!Object->sUnitField->Health > 0 && !Settings::Drawing::DrawDeadEntity) {
+						UnitColor = Settings::Drawing::CorpseColor.Color();
+					}
+					else {
+						UnitColor = Settings::Drawing::UnitColor.Color(Object);
+					}
+					Renderer::DrawObjects(Object, UnitColor);
 				}
 			}
 		}
 		__except (Utils::filterException(GetExceptionCode(), GetExceptionInformation())) {
-			printf("[!] Render class Exception Caught!\n");
-			LuaScript::ReInitObjMgr(true);
+			printf("[!] RenderClass Exception Caught!\n");
+			Settings::bot::Refresh = true;
 		}
 	}
 
-	/*float GMISlandos[3]; float GMPoss[2];
-	GMISlandos[0] = 16222.099609;
-	GMISlandos[1] = 16252.099609;
-	GMISlandos[2] = 12.581040;*/
+
 	void Renderer::EndScene()
 	{
-		if (!Settings::Objectmanager::ObjMgrisdone)
-		{
-			GMenu::InitObjmgr();
-		}
-
 		InitBeforeDrawing();
 
 		ImGuiWindow* windowGui = ImGui::GetCurrentWindow();
 		windowGui->DrawList->PushClipRectFullScreen();
 
-		windowGui->DrawList->AddText(ImVec2(5, 0), ImColor(0, 162, 232), "XHOOK for World of warcraft");
+		windowGui->DrawList->AddText(ImVec2(5, 0), ImColor(0, 162, 232), "X-HOOK for World of warcraft");
 
 		ImGui::End();
 		ImGui::PopStyleColor();
 		ImGui::PopStyleVar(2);
+
+		
+
+		if ((Globals::timeSinceEpochMillisec() - Globals::last_update) >= Globals::next_update_delta)
+		{
+		//	printf("Last Update: %i Next_update_delta %i \n", Globals::last_update, Globals::next_update_delta);
+			Globals::next_update_delta = Globals::timeSinceEpochMillisec() + 1000;
+			Globals::last_update = Globals::timeSinceEpochMillisec();
+		//	printf("After Last Update: %i Next_update_delta %i \n", Globals::last_update, Globals::next_update_delta);
+
+			if (!GameMethods::ObjMgrIsValid(0))
+			{ }
+			else
+			{
+				LuaScript::ReInitObjMgr(); // Loop ObjMgr
+			}
+			Globals::last_update = 0;
+		}
 	}
 }

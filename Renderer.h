@@ -23,5 +23,7 @@ namespace Draw
 	private:
 		ImFont* m_pFont;
 	};
+
+
 }
 #define g_sRenderer RangeMachine::Renderer::GetInstance()

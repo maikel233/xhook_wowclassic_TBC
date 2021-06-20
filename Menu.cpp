@@ -1,6 +1,9 @@
 ﻿#include "Menu.h"
 #include "Radar.h"
+#include "Camera.h"
+#include "Hacks.h"
 #include <inttypes.h>
+
 #define IM_ARRAYSIZE(_ARR)      ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
 char ConfigNames[128] = "";
@@ -248,33 +251,26 @@ static auto runOnce = true;
 void GMenu::InitObjmgr()
 {
 
-    if (runOnce)
-    {
-        runOnce = false;
-        Settings::Objectmanager::ObjMgrisdone = true;
+    //if (runOnce)
+    //{
+    //    runOnce = false;
+    //    Settings::Objectmanager::ObjMgrisdone = true;
+    //    srand(time(0));
+    //    //This is broken atm... Feel free to find a workaround...
+    //    //LuaScript::RegisterHandler("iterObjects", LuaScript::IterateObjects);
+    //    //LuaScript::RegisterHandler("fish", LuaScript::Fish);
+    //    //LuaScript::RegisterHandler("after", LuaScript::ExecuteAfterMS);
+    //    //LuaScript::RegisterHandler("every", LuaScript::ExecuteEveryMS);
+    //    //LuaScript::RegisterHandler("ctm", LuaScript::ClickToMove);
+    //    //LuaScript::RegisterHandler("getPosition", LuaScript::GetPlayerPosition);
+    //    ////// For later
+    //    //LuaScript::RegisterHandler("fakeTeleport", LuaScript::fakeTeleport);
+    //    //LuaScript::RegisterHandler("goToCorpse", LuaScript::GoToCorpse);
+    //    //LuaBase::PushLua();
+    //}
+ //  LuaBase::Execute();
 
-        srand(time(0));
-
-        //This is broken atm... Feel free to find a workaround...
-
-        //LuaScript::RegisterHandler("iterObjects", LuaScript::IterateObjects);
-        //LuaScript::RegisterHandler("fish", LuaScript::Fish);
-        //LuaScript::RegisterHandler("after", LuaScript::ExecuteAfterMS);
-        //LuaScript::RegisterHandler("every", LuaScript::ExecuteEveryMS);
-        //LuaScript::RegisterHandler("ctm", LuaScript::ClickToMove);
-        //LuaScript::RegisterHandler("getPosition", LuaScript::GetPlayerPosition);
-
-        //// For later
-        //LuaScript::RegisterHandler("fakeTeleport", LuaScript::fakeTeleport);
-        //LuaScript::RegisterHandler("goToCorpse", LuaScript::GoToCorpse);
-
-        //LuaBase::PushLua();
-    }
-
-    //LuaBase::Execute();
-    //LuaScript::chat("Script executed.");
 }
-
 
 const char* GMenu::MenuTabs[] = {
     "Misc",
@@ -303,7 +299,7 @@ void GMenu::Menu(bool p_open)
     ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
 
-    if (!ImGui::Begin("XHOOK for World of Warcraft 1.13.5", &p_open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))
+    if (!ImGui::Begin("XHOOK for World of Warcraft 1.13.7", &p_open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))
     {
         // Early out if the window is collapsed, as an optimization.
         ImGui::End();
@@ -328,13 +324,19 @@ void GMenu::Menu(bool p_open)
             ImGui::Text("Misc");
             ImGui::BeginChild("MISC", ImVec2(0, 0), true);
             ImGui::Separator();
-
+            
             ImGui::Columns(2, NULL, true);
             {
                 ImGui::PushItemWidth(100);
                 if (LuaScript::ActivePlayer)
                 {
-                    ImGui::Text("Coordinates: X: %f Y: %f Z: %f R: %f", LuaScript::ActivePlayer->GetUnitPosition().x, LuaScript::ActivePlayer->GetUnitPosition().y, LuaScript::ActivePlayer->GetUnitPosition().z, LuaScript::ActivePlayer->GetFacing());
+                    ImGui::Text("Hello Maikel233, LocalPlayer is located at: %p\n", LuaScript::ActivePlayer->Ptr());
+                  //  ImGui::Text("Casting %i and %i", LuaScript::ActivePlayer->sUnitField->SpellID, LuaScript::ActivePlayer->GetSpellCastID());
+                    ImGui::Text("Coordinates: X:%f Y:%f Z:%f R:%f MapID:%i", LuaScript::ActivePlayer->GetUnitPosition().x, LuaScript::ActivePlayer->GetUnitPosition().y, LuaScript::ActivePlayer->GetUnitPosition().z, LuaScript::ActivePlayer->GetFacing(), GameMethods::ClntObjMgr__GetMapId());    
+                 //   ImGui::Text("Radar Dir: X:%f Y:%f Z:%f", LuaScript::ActivePlayer->direction.x, LuaScript::ActivePlayer->direction.y, LuaScript::ActivePlayer->direction.z);
+                 //   ImGui::Text("Radar_2D Dir: X:%f Y:%f", LuaScript::ActivePlayer->direction_2d.x, LuaScript::ActivePlayer->direction_2d.y);              
+                 //   ImGui::Text("AncorPos Dir: X:%f Y:%f Z:%f", LuaScript::ActivePlayer->anchor_position.x, LuaScript::ActivePlayer->anchor_position.y, LuaScript::ActivePlayer->anchor_position.z);
+                  //  ImGui::Text("Current speed: %f", LuaScript::ActivePlayer->CurrentSpeed);
                     ImGui::Text("X:");
                     ImGui::SameLine();
                     ImGui::InputFloat(XorStr("##X"), &Settings::Hacks::Movement::NextPos.x, 10.01f, 0.0f, 2.0f);
@@ -350,53 +352,33 @@ void GMenu::Menu(bool p_open)
                     if (ImGui::Button("<="))
                     {
                         Settings::Hacks::Movement::TeleportBack = true;
-                        LuaScript::fakeTeleport(1);
+                        WoW::Hacks::fakeTeleport(1);
                     }
                     ImGui::SameLine();
                     if (ImGui::Button("Corpse"))
                     {
-                        LuaScript::GoToCorpse(1);
+                        WoW::Hacks::GoToCorpse(1);
                     }
                     ImGui::SameLine();
                     if (ImGui::Button("=>"))
                     {
-                        LuaScript::fakeTeleport(1);
+                        WoW::Hacks::fakeTeleport(1);
                     }
 
-       
-                        if (ImGui::Button("TP menu", ImVec2(-1, 0)))
-                        {
-                            Settings::Hacks::Movement::TeleportMenu = true;
-                        }
-                    
-            
-
-                    ImGui::NewLine();
-                    if (ImGui::Button("Load LuaScript"))
-                    {          
-                    //  LuaScript::Load(LUA_FILE); // Works Method1
-                    ////   LuaScript::Unlock(state); // Method2
-                   
-                        LuaScript::chat("Nope.");
-                    }
-                 
-                    ImGui::SameLine();
                     if (ImGui::Button("Reload objmgr"))
                     {                   
-                        Settings::UnitHelper::UnitInfos.clear();
-                        LuaBase::Input("iterObjects(1)", 1);
-                        LuaBase::PushLua();
-                        LuaBase::Execute();
+                        LuaScript::ReInitObjMgr();        
                     }
-                    //ImGui::SameLine();
-                    //if (ImGui::Button("Panic button"))
-                    //{
-                    //    //Restore all modified values to original.
-                    //    //RestoreAllValues(true);                  
-                    //}
+
+                    ImGui::Checkbox("FishBot", &Settings::bot::fishing::Enabled);
+                    //ImGui::Checkbox("Pool detection", &PoolDetection);
+                    //SetTooltip("NavMesh is currently disabled.");
+                    ImGui::Checkbox("GrindBot", &Settings::bot::Grinding::Enabled);
+                    SetTooltip("Still a work in progress. Dont use!");
                     ImGui::NextColumn();
                     {
                         ImGui::PushItemWidth(478);
+
                         ImGui::InputFloat(XorStr("##ms11"), &Settings::Hacks::Movement::jumpHeight, 3.01f, 1.0f, 2.0f);
                         ImGui::SameLine();
                         ImGui::Checkbox("JumpHeight", &Settings::Hacks::Movement::JumpStatev2);
@@ -408,7 +390,8 @@ void GMenu::Menu(bool p_open)
                         if (Settings::Hacks::Movement::JumpState)
                         {
                             ImGui::Checkbox("Superslowfall", &Settings::Hacks::Movement::SuperSlowFall);
-                            SetTooltip("This option allows you to maintain High altitude.\nDont use this on the ground or above the water!");               
+                            SetTooltip("This option allows you to maintain High altitude.\nDont use this on the ground or above the water!");
+                            ImGui::SliderInt("SlowFallValue", &Settings::Hacks::Movement::SuperSlowSleepTime, 0, 100, "SlowFall SleepTime %i");                         
                         }
                         else
                         {
@@ -423,17 +406,17 @@ void GMenu::Menu(bool p_open)
                         ImGui::SameLine();
                         if (ImGui::Button("set##1"))
                         {
-                            LuaScript::ActivePlayer->WalkSpeed = Settings::Hacks::Movement::max_walkspeed;
+                               LuaScript::ActivePlayer->WalkSpeed = Settings::Hacks::Movement::max_walkspeed;
                         }
                         SetTooltip("Warning!\nThis option will dc you if you go faster than normal!");
-                        ImGui::SliderFloat("##RUNSPEED", &Settings::Hacks::Movement::max_runspeed, 0, 9999, "Run speed %0.3f");
+                        ImGui::SliderFloat("##RUNSPEED", &Settings::Hacks::Movement::max_runspeed, -10, 10, "Run speed %0.3f");
                         ImGui::SameLine();
                         if (ImGui::Button("set##2"))
                         {
                             LuaScript::ActivePlayer->RunForwardSpeed = Settings::Hacks::Movement::max_runspeed;
                         };           
                         SetTooltip("Warning!\nThis option will dc you if you go faster than normal!\n Try increasing in small steps and test it out.");
-                        ImGui::SliderFloat("##ROTATIONSPEED", &Settings::Hacks::Movement::player_rotationspeed, 0, 12, "Rotation speed %0.3f");
+                        ImGui::SliderFloat("##ROTATIONSPEED", &Settings::Hacks::Movement::player_rotationspeed, 0, 10, "Rotation speed %0.3f");
                         ImGui::SameLine();
                         if (ImGui::Button("set##3"))
                         {
@@ -445,10 +428,7 @@ void GMenu::Menu(bool p_open)
                         {
                             LuaScript::ActivePlayer->Player_scale = Settings::Hacks::Misc::ScaleHeight;
                         }
-
-
                         ImGui::PopItemWidth();
-
                     }
 
                     ImGui::Columns(1);
@@ -462,20 +442,26 @@ void GMenu::Menu(bool p_open)
                         ImGui::SameLine();
                         if (ImGui::Button("set##100"))
                         {
-                            LuaScript::GCamera->cameraptr->FOV = Settings::Hacks::Camera::Camera_fov;
+                            if (WoW::camera::GCamera == nullptr) WoW::camera::Init();
+                            else
+                            WoW::camera::GCamera->cameraptr->FOV = Settings::Hacks::Camera::Camera_fov;
                         }
                         ImGui::NewLine();
                         ImGui::SliderFloat("##ZOOMOUT", &Settings::Hacks::Camera::Camera_zoomout, 0, 100000, "Zoomout: %0.3f");                   
                         ImGui::SameLine();
                         if (ImGui::Button("set##101"))
                         {
-                            LuaScript::GCamera->cameraptr->Camera_zoomin = Settings::Hacks::Camera::Camera_zoomin;
+                            if (WoW::camera::GCamera == nullptr) WoW::camera::Init();
+                            else
+                            WoW::camera::GCamera->cameraptr->Camera_zoomin = Settings::Hacks::Camera::Camera_zoomin;
                         }                
                         ImGui::SliderFloat("##ZOOMIN", &Settings::Hacks::Camera::Camera_zoomin, 0, 100000, "Zoomin: %0.3f");
                         ImGui::SameLine();
                         if (ImGui::Button("set##103"))
                         {
-                            LuaScript::GCamera->cameraptr->Camera_zoomout = Settings::Hacks::Camera::Camera_zoomout;
+                            if (WoW::camera::GCamera == nullptr) WoW::camera::Init();
+                            else
+                            WoW::camera::GCamera->cameraptr->Camera_zoomout = Settings::Hacks::Camera::Camera_zoomout;
                         }
                         ImGui::Checkbox("EntityViewer", &Settings::EntityViewer::Enabled);
                         ImGui::PopItemWidth();                   
@@ -491,6 +477,8 @@ void GMenu::Menu(bool p_open)
                         ImGui::Checkbox("Lvl", &Settings::Drawing::Lvl);
                         ImGui::SameLine();
                         ImGui::Checkbox("Health", &Settings::Drawing::Health);           
+                        ImGui::SameLine();
+                        ImGui::Checkbox("Energy & Mana", &Settings::Drawing::EnergyAndMana);
                         ImGui::SameLine();
                         ImGui::Checkbox("Race", &Settings::Drawing::Race);
                         ImGui::SameLine();
@@ -537,11 +525,12 @@ void GMenu::Menu(bool p_open)
                 else
                 {
                     ImGui::Text("Log into your character.");
+
                     if (ImGui::Button("Go!"))
                     {            
                         runOnce = true;
                         InitObjmgr();
-                        LuaScript::ReInitObjMgr(true);
+                        LuaScript::ReInitObjMgr();
                        
                     }
                 }
@@ -586,6 +575,7 @@ void GMenu::Menu(bool p_open)
                 SetTooltip("Makes the color an animated rainbow.");
                 ImGui::PushItemWidth(-1);
                 ImGui::SliderFloat("##RAINBOWSPEED", &colors[colorSelected].colorVarPtr->rainbowSpeed, 0.f, 1.f, "Rainbow Speed: %0.3f");
+                ImGui::Checkbox("ClassColors", &Settings::Drawing::ClassColor);
             }
         }
         break;

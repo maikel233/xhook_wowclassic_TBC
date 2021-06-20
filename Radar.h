@@ -3,6 +3,7 @@
 #include "Singleton.h"
 #include <imgui.h>
 #include <set>
+
 namespace Radar
 {
 	enum EntityShape_t : int
@@ -14,4 +15,5 @@ namespace Radar
 	};
 	//ImColor GetRadarPlayerColor(WObject* player, bool visible);
 	void RenderWindow();
+	float RadianToDegree(float Rotation);
 };

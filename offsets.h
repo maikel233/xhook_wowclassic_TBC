@@ -1,7 +1,6 @@
 #pragma once
 #include "stdafx.h"
 #include "Constants.h"
-
 namespace Offsets
 {
 	////////////////////////
@@ -13,10 +12,10 @@ namespace Offsets
 
 	// framescript
 	static inline uintptr_t FrameScriptExecute = 0x80ABF0; // Unsure of this one  
-	static inline uintptr_t FrameScriptGetText = 0x80ABF0;	// Unsure of this one  
-	static inline uintptr_t FrameScriptRegister = 0x8074B0;	// Unsure of this one  
-	static inline uintptr_t FrameScript_RegisterFunctionNamespaceWithCount = 0x807500;	// Unsure of this one  
-	//FrameScript::RegisterEvent at: 0x807D20; FrameScript::GetContext at: 0x805A40; // Unsure of this one  
+	static inline uintptr_t FrameScriptGetText = 0x80ABF0;	// 
+	static inline uintptr_t FrameScriptRegister = 0x8074B0;	// 
+	static inline uintptr_t FrameScript_RegisterFunctionNamespaceWithCount = 0x807500;	
+	//FrameScript::RegisterEvent at: 0x807D20; FrameScript::GetContext at: 0x805A40;
 
 	// Lua 
 	inline static uintptr_t lua_createtable = Base; /*+ 0x19E5CC0;*/
@@ -108,3 +107,4 @@ namespace Offsets
 	static inline  uintptr_t CameraPtr = 0x38D8; // wowclassic 0x3330;
 
 };
+
