@@ -14,7 +14,7 @@ bool Settings::Drawing::Lines = false;
 bool Settings::Drawing::Names = false;
 bool Settings::Drawing::Lvl = false;
 bool Settings::Drawing::Health = false;
-bool Settings::Drawing::Energy = false;
+bool Settings::Drawing::EnergyAndMana = false;
 bool Settings::Drawing::Ally = false;
 bool Settings::Drawing::Enemy = false;
 int Settings::Drawing::MaxLvl = 61;
@@ -32,7 +32,7 @@ bool Settings::Drawing::Radar::Horde = false;
 bool Settings::Drawing::Radar::Alliance = false;
 bool Settings::Drawing::Radar::Player, Settings::Drawing::Radar::LocalPlayer, Settings::Drawing::Radar::Unit, Settings::Drawing::Radar::Corpse, Settings::Drawing::Radar::GameObject, Settings::Drawing::Radar::DrawDeadEntity;
 bool Settings::Drawing::Radar::name = false;
-float Settings::Drawing::Radar::zoom = 2.f;
+float Settings::Drawing::Radar::zoom = 1.f;
 float Settings::Drawing::Radar::iconsScale = 4.5f;
 float Settings::Drawing::Radar::multiply = 4.5f;
 TeamColorType Settings::Drawing::Radar::teamColorType = TeamColorType::RELATIVE_;
@@ -52,7 +52,7 @@ HealthColorVar Settings::Drawing::Radar::UnitColor = ImColor(255, 127, 80);
 ColorVar Settings::Drawing::Radar::GameObjectColor = ImColor(0, 157, 20);
 
 HealthColorVar Settings::Drawing::PlayerColor = ImColor(240, 248, 255);
-HealthColorVar Settings::Drawing::LocalPlayerColor = ImColor(240, 248, 255);
+HealthColorVar Settings::Drawing::LocalPlayerColor = ImColor(15, 248, 255);
 HealthColorVar Settings::Drawing::UnitColor = ImColor(255, 127, 80);
 ColorVar Settings::Drawing::CorpseColor = ImColor(255, 0, 0);
 ColorVar Settings::Drawing::GameObjectColor = ImColor(0, 157, 20);
@@ -66,10 +66,9 @@ float Settings::Drawing::FOVY = 35.0f;
 
 float Settings::Drawing::MultiPly = 2.0f;
 bool Settings::Drawing::W2S_SKIP = false;
-
+bool Settings::Drawing::ClassColor = false;
 
 bool Settings::Hacks::Movement::TogglePlayerState = false;
-bool Settings::Hacks::Movement::CTM = false;
 PlayerState Settings::Hacks::Movement::CurrentPlayerState = PlayerState::Ground;
 
 TeamID Settings::Drawing::Radar::EntityTeamid = TeamID::Horde;
@@ -78,6 +77,7 @@ TeamID Settings::Drawing::Radar::EntityTeamid = TeamID::Horde;
 //Camera
 bool Settings::Hacks::Camera::Enable = false;
 float Settings::Hacks::Camera::Camera_zoomout = 0, Settings::Hacks::Camera::Camera_zoomin = 0, Settings::Hacks::Camera::Camera_fov;
+
 
 //
 float Settings::Hacks::Movement::Current_Groundspeed = 0;
@@ -90,10 +90,6 @@ float Settings::Hacks::Movement::max_something2 = 0;
 float Settings::Hacks::Movement::player_rotationspeed = 0;
 
 int Settings::Hacks::Movement::max_jumpstate = 824;
-bool Settings::Hacks::Movement::JumpState = false;
-bool Settings::Hacks::Movement::SuperSlowFall = false;
-bool Settings::Hacks::Movement::JumpStatev2 = false;
-
 
 bool Settings::Objectmanager::LoopObj = false;
 bool Settings::Objectmanager::ObjMgrisdone = false;
@@ -102,8 +98,8 @@ bool Settings::Objectmanager::ObjMgrisdone = false;
 bool Settings::skip = false;
 
 bool Settings::Hacks::Movement::TeleportBack = false;
-Vector3 Settings::Hacks::Movement::NextPos = { 0,0,0 };
-Vector3 Settings::Hacks::Movement::PrevPos = { 0,0,0 };
+C3Vector Settings::Hacks::Movement::NextPos = { 0,0,0 };
+C3Vector Settings::Hacks::Movement::PrevPos = { 0,0,0 };
 
 //
 float Settings::Hacks::Movement::SomethingJump = -7.955547;
