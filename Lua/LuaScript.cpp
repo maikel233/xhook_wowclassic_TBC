@@ -6,39 +6,15 @@
 #include <type_traits>
 
 #include "Renderer.h"
-
 #include "Settings/Settings.h"
-
 #include <algorithm>
-
 #include "Hacks.h"
 #include "bot/GrindBot.h"
 //#define ADDON_PATH R"(C:\Program Files (x86)\World of Warcraft\_classic_\Interface\AddOns\)"
 //constexpr auto ADDON_FILE = "Ding.lua";
 
 WObject* object;
-
 WObject* LuaScript::ActivePlayer = nullptr;
-
-
-
-bool testf = false;
-int i;
-//
-//bool hasWorld()
-//{
-//	std::byte buffer;
-//
-//	uintptr_t CGWorldFrame__RenderWorld = Offsets::Base + 0x101CA00;
-//
-//	if (CGWorldFrame__RenderWorld);
-//		return true;
-//
-//	if (CGWorldFrame__RenderWorld == 0xC3)
-//		return true;
-//
-//	return false;
-//}
 
 long LuaScript::getCurrentTime() {
 	LARGE_INTEGER frequency, counter;
@@ -47,7 +23,6 @@ long LuaScript::getCurrentTime() {
 	long currentTime = (counter.QuadPart * 1000) / frequency.QuadPart;
 	return currentTime;
 }
-
 
 void LuaScript::ReInitObjMgr()
 {
@@ -76,7 +51,6 @@ void LuaScript::ReInitObjMgr()
 			return;
 		}
 
-
 		GameMethods::Invoke<char>(Offsets::ClntObjMgrEnumVisibleObjectsPtr, LuaScript::EnumVisibleObjCb, (int)TypeId::CGUnit);
 		GameMethods::Invoke<char>(Offsets::ClntObjMgrEnumVisibleObjectsPtr, LuaScript::EnumVisibleObjCb, (int)TypeId::CGCorpse);
 		//GameMethods::Invoke<char>(Offsets::ClntObjMgrEnumVisibleObjectsPtr, LuaScript::EnumVisibleObjCb, (int)TypeId::CGDynamicObject);
@@ -84,7 +58,6 @@ void LuaScript::ReInitObjMgr()
 		//GameMethods::Invoke<char>(Offsets::ClntObjMgrEnumVisibleObjectsPtr, LuaScript::EnumVisibleObjCb, (int)TypeId::CGItem);
 		GameMethods::Invoke<char>(Offsets::ClntObjMgrEnumVisibleObjectsPtr, LuaScript::EnumVisibleObjCb, (int)TypeId::CGPlayer);
 		GameMethods::Invoke<char>(Offsets::ClntObjMgrEnumVisibleObjectsPtr, LuaScript::EnumVisibleObjCb, (int)TypeId::CGActivePlayer);
-
 		
 	//	Probably smart to clear the Vector once in a time.
 	//	i++;
@@ -177,32 +150,6 @@ unsigned int LuaScript::EnumVisibleObjCb(int64_t objectPtr, int64_t filter)
 	}
 	return 0; // Failure point
 }
-
-//void LuaScript::GetObjectGuid(int64_t L)
-//{
-//	auto objectName = GameMethods::Invoke<char*>(Offsets::lua_tolstring, L, 2, nullptr);
-//
-//	Objects.clear();
-//	GameMethods::Invoke<char>(Offsets::EnumVisibleObjectsPtr, GameInterface::EnumVisibleObjectsCb, (int)TypeId::Creature);
-//	GameMethods::Invoke<char>(Offsets::EnumVisibleObjectsPtr, GameInterface::EnumVisibleObjectsCb, (int)TypeId::Corpse);
-//	GameMethods::Invoke<char>(Offsets::EnumVisibleObjectsPtr, GameInterface::EnumVisibleObjectsCb, (int)TypeId::DynamicObject);
-//	GameMethods::Invoke<char>(Offsets::EnumVisibleObjectsPtr, GameInterface::EnumVisibleObjectsCb, (int)TypeId::GameObject);
-//	GameMethods::Invoke<char>(Offsets::EnumVisibleObjectsPtr, GameInterface::EnumVisibleObjectsCb, (int)TypeId::Item);
-//	GameMethods::Invoke<char>(Offsets::EnumVisibleObjectsPtr, GameInterface::EnumVisibleObjectsCb, (int)TypeId::Player);
-//
-//	for (auto o : Globals::Objects)
-//	{
-//		if (string(o->GetObjectName()) == objectName)
-//		{
-//			GameMethods::Invoke<int64_t>(Offsets::lua_pushguid, L, o->GetGuid());
-//			return;
-//		}
-//		else
-//			continue;
-//	}
-//
-//	GameMethods::Invoke<int64_t>(Offsets::lua_pushnil, L);
-//}
 
 void LuaScript::RegisterHandler(std::string commandName, GameMethods::LuaCallback callback)
 {
@@ -346,3 +293,29 @@ GameMethods::LuaCallback LuaScript::WriteCallback(GameMethods::LuaCallback callb
 //	//GameMethods::Execute(to_print.c_str());
 //}
 //
+
+//void LuaScript::GetObjectGuid(int64_t L)
+//{
+//	auto objectName = GameMethods::Invoke<char*>(Offsets::lua_tolstring, L, 2, nullptr);
+//
+//	Objects.clear();
+//	GameMethods::Invoke<char>(Offsets::EnumVisibleObjectsPtr, GameInterface::EnumVisibleObjectsCb, (int)TypeId::Creature);
+//	GameMethods::Invoke<char>(Offsets::EnumVisibleObjectsPtr, GameInterface::EnumVisibleObjectsCb, (int)TypeId::Corpse);
+//	GameMethods::Invoke<char>(Offsets::EnumVisibleObjectsPtr, GameInterface::EnumVisibleObjectsCb, (int)TypeId::DynamicObject);
+//	GameMethods::Invoke<char>(Offsets::EnumVisibleObjectsPtr, GameInterface::EnumVisibleObjectsCb, (int)TypeId::GameObject);
+//	GameMethods::Invoke<char>(Offsets::EnumVisibleObjectsPtr, GameInterface::EnumVisibleObjectsCb, (int)TypeId::Item);
+//	GameMethods::Invoke<char>(Offsets::EnumVisibleObjectsPtr, GameInterface::EnumVisibleObjectsCb, (int)TypeId::Player);
+//
+//	for (auto o : Globals::Objects)
+//	{
+//		if (string(o->GetObjectName()) == objectName)
+//		{
+//			GameMethods::Invoke<int64_t>(Offsets::lua_pushguid, L, o->GetGuid());
+//			return;
+//		}
+//		else
+//			continue;
+//	}
+//
+//	GameMethods::Invoke<int64_t>(Offsets::lua_pushnil, L);
+//}
