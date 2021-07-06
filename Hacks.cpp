@@ -204,7 +204,7 @@ namespace WoW
 				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::UnderWaterWalking)
 					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_WALKING;								//Yes
 				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::WaterWalking)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_WATERWALKING); //Below this one are useless used for testing.	
+					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_WATERWALKING; //Below this one are useless used for testing.	
 				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::FallingSlow)
 					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_FALLING_FAR;		
 				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::CanFly)
