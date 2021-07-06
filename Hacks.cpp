@@ -200,17 +200,17 @@ namespace WoW
 				if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Ground)
 					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_SWIMMING;								//Yes
 				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Swimming)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_FALLING;			//Yes
+					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_SWIMMING;				
 				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::UnderWaterWalking)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_SPLINE_ELEVATION;								//Yes
+					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_WALKING;								//Yes
 				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::WaterWalking)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_PITCH_DOWN;		//Disconnect
+					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_WATERWALKING); //Below this are useless used for testing.	
 				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::FallingSlow)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_FALLING_FAR;		//Nope
+					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_FALLING_FAR;		
 				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::CanFly)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_FALLING_SLOW;				//Nope
+					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_FALLING_SLOW;			
 				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::DisableCollision)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_HOVER; // Nope
+					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_HOVER; 
 				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Root)
 					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_FLYING;
 				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Loggedoff)
