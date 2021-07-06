@@ -11,7 +11,7 @@ namespace Offsets
 	static inline uintptr_t Base = reinterpret_cast<uintptr_t>(GetModuleHandle(NULL));
 
 	// framescript
-	static inline uintptr_t FrameScriptExecute = 0x80ABF0; // Unsure of this one  
+	static inline uintptr_t FrameScriptExecute = 0x00; // 
 	static inline uintptr_t FrameScriptGetText = 0x7FD2C0;	// 
 	static inline uintptr_t FrameScriptRegister = 0x7F9C70;	// 
 	static inline uintptr_t FrameScript_RegisterFunctionNamespaceWithCount = 0x7F9CC0;
@@ -67,7 +67,7 @@ namespace Offsets
 	//CTM
 	static inline uintptr_t ClickToMove = 0x00; //
 
-	static inline uintptr_t FaceTo = 0x1167360; // Bindiffed.
+	static inline uintptr_t FaceTo = 0x00; // Needs a update.
 	// pointers
 	static inline uintptr_t InvalidPtrCheckMin = Base + 0x2C9DF30;
 	static inline uintptr_t InvalidPtrCheckMax = Base + 0x2C9DF38;
