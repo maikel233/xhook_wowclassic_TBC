@@ -1,6 +1,6 @@
 # xhook_wowclassic
 World of warcraft TBC classic multihack 
-supported patch: 2.5.1.38835
+supported patch: 2.5.1.39170
 
 How to build:
 Open C++ Build DebugX64, Inject and press insert.
