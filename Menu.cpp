@@ -299,7 +299,7 @@ void GMenu::Menu(bool p_open)
     ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
 
-    if (!ImGui::Begin("XHOOK for World of Warcraft 1.13.7", &p_open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))
+    if (!ImGui::Begin("XHOOK for World of Warcraft 2.5.1 39170", &p_open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))
     {
         // Early out if the window is collapsed, as an optimization.
         ImGui::End();
