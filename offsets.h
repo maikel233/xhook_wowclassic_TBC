@@ -71,7 +71,7 @@ namespace Offsets
 	// pointers
 	static inline uintptr_t InvalidPtrCheckMin = Base + 0x2C9DF30;
 	static inline uintptr_t InvalidPtrCheckMax = Base + 0x2C9DF38;
-	static inline uintptr_t HardwareEventPtr = Base + 0x2CB7CD8;
+	static inline uintptr_t HardwareEventPtr = Base + 0x2C75D98;
 	static inline uintptr_t CanPerformAction = 0x00;
 
 	// Register
