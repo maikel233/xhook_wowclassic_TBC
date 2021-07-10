@@ -11,11 +11,10 @@ namespace Offsets
 	static inline uintptr_t Base = reinterpret_cast<uintptr_t>(GetModuleHandle(NULL));
 
 	// framescript
-	static inline uintptr_t FrameScriptExecute = 0x00; // 
+	static inline uintptr_t FrameScriptExecute = 0x7F7A80;
 	static inline uintptr_t FrameScriptGetText = 0x7FD2C0;	// 
-	static inline uintptr_t FrameScriptRegister = 0x7F9C70;	// 
+	static inline uintptr_t FrameScriptRegister = 0x7F94F0;	// 
 	static inline uintptr_t FrameScript_RegisterFunctionNamespaceWithCount = 0x7F9CC0;
-	//FrameScript::RegisterEvent at: 0x807D20; FrameScript::GetContext at: 0x805A40;
 
 	//// Lua Outdated
 	//inline static uintptr_t lua_createtable = Base; /*+ 0x19E5CC0;*/
@@ -35,9 +34,9 @@ namespace Offsets
 	//inline static uintptr_t lua_pushguid = Base + 0x80DC40;
 	//inline static uintptr_t lua_pushinteger = Base + 0x460A20;
 	//inline static uintptr_t lua_pushlightuserdata = Base + 0x19E6F40;
-	//inline static uintptr_t lua_pushnil = Base + 0x460AF0;
-	//inline static uintptr_t lua_pushnumber = Base + 0x460B10;
-	//inline static uintptr_t lua_pushstring = Base + 0x460B30;
+	//inline static uintptr_t lua_pushnil = Base + 0x456020;    39170
+	//inline static uintptr_t lua_pushnumber = Base + 0x456040; 39170
+	//inline static uintptr_t lua_pushstring = Base + 0x456060; 39170
 	//inline static uintptr_t lua_rawget = Base + 0x460D60; // _lua_rawgeti 0x460E10
 	//inline static uintptr_t lua_rawset = Base + 0x460ED0;
 	//inline static uintptr_t lua_remove = Base + 0x4610B0;
@@ -47,15 +46,16 @@ namespace Offsets
 	//inline static uintptr_t lua_toboolean = Base + 0x461770;
 	//inline static uintptr_t lua_toguid = Base + 0x80DD00;
 	//inline static uintptr_t lua_tointeger = Base + 0x4617D0;
-	//inline static uintptr_t lua_tolstring = Base + 0x461850;
-	//inline static uintptr_t lua_tonumber = Base + 0x4618F0;
+	//inline static uintptr_t lua_tolstring = Base + 0x456D80; 39170
+	//inline static uintptr_t lua_tonumber = Base + 0x456E20; 
 	//inline static uintptr_t lua_type = Base + 0x461A00;
 	//inline static uintptr_t luaL_loadfile = Base + 0x19E94F0;
 	//inline static uintptr_t luaL_ref = Base; /*0x19E9CB0*/
 	//// DUMP: _lua_getstack 0x0464C30; 
 
 	// Pointers
-	static inline uintptr_t InGame = Base + 0x00;
+	static inline uintptr_t InGame = Base + 0x2F165B0;// Script_IsPlayerInWorld
+	static inline uintptr_t LoadingScreen = Base + 0x2BEFE00; // good //Reversed From Script_CanLogIn to CGlueMgr__CanLogIn
 	static inline uintptr_t InWorld = Base + 0x00;
 	static inline uintptr_t CGGameUI_s_inWorld = Base + 0x2F165B0; //   NotInitialized = 0, LoadingScreen1 = 3, LoadingScreen2 = 2, InGame = 4
 
@@ -67,7 +67,7 @@ namespace Offsets
 	//CTM
 	static inline uintptr_t ClickToMove = 0x00; //
 
-	static inline uintptr_t FaceTo = 0x00; // Needs a update.
+	static inline uintptr_t FaceTo = 0x113FAF0;
 	// pointers
 	static inline uintptr_t InvalidPtrCheckMin = Base + 0x2C9DF30;
 	static inline uintptr_t InvalidPtrCheckMax = Base + 0x2C9DF38;
