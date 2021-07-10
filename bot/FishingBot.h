@@ -17,7 +17,8 @@ namespace WoW {
 			apprentice = 7620,
 			journeyman = 7731,
 			expert = 7732,
-			artisan = 18248
+			artisan = 18248,
+			master = 33095
 		};
 	};
 }
