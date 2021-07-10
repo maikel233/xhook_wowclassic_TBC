@@ -55,7 +55,9 @@ namespace WoW {
 
 	int FishBot::GetFishingLevel()
 	{
-		if (GameMethods::IsSpellKnown(FishBot::FishingLevels::artisan))
+		if (GameMethods::IsSpellKnown(FishBot::FishingLevels::master))
+			return FishBot::FishingLevels::master;
+		else if (GameMethods::IsSpellKnown(FishBot::FishingLevels::artisan))
 			return FishBot::FishingLevels::artisan;
 		else if (GameMethods::IsSpellKnown(FishBot::FishingLevels::expert))
 			return FishBot::FishingLevels::expert;
