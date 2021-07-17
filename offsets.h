@@ -88,7 +88,7 @@ namespace Offsets
 	//cast  
 	static inline uintptr_t Spell_C_GetMinMaxRange = Base + 0xF33EA0;//0xF5E440;/*0xF043C0;*/ // Unsure about this one...
 	static inline uintptr_t Spell_C_GetSpellCoolDown = Base + 0xF36970;//0xF60F10;
-	static inline uintptr_t castSpell = Base + 0xF2E0A0;
+	static inline uintptr_t castSpell = Base + 0x1551360;
 	static inline uintptr_t isSpellKnown = Base + 0x155AC90;
 	static inline uintptr_t findSlotBySpellId = Base + 0x15536E0;
 
