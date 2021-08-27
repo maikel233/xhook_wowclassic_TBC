@@ -57,7 +57,7 @@ namespace Offsets
 	static inline uintptr_t GetPlayerName = Base + 0x264270;
 		
 	static inline uintptr_t CorpseMapID = Base + 0x00;/
-	static inline uintptr_t Corpsex = Base + 0x00;  // float x,y,z is gone Decompile -> 0x14FA330
+	static inline uintptr_t Corpsex = Base + 0x2A9B080;  // Credits Razzue from Ownedcore | NOT TESTED!
 	static inline uintptr_t Corpsey = Corpsex + 0x4;
 	static inline uintptr_t Corpsez = Corpsex + 0x8;
 
