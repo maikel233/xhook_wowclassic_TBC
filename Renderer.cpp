@@ -26,32 +26,6 @@ namespace Draw
 		}
 	}
 
-	bool Wireframe(bool state)
-	{
-		DWORD currentFlag = NULL, newFlag = NULL;
-
-		DWORD RenderFlag = 0x1018D50;
-		
-
-		//if (IsWardenLoaded()) return FALSE;
-		RenderFlag, &currentFlag, sizeof(currentFlag);
-
-		if (state) // Enable Wireframe rendering.
-		{
-			newFlag = currentFlag | (1 << 29);
-			newFlag = newFlag ^ (1 << 26);
-		}
-
-		else // Disable Wireframe rendering.
-		{
-			newFlag = currentFlag ^ (1 << 29);
-			newFlag = newFlag | (1 << 26);
-		}
-
-		RenderFlag, &newFlag, sizeof(newFlag);
-		return newFlag == currentFlag; // If no change has occured, return false.
-	}
-
 	void Renderer::BeginScene()
 	{
 		ImGuiIO& io = ImGui::GetIO();
