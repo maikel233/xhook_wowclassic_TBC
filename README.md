@@ -1,6 +1,8 @@
 # xhook wowclassic TBC
 World of warcraft TBC classic multihack 
-supported patch:   2.5.1.39640
+supported patch: 2.5.2.41446
+
+I have just updated the offsets for 2.5.2.41446 however the object table is probably outdated i have no subscription in wow so incase you fix this by yourself Please commit code r offsets to keep the proj alive...
 
 How to build:
 Open C++ Build DebugX64, Inject and press insert.
