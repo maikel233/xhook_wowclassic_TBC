@@ -75,7 +75,7 @@ void LuaScript::ReInitObjMgr()
 
 bool LuaScript::InGame()
 {
-	return *reinterpret_cast<int8_t*>(Offsets::InGame) != 0 ? true : false;
+	return *reinterpret_cast<int8_t*>(Offsets::IsPlayerInWorld) != 0 ? true : false;
 }
 
 unsigned int LuaScript::EnumVisibleObjCb(int64_t objectPtr, int64_t filter)
