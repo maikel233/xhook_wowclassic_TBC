@@ -54,9 +54,9 @@ namespace Offsets
 	static inline uintptr_t findSlotBySpellId = Base + 0x16874F0;
 
 	//Globals
-	static inline uintptr_t GetPlayerName = Base + 0x264270;
+	static inline uintptr_t GetPlayerName = Base + 0x2B6960;
 		
-	static inline uintptr_t CorpseMapID = Base + 0x00;
+	static inline uintptr_t CorpseMapID = Base + 0x2CAEAB0; // Script_RetrieveCorpse -> First xmmword xref (+C6) -> Under objmgrgetmap, First DWORD you find.
 	static inline uintptr_t Corpsex = Base + 0x2CAEAB0;  // Script_RetrieveCorpse -> First xmmword xref -> sub -> Under cintobjmgr first dword.  
 	static inline uintptr_t Corpsey = Corpsex + 0x4;
 	static inline uintptr_t Corpsez = Corpsex + 0x8;
