@@ -10,6 +10,11 @@ namespace Offsets
 	// base address
 	static inline uintptr_t Base = reinterpret_cast<uintptr_t>(GetModuleHandle(NULL));
 
+
+	//Lua
+	inline static uintptr_t lua_pushnumber = Base + 0x511E00;
+	inline static uintptr_t lua_pushboolean = Base + 0x511E00;
+
 	// framescript
 	static inline uintptr_t FrameScriptExecute = 0x00;
 	static inline uintptr_t FrameScriptGetText = 0x00;	// 
@@ -17,7 +22,7 @@ namespace Offsets
 	static inline uintptr_t FrameScript_RegisterFunctionNamespaceWithCount = 0x8C79C0;
 
 	// Pointers
-	static inline uintptr_t IsPlayerInWorld = Base + 0x30C2F24;// Script_IsPlayerInWorld
+	static inline uintptr_t IsPlayerInWorld = Base + 0x30C2F24;// Script_IsPlayerInWorld or Script_GameMovieFinished 
 	static inline uintptr_t LoadingScreen = Base + 0x00; // good //Reversed From Script_CanLogIn to CGlueMgr__CanLogIn
 	static inline uintptr_t InWorld = Base + 0x00;
 	static inline uintptr_t CGGameUI_s_inWorld = Base + 0x30C2F24; //   NotInitialized = 0, LoadingScreen1 = 3, LoadingScreen2 = 2, InGame = 4
@@ -28,7 +33,7 @@ namespace Offsets
 	static inline uintptr_t ClntObjMgrIsValid = Base + 0x13E8DF0;
 
 	//CTM
-	static inline uintptr_t ClickToMove = 0x00; //CGGameUI::HandleTerrainClick
+	static inline uintptr_t ClickToMove = 0x161F1D0; // ~s_Cvar_deselectOnClick  xref one of those sub_loc is CGGameUI::OnTerrainClick.
 
 	static inline uintptr_t FaceTo = 0x000;
 	// pointers
@@ -50,13 +55,13 @@ namespace Offsets
 	static inline uintptr_t Spell_C_GetMinMaxRange = Base + 0x103F080;
 	static inline uintptr_t Spell_C_GetSpellCoolDown = Base + 0x1041B60;
 	static inline uintptr_t castSpell = Base + 0x10395D0; // From Spell_C_CastSpell not the function itself.
-	static inline uintptr_t isSpellKnown = Base + 0x1679300; // Script_IsSpellKnow
+	static inline uintptr_t isSpellKnown = Base + 0x168EE60; // 
 	static inline uintptr_t findSlotBySpellId = Base + 0x16874F0;
 
 	//Globals
-	static inline uintptr_t GetPlayerName = Base + 0x2B6960;
+	static inline uintptr_t GetPlayerName = Base + 0x264270;
 		
-	static inline uintptr_t CorpseMapID = Base + 0x2CAEAB0; // Script_RetrieveCorpse -> First xmmword xref (+C6) -> Under objmgrgetmap, First DWORD you find.
+	static inline uintptr_t CorpseMapID = Base + 0x00;
 	static inline uintptr_t Corpsex = Base + 0x2CAEAB0;  // Script_RetrieveCorpse -> First xmmword xref -> sub -> Under cintobjmgr first dword.  
 	static inline uintptr_t Corpsey = Corpsex + 0x4;
 	static inline uintptr_t Corpsez = Corpsex + 0x8;
@@ -64,5 +69,10 @@ namespace Offsets
 	//Camera WorldFrame::GetActiveCamera
 	static inline  uintptr_t CameraMgr = Base + 0x31A4CA8;
 	static inline  uintptr_t CameraPtr = 0x38E0; // Shifted 8 bytes since 38631
+
+	//ESP
+	static inline uintptr_t GetWorld = Base + 0x214DE0; // Script_QuitGame, First Call, First DWORD.
+	static inline uintptr_t WorldFrameIntersect = Base + 0x1A9F9D0; // F12, Search: Preload Immediate End -> DATA XREF: sub -> Sub below that, First Call and select second sub.
+
 };
 
