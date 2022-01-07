@@ -1,19 +1,20 @@
 # xhook wowclassic TBC
 World of warcraft TBC classic multihack 
-supported patch: 2.5.2.41446
+Source code supported patch: 2.5.2.41446
+Prebuild .DLL supported patch: 2.5.2.41510
 
-I have just updated the offsets for 2.5.2.41446 however the object table is probably outdated i have no subscription in wow so incase you fix this by yourself Please commit code r offsets to keep the project alive...
-
-How to build:
-Open C++ Build DebugX64, Inject and press insert.
+How to build the .DLL:
+Open C++, Build DebugX64 version, Open the game go to settings and set your directx version on dx11. Download a injector and inject.
 
 Does not contain any anti Warden code use at your own risk!
 
 
-Older previews:
 <img src="Image/bg.png">
 <img src="Image/bg2.png">
 <img src="Image/bg3.png">
+
+
+Dont pm me if you cant build it on yourself and dont know how to update it...
 
 
 https://www.youtube.com/watch?v=NHlHjc5f8SE&t=1s&ab_channel=TeamGalixte
