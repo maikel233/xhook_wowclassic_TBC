@@ -3,6 +3,6 @@ Offsets, structs Fishbot, Grindbot got updated. added mesh walking.
 Create a folder c:/xhook/wow/mmaps 
 
 I cant upload them here because of the file size.
-Download mmaps from the webz or make your own using trinitycore extractor...
+Download mmaps and vmtiles from the webz or make your own using trinitycore extractor...
 
  incase you cant download them the grindbot wont work.
