@@ -1,3 +1,6 @@
+[2.5.3.42083]
+Objectmanager overhaul added more functions for fishbot and grindbot.
+
 [2.5.2.41510]
 Offsets, structs Fishbot, Grindbot got updated. added mesh walking.
 Create a folder c:/xhook/wow/mmaps 
