@@ -1,9 +1,0 @@
-print('XHOOK for world of warcraft')
-
-function goThere()
-	local x, y, z = getPosition()
-	x = x + 5
-	ctm(x, y, z)
-end
-
-after(2000, 'goThere')
