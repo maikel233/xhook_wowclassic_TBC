@@ -8,7 +8,7 @@
 #include <vector>
 #include "json.h"
 
-#include "Lua/LuaScript.h"
+#include "Lua/ObjectManager.h"
 
 //ImGUI imports
 #include "imgui/imgui.h"
@@ -17,9 +17,22 @@
 #include "imgui/imgui_internal.h"
 
 #include "Constants.h"
-
 #include "Utils.h"
+#include "Settings/Settings.h"
 
+enum class PathType : int
+{
+	STRAIGHT = 0,
+	RANDOM = 1,
+};
+
+
+enum class PathRequestFlag : int
+{
+	NONE = 0,
+	CHAIKIN = 1,
+	CATMULLROM = 2,
+};
 
 class ColorVar
 {
@@ -45,11 +58,9 @@ public:
 	}
 };
 
-class HealthColorVar : public ColorVar
-{
+class HealthColorVar : public ColorVar {
 public:
 	bool hp;
-
 	HealthColorVar(ImColor color)
 	{
 		this->color = color;
@@ -67,8 +78,7 @@ public:
 
 };
 
-enum class PlayerState : int
-{
+enum class PlayerState : int {
 	Ground,
 	Swimming,
 	UnderWaterWalking,
@@ -81,50 +91,59 @@ enum class PlayerState : int
 	DisableGravity
 };
 
-enum class TeamColorType : int
-{
+enum class TeamColorType : int {
 	ABSOLUTE_,
 	RELATIVE_,
 };
 
-enum class TeamID : int
-{
-	Horde,
-	Alliance,
-};
+//enum class TeamID : int {
+//	Horde,
+//	Alliance,
+//	INVALID,
+//};
 
-struct TeleporterInfo
-{
-	Vector3 pos;
-	std::string name;
-	int currmsg;
-
-	TeleporterInfo(Vector3 pos, std::string name, int currmsg)
-	{
-		this->pos = pos;
-		this->name = name;
-		this->currmsg = currmsg;
-	}
-};
+//struct TeleporterInfo
+//{
+//	Vector3 pos;
+//	std::string name;
+//	int currmsg;
+//
+//	TeleporterInfo(Vector3 pos, std::string name, int currmsg)
+//	{
+//		this->pos = pos;
+//		this->name = name;
+//		this->currmsg = currmsg;
+//	}
+//};
 
 namespace Settings
 {
-	extern bool skip;
 
-	namespace TeleportHelper
-	{
-		extern std::vector<TeleporterInfo> TeleporterInfos;
-		extern bool enabled;
-		extern std::string actMapName;
-	}
+	//namespace TeleportHelper
+	//{
+	//	extern std::vector<TeleporterInfo> TeleporterInfos;
+	//	extern bool enabled;
+	//	extern std::string actMapName;
+	//}
 
 	namespace bot
 	{
 		extern bool Refresh;
 
+		namespace Navigator
+		{
+			extern PathType pPathType;
+			extern PathRequestFlag pPathRequestFlag;
+		}
+
 		namespace Grinding
 		{
 			extern bool Enabled;
+			extern const char* FoodName;
+			extern const char* DrinkName;
+			extern float mRestManaPercent;
+			extern float mRestHealthPercent;
+			extern bool SkinMobs;
 		}
 		namespace fishing
 		{
@@ -134,10 +153,6 @@ namespace Settings
 		}
 	}
 
-	namespace EntityViewer
-	{
-		extern bool Enabled;
-	}
 
 	namespace HWID
 	{
@@ -149,22 +164,24 @@ namespace Settings
 
 	namespace Drawing
 	{
-		extern bool ClassColor;
-		extern bool Ally, Enemy;
+		extern bool TraceLine;
+		extern bool Ally, Enemy, HostileUnits, HostilePlayers;
 		extern bool Player, LocalPlayer, Unit, Corpse, Object, GameObject, DynamicObject, Race, Horde, Alliance, DrawDeadEntity;
-		extern bool Enabled, Lines, Names, Lvl, Health, EnergyAndMana, Distance;
+		extern bool Enabled, Lines, Names, Lvl, Health, EnergyAndMana, Distance, WayPoints, GuidStr;
 		extern int MaxLvl, MinLvl;
-		extern float FOVX, FOVY, MultiPly;
-		extern bool W2S_SKIP;
 		extern ColorVar CorpseColor, GameObjectColor, ObjectColor, DynamicObjectColor;
 		extern HealthColorVar PlayerColor, LocalPlayerColor, UnitColor, HordeColor, AllianceColor;
-		
+
+		namespace EntityViewer
+		{
+			extern bool Enabled;
+		}
+
 		namespace Radar
 		{
 			extern bool Enabled;
 			extern bool name;
-			extern bool Horde;
-			extern bool Alliance;
+			extern bool Ally, Enemy, HostileUnits, HostilePlayers;
 			extern bool Player, LocalPlayer, Unit, Corpse, Object, GameObject, DrawDeadEntity;
 			extern float zoom;
 			extern float iconsScale;
@@ -184,17 +201,9 @@ namespace Settings
 		}
 	}
 
-	namespace Objectmanager
-	{
-		extern bool ObjMgrisdone, LoopObj;
-	}
-
 	namespace Hacks
 	{
-		namespace Lua {
-			extern bool toggle;
-		
-		}
+
 		namespace Misc {
 			extern float ScaleHeight;
 		}
@@ -205,22 +214,20 @@ namespace Settings
 		}
 		namespace Movement
 		{
-		
+
 			extern bool enabled;
-			extern bool TogglePlayerState;
 			extern PlayerState CurrentPlayerState;
-			extern bool CTM;		
+			extern bool CTM;
 			extern bool TeleportBack;
-			extern bool Toggleplayerstate;
+			extern bool TogglePlayerState;
 			extern bool JumpState, SuperSlowFall;
 			extern bool JumpStatev2;
 			extern bool Teleport;
-			extern bool test, SuperFly, Infintejump, NoFallDamage, AntiJump, AntiMove, AntiRoot, Gravity, MovementFacing, TeleportBack, TeleporttoCorpse, TeleportMenu, SetCurrentXYZ, MovementNoClip, MovementJumpStartingHeight, MovementCameraspeed, MovementSwimmingspeed, MovementWalkingspeed, MovementRunningspeed, MovementTurnspeed, Lootpatch;
+			//	extern bool test, SuperFly, Infintejump, NoFallDamage, AntiJump, AntiMove, AntiRoot, Gravity, MovementFacing, TeleportBack, TeleporttoCorpse, TeleportMenu, SetCurrentXYZ, MovementNoClip, MovementJumpStartingHeight, MovementCameraspeed, MovementSwimmingspeed, MovementWalkingspeed, MovementRunningspeed, MovementTurnspeed, Lootpatch;
 			extern int SuperSlowSleepTime;
 
-			extern int max_jumpstate;	
+			extern int max_jumpstate;
 			extern int MovementType, NoClip; //BYTE
-			extern int MAPID;
 
 			extern float max_walkspeed, max_runspeed, max_walkingbackspeed, Current_Groundspeed, Current_Swimmingspeed;
 			extern float max_walkspeed2;
@@ -235,16 +242,13 @@ namespace Settings
 			extern float WallClimb;
 			extern float single;
 
-			extern C3Vector NextPos, PrevPos;
-		
+			extern Vector3 NextPos, PrevPos;
+
 		}
 
 	}
 
-	namespace Background
-	{
-		extern bool enable;
-	}
+
 	namespace UI
 	{
 		extern bool is_renderer_active;
@@ -256,6 +260,10 @@ namespace Settings
 		extern bool MainUI;
 
 		namespace Windows {
+			namespace Menu {
+				extern bool GetInvItems;
+				extern bool g_ShowMenu;
+			}
 			namespace Config {
 				extern int posX;
 				extern int posY;
@@ -270,8 +278,8 @@ namespace Settings
 	void LoadDefaultsOrSave(std::string path);
 	void LoadConfig(std::string path);
 	void LoadSettings();
-	
-	void SaveTeleporterInfo(std::string path);
-	void LoadTeleporterInfo(std::string path);
+
+	//void SaveTeleporterInfo(std::string path);
+	//void LoadTeleporterInfo(std::string path);
 }
 
