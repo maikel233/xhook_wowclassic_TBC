@@ -1,6 +1,6 @@
 #include "Settings/Settings.h"
 #include "Configs.h"
-#include "XorStr.h"
+
 
 int Settings::UI::Windows::Config::sizeX = 185;
 int Settings::UI::Windows::Config::sizeY = 250;
@@ -160,7 +160,7 @@ void Configs::RenderWindow() {
 			if (configItems.size() > 0 &&
 				(configItemCurrent >= 0 && configItemCurrent < (int)configItems.size())) {
 
-				folder = std::string(path) + "C:\\XHOOK\\wow\\Configs\\";
+				folder = std::string(path) + "C:\\xhook\\wow\\Configs\\";
 				file = std::string(folder) + configItems[configItemCurrent] + ".ini";
 				remove(file.c_str());
 
@@ -176,14 +176,14 @@ void Configs::RenderWindow() {
 
 		ImGui::SameLine();
 		if (ImGui::Button(XorStr("Add")) && strlen(buf) > 0) {
-			folder = std::string(path) + "C:\\XHOOK\\wow\\Configs\\";
+			folder = std::string(path) + "C:\\xhook\\wow\\Configs\\";
 			file = std::string(folder) + std::string(buf) + ".ini";
 			Settings::LoadDefaultsOrSave(file);
 		}
 
 		ImGui::PushItemWidth(178);
 		if (ImGui::ListBox("", &configItemCurrent, configItems, 10)) {
-			folder = std::string(path) + "C:\\XHOOK\\wow\\Configs\\";
+			folder = std::string(path) + "C:\\xhook\\wow\\Configs\\";
 			file = std::string(folder) + configItems[configItemCurrent] + ".ini";
 
 			Settings::LoadConfig(file);
