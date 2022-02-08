@@ -1,297 +1,162 @@
 #include "Hacks.h"
-#include "WowTypes.h"
+
 bool Settings::Hacks::Movement::JumpState = false;
 bool Settings::Hacks::Movement::SuperSlowFall = false;
 bool Settings::Hacks::Movement::JumpStatev2 = false;
 bool Settings::Hacks::Movement::CTM = false;
-
 int Settings::Hacks::Movement::SuperSlowSleepTime = 20;
 
 namespace WoW
 {
-	//bool Funcs::IsGhost(Vector3 Corpse)
-	//{
-	//	if (Corpse.x != 0 || Corpse.y != 0 || Corpse.z != 0)
-	//	{
-	//		return true;
-	//	}
-	//	else
-	//	{
-	//		return false;
-	//	}
-	//}
-
-	//bool Funcs::IsEntityAlive(WObject* entity)
-	//{
-	//	int TypeID = entity->GetType();
-
-	//	if (TypeID == CGPlayer || TypeID == CGUnit || TypeID == CGActivePlayer)
-	//	{
-	//		if (entity->sUnitField->Health > 0)
-	//			return false;
-	//	}
-	//	return true;
-	//}
-
-	////bool Funcs::InRangeOf(WObject* Entity, const C3Vector& v, float distance)
-	////{
-	////	return Entity->GetUnitPosition().Distance(v) <= distance;
-	////}
-
-	//void Funcs::ReleaseSpirit()
-	//{
-	//	//GameMethods::Execute("RepopMe()");
-
-	//}
-
-	//void Funcs::ReviveAtCorpse()
-	//{
-	//	//GameMethods::Execute("RetrieveCorpse()");
-	//}
-
-	void Hacks::StartQualityOfLife()
-	{
-
-		if (!Settings::Hacks::Movement::CTM)
-			return;
-
-		__try
-		{
-			WObject* LocalPlayer = (WObject*)LuaScript::ActivePlayer;
-
-
-			//if (WoW::Funcs::IsEntityAlive(LocalPlayer))
-			//{
-			//	Sleep(1250);
-			//	printf("[+] Releasing Spirit!\n");
-			//	WoW::Funcs::ReleaseSpirit(); //Spamming this will crash your game.
-			//}
-
-
-			Vector3 Corpse;
-			Corpse.x = *reinterpret_cast<float*>(Offsets::Corpsex);
-			Corpse.y = *reinterpret_cast<float*>(Offsets::Corpsey);
-			Corpse.z = *reinterpret_cast<float*>(Offsets::Corpsez);
-			if (Corpse.x != 0 && Corpse.y != 0 && Corpse.z != 0)
-			{
-				/*if (Funcs::IsGhost(Corpse))
-				{
-					if (Funcs::InRangeOf(LocalPlayer, Corpse, 20.0))
-					{
-						Sleep(1250);
-						printf("[+] Reviving!\n");
-						WoW::Funcs::ReviveAtCorpse();
-						C2M_Test(false, Corpse);
-					}
-					else
-					{
-						printf("[+] Walking to Corpse\n");
-						C2M_Test(true, Corpse);
-					}
-				}*/
-			}
-			else
-			{
-				//Continue...
-			}
-		}
-		__except (Utils::filterException(GetExceptionCode(), GetExceptionInformation())) {
-			printf("[!] Auto Mode Exception Caught!\n");
-			LuaScript::ReInitObjMgr();
-		}
-	}
-
-	void Hacks::FreezeJump()
+	void Hacks::FreezeJump(WObject* localplayer)
 	{
 
 		if (!Settings::Hacks::Movement::JumpState)
 			return;
 
-		if (!LuaScript::ActivePlayer)
-			return;
-
 		__try
 		{
-			float ZAxis = LuaScript::ActivePlayer->GetUnitPosition().z;
+			float ZAxis = Globals::LocalPlayer->GetUnitPosition().z;
 
-			if (Settings::Hacks::Movement::SuperSlowFall)
-			{
+			if (Settings::Hacks::Movement::SuperSlowFall) {
 				Sleep(Settings::Hacks::Movement::SuperSlowSleepTime); // Some users will dc on 20ms try a higher number but this will decrease your in air time. I should probably check in jump state + max jump alt?
-				LuaScript::ActivePlayer->StopFall = 824;
+				localplayer->StopFall = 824;
 				return;
 			}
 
-			if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-			{
+			if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
 				Sleep(50);
 
-				if (LuaScript::ActivePlayer->GetUnitPosition().z == ZAxis)
+				if (localplayer->GetUnitPosition().z == ZAxis)
 					return;
 
-				if (LuaScript::ActivePlayer->GetUnitPosition().z != ZAxis)
-				{
+				if (localplayer->GetUnitPosition().z != ZAxis) {
 					Sleep(600);
-					LuaScript::ActivePlayer->StopFall = 824;
-					printf("test\n");
+					localplayer->StopFall = 824;
 				}
 			}
 		}
 		__except (Utils::filterException(GetExceptionCode(), GetExceptionInformation())) {
-			printf("[!] WoW Error!\n");
+			printf("[!] Freeze jump caused a error!\n");
 
 		}
 	}
 
-	float test;
-	void Hacks::ModifyJumpHeight()
+	void Hacks::ModifyJumpHeight(WObject* localplayer)
 	{
 		//Useless dc at jump...
 		if (!Settings::Hacks::Movement::JumpStatev2)
 			return;
 
+		/*if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
+			localplayer->StartofJumpHeight = Settings::Hacks::Movement::jumpHeight;
+		}*/
 
-		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-		{
-			LuaScript::ActivePlayer->JumpHeight = Settings::Hacks::Movement::jumpHeight;			
-		}
-		
 	}
 
-	void Hacks::CTM(C3Vector destination)
+	void Hacks::CTMLP(WObject* OBJDestination)
 	{
-		WObject* LocalPlayer = LuaScript::ActivePlayer;
+/*		if (!Utils::ValidCoord(OBJDestination))
+			return*/;
 
-		if (LocalPlayer->CurrentSpeed != 0)
+		if ((OBJDestination->GetUnitPosition().x == 0 && OBJDestination->GetUnitPosition().y == 0 && OBJDestination->GetUnitPosition().z == 0) || Utils::GetDistance(OBJDestination->GetUnitPosition()) >= 100000)
 			return;
 
-		//Vector destination = Unit->GetUnitPosition();
-		GameMethods::ClickToMove(LocalPlayer->Ptr(), destination);
+		WObject* LocalPlayer = Globals::LocalPlayer;
+		GameMethods::ClickToMove(LocalPlayer->Ptr(), OBJDestination->GetUnitPosition());
+		WoWObjectManager::SetHardwareEvent();
+	}
 
-		LuaScript::SetHardwareEvent();
+	void Hacks::CTM(Vector3 destination)
+	{
+		if ((destination.x == 0 && destination.y == 0 && destination.z == 0) || Utils::GetDistance(destination) >= 100000)
+			return;
+
+		WObject* LocalPlayer = Globals::LocalPlayer;
+		GameMethods::ClickToMove(LocalPlayer->Ptr(), destination);
+		WoWObjectManager::SetHardwareEvent();
 	}
 
 	static bool once;
-	bool Init = false;
 	void Hacks::GExecute_IGFunctions()
 	{
-		//if (!LuaScript::InGame())
-		//{
-		//	printf("Not Ingame\n");
-		//	
-		
-	
 
-		if (!GameMethods::ObjMgrIsValid(0))
+		WObject* localplayer = (WObject*)Globals::LocalPlayer;
+		if (!localplayer) {
+			return;
+		}
+
+		Hacks::FreezeJump(localplayer);
+		Hacks::ModifyJumpHeight(localplayer);
+
+		if (!Settings::Hacks::Movement::TogglePlayerState)
 			return;
 
-		//LuaScript::ReInitObjMgr(); // Loop ObjMgr
-	
-		Hacks::FreezeJump();
-		Hacks::ModifyJumpHeight();
-		Hacks::StartQualityOfLife();
+		if (Settings::Hacks::Movement::TogglePlayerState) {
+			once = true;
 
-			if (!Settings::Hacks::Movement::TogglePlayerState)
-				return;
-
-			if (Settings::Hacks::Movement::TogglePlayerState) {
-				once = true;
-
-
-				if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Ground)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_NONE;	
-				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Swimming)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_SWIMMING;				
-				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::UnderWaterWalking)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_WALKING;								//Yes
-				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::WaterWalking)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_WATERWALKING; //Below this one are useless used for testing.	
-				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::FallingSlow)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_FALLING_FAR;		
-				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::CanFly)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_FALLING_SLOW;			
-				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::DisableCollision)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_HOVER; 
-				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Root) 
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_FLYING;
-				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Loggedoff) // Antistun?
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_PITCH_UP;
-				else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::DisableGravity)
-					LuaScript::ActivePlayer->Collision_StateHack = MovementFlags::MOVEMENTFLAG_ASCENDING;
-			} 
-			else {
-				if (once)
-					LuaScript::ActivePlayer->Collision_StateHack = 0x3F8000003FEE38E4; // Walking state
-					once = false; // After any movement wow should change the value to its original.
+			if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Ground)
+				localplayer->MovementFlags = MovementFlags::MOVEMENTFLAG_NONE;
+			else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Swimming)
+				localplayer->MovementFlags = MovementFlags::MOVEMENTFLAG_SWIMMING;
+			else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::UnderWaterWalking)
+				localplayer->MovementFlags = MovementFlags::MOVEMENTFLAG_WALKING;								//Yes
+			else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::WaterWalking)
+				localplayer->MovementFlags = MovementFlags::MOVEMENTFLAG_WATERWALKING; //Below this one are useless used for testing.	
+			else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::FallingSlow)
+				localplayer->MovementFlags = MovementFlags::MOVEMENTFLAG_FALLING_FAR;
+			else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::CanFly)
+				localplayer->MovementFlags = MovementFlags::MOVEMENTFLAG_FALLING_SLOW;
+			else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::DisableCollision)
+				localplayer->MovementFlags = MovementFlags::MOVEMENTFLAG_HOVER;
+			else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Root)
+				localplayer->MovementFlags = MovementFlags::MOVEMENTFLAG_FLYING;
+			else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::Loggedoff) // Antistun?
+				localplayer->MovementFlags = MovementFlags::MOVEMENTFLAG_PITCH_UP;
+			else if (Settings::Hacks::Movement::CurrentPlayerState == PlayerState::DisableGravity)
+				localplayer->MovementFlags = MovementFlags::MOVEMENTFLAG_ASCENDING;
+		}
+		else {
+			if (once) {
+				localplayer->MovementFlags = 0x3F8000003FEE38E4; // Walking state
+				once = false; // After any movement wow should change the value to its original.
 			}
+		}
 	}
 
-
-
-	int Hacks::GoToCorpse(int64_t luaState)
-	{
-		if (!LuaScript::ActivePlayer)
+	int Hacks::GoToCorpse(int64_t luaState) {
+		//Kinda useless now because dc at tele...
+		if (!Globals::LocalPlayer)
 			return 1;
-
-		float corpseXPos = *reinterpret_cast<float*>(Offsets::Corpsex);
-		float corpseYPos = *reinterpret_cast<float*>(Offsets::Corpsey);
-		float corpseZPos = *reinterpret_cast<float*>(Offsets::Corpsez);
-
 		int corpseMapID = *reinterpret_cast<int*>(Offsets::CorpseMapID);
+		printf("Corpse located at: x %f y %f z %f MapID: %i \n", Globals::CorpsePos.x, Globals::CorpsePos.y, Globals::CorpsePos.z, corpseMapID);
 
-		printf("Corpse located at: x %f y %f z %f MapID: %i \n", corpseXPos, corpseYPos, corpseZPos, corpseMapID);
-
-		if (corpseXPos != 0 && corpseYPos != 0 && corpseZPos != 0)
-		{
-			LuaScript::ActivePlayer->GetUnitPositionModify.x = corpseXPos;
-			LuaScript::ActivePlayer->GetUnitPositionModify.y = corpseYPos;
-			LuaScript::ActivePlayer->GetUnitPositionModify.z = corpseZPos;
+		if (Globals::CorpsePos.x != 0 && Globals::CorpsePos.y != 0 && Globals::CorpsePos.z != 0) {
+			Globals::LocalPlayer->GetUnitPositionModify.x = Globals::CorpsePos.x;
+			Globals::LocalPlayer->GetUnitPositionModify.y = Globals::CorpsePos.y;
+			Globals::LocalPlayer->GetUnitPositionModify.z = Globals::CorpsePos.z;
 		}
-		else
-		{
-			printf("Corpse not found!\n");
+		else {
+			printf("Corpse not found!!!\n");
 		}
 		return 1;
 	}
 
-	int Hacks::fakeTeleport(int64_t luastate)
-	{
-		if (!LuaScript::ActivePlayer)
+	int Hacks::fakeTeleport(int64_t luastate) {
+		//Kinda useless now because dc at tele...
+		if (!Globals::LocalPlayer)
 			return 1;
 
-		if (Settings::Hacks::Movement::TeleportBack)
-		{
-			LuaScript::ActivePlayer->GetUnitPosition() = Settings::Hacks::Movement::PrevPos; // For now 
+		if (Settings::Hacks::Movement::TeleportBack) {
+			Globals::LocalPlayer->GetUnitPosition() = Settings::Hacks::Movement::PrevPos; // For now 
 			Settings::Hacks::Movement::TeleportBack = false;
 			return 1;
 		}
-		else
-		{
-			Settings::Hacks::Movement::PrevPos = LuaScript::ActivePlayer->GetUnitPosition();
+		else {
+			Settings::Hacks::Movement::PrevPos = Globals::LocalPlayer->GetUnitPosition();
 		}
-
-		LuaScript::ActivePlayer->GetUnitPosition() = Settings::Hacks::Movement::NextPos;  // For now
+		Globals::LocalPlayer->GetUnitPosition() = Settings::Hacks::Movement::NextPos;  // For now
 
 		return 1;
 	}
-
-	//int Hacks::ClickToMove(int64_t luaState)
-	//{
-	//	if (!LuaScript::ActivePlayer)
-	//		return 1;
-
-	//	int x = GameMethods::ToNumber(luaState, 1);
-	//	int y = GameMethods::ToNumber(luaState, 2);
-	//	int z = GameMethods::ToNumber(luaState, 3);
-
-	//	Vector3 position = Vector3(x, y, z);
-
-	//	GameMethods::ClickToMove(LuaScript::ActivePlayer->Ptr(), position);
-
-	//	LuaScript::SetHardwareEvent();
-
-	//	return 1;
-	//}
-
-
-
 };

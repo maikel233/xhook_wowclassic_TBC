@@ -4,8 +4,12 @@
 #include <imgui.h>
 #include <set>
 
-namespace ShowEntityList
+namespace Draw
 {
-	void GetObjectInfo(WObject* entity);
-	void RenderWindow();
+	class EntityList {
+	public:
+		void RenderWindow();
+	private:
+		void GetObjectInfo(WObject* entity);
+	};
 }

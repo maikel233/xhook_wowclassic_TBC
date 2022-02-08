@@ -6,9 +6,6 @@
 #include<map>
 #include<memory>
 
-#include "Location.hpp"
-//#include "..\Util\Timer.hpp"
-
 typedef int64_t int64;
 typedef int32_t int32;
 typedef int16_t int16;
@@ -2047,22 +2044,22 @@ TC_ADAMANTITE_ROD              = 62,
 TC_ETERNIUM_ROD                = 63
 };
 */
+//
+//enum UnitDynFlags
+//{
+//	UNIT_DYNFLAG_NONE = 0x0000,
+//	UNIT_DYNFLAG_LOOTABLE = 0x0001,
+//	UNIT_DYNFLAG_TRACK_UNIT = 0x0002,
+//	UNIT_DYNFLAG_TAPPED = 0x0004,       // Lua_UnitIsTapped - Indicates the target as grey for the client.
+//	UNIT_DYNFLAG_ROOTED = 0x0008,
+//	UNIT_DYNFLAG_SPECIALINFO = 0x0010,
+//	UNIT_DYNFLAG_DEAD = 0x0020,
+//};
 
-enum UnitDynFlags
-{
-	UNIT_DYNFLAG_NONE = 0x0000,
-	UNIT_DYNFLAG_LOOTABLE = 0x0001,
-	UNIT_DYNFLAG_TRACK_UNIT = 0x0002,
-	UNIT_DYNFLAG_TAPPED = 0x0004,       // Lua_UnitIsTapped - Indicates the target as grey for the client.
-	UNIT_DYNFLAG_ROOTED = 0x0008,
-	UNIT_DYNFLAG_SPECIALINFO = 0x0010,
-	UNIT_DYNFLAG_DEAD = 0x0020,
-};
-
-enum CorpseDynFlags
-{
-	CORPSE_DYNFLAG_LOOTABLE = 0x0001
-};
+//enum CorpseDynFlags
+//{
+//	CORPSE_DYNFLAG_LOOTABLE = 0x0001
+//};
 
 // Passive Spell codes explicit used in code
 #define SPELL_ID_PASSIVE_BATTLE_STANCE          2457

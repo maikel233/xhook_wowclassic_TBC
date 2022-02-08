@@ -17,13 +17,11 @@ namespace Draw
 		void Initialize();
 		void BeginScene();
 		void EndScene();
-		void InitBeforeDrawing();
+		void PreDraw();
 		void DrawObjects(WObject* Entity, HealthColorVar Color);
 
 	private:
 		ImFont* m_pFont;
 	};
-
-
 }
 #define g_sRenderer RangeMachine::Renderer::GetInstance()

@@ -24,17 +24,11 @@
     <Filter Include="Header Files\Menu">
       <UniqueIdentifier>{399fc7ca-47b4-4776-84b9-aa405e142ccf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\WoW\LUA">
-      <UniqueIdentifier>{7fe0c99d-b4ce-4dce-9d9c-61934cc66c88}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Settings">
       <UniqueIdentifier>{16039e9c-1cf5-4f34-b479-dd245f4c7ff1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Settings">
       <UniqueIdentifier>{994e8ec7-5a63-4300-bac6-77c6b378617c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Menu\Authentication">
-      <UniqueIdentifier>{7e37763d-de12-4b93-91b8-7c99e3fce96d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\WoW\Camera">
       <UniqueIdentifier>{8f401784-d948-41db-acd1-b443644f04e9}</UniqueIdentifier>
@@ -48,23 +42,11 @@
     <Filter Include="Source Files\Menu\Drawing">
       <UniqueIdentifier>{247d9049-27a1-47c5-b8f8-a6e75822529c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Funcs">
-      <UniqueIdentifier>{959c0621-721c-4a66-912d-6f08a7ff0cb2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Funcs">
       <UniqueIdentifier>{29c74896-3bc1-4d7f-9fbb-2dfcacdc46c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Funcs\ImGui">
-      <UniqueIdentifier>{53e57d90-ad36-45e1-85f8-420cea3d6ddb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\WoW\More WoW Stuff">
       <UniqueIdentifier>{a18d4f4e-e960-4146-9e3e-37781e026e2a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\WoW\Nav">
-      <UniqueIdentifier>{a8570205-bdc8-4d41-a22f-0991a377d2a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\WoW\Navigation">
-      <UniqueIdentifier>{2bbece26-c266-4d98-86c0-d5200394eddf}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\WoW\Bot">
       <UniqueIdentifier>{323308c3-c007-4cbb-816a-d07c18130628}</UniqueIdentifier>
@@ -72,115 +54,79 @@
     <Filter Include="Header Files\WoW\Global">
       <UniqueIdentifier>{cf2acba9-cffb-478e-a1fc-79872d4c52b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Detours\Det">
+      <UniqueIdentifier>{1333c47e-b104-4e7f-9062-f068a4142fc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Detours\Detheader">
+      <UniqueIdentifier>{d907f6e9-1170-4eb0-ad64-28441141a840}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\nav">
+      <UniqueIdentifier>{8c71441a-d2d0-4524-bb5e-f1088963fe48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\imgui">
+      <UniqueIdentifier>{959c0621-721c-4a66-912d-6f08a7ff0cb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\WoW\ObjectManager">
+      <UniqueIdentifier>{7fe0c99d-b4ce-4dce-9d9c-61934cc66c88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\WoW\ObjectManager">
+      <UniqueIdentifier>{4162662d-175e-4f62-bf58-be312e05e8f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\WoW\Camera">
+      <UniqueIdentifier>{8fa23e6d-37d3-4dfb-af39-c04a67425497}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\WoW\Bot">
+      <UniqueIdentifier>{0a0c21d2-8a2a-4ac6-9ad8-4bfb51b80e45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\WoW\Global">
+      <UniqueIdentifier>{8067be14-d752-42a7-b36c-0ec5b635a7c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\nav">
+      <UniqueIdentifier>{9ebe1cf9-f52f-4941-ac27-55008bacd812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Func">
+      <UniqueIdentifier>{80271703-da86-4801-b4ac-754de9add873}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Defines">
+      <UniqueIdentifier>{e296dad7-e97b-4f5b-9b05-2219fd0b646e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Defines">
+      <UniqueIdentifier>{2e36b946-f63b-4b58-a10f-7325cc2d36db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Settings\Trash">
+      <UniqueIdentifier>{7192d345-3ffe-42ec-ada6-bac9a651a084}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="detours.h">
       <Filter>Header Files\Detours</Filter>
-    </ClInclude>
-    <ClInclude Include="IncludeHeaders.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="offsets.h">
-      <Filter>Header Files\WoW</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imconfig.h">
-      <Filter>Header Files\Funcs\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui.h">
-      <Filter>Header Files\Funcs\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_dx11.h">
-      <Filter>Header Files\Funcs\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_win32.h">
-      <Filter>Header Files\Funcs\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_internal.h">
-      <Filter>Header Files\Funcs\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_rectpack.h">
-      <Filter>Header Files\Funcs\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_textedit.h">
-      <Filter>Header Files\Funcs\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_truetype.h">
-      <Filter>Header Files\Funcs\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="Menu.h">
       <Filter>Header Files\Menu</Filter>
     </ClInclude>
-    <ClInclude Include="Settings.h">
-      <Filter>Header Files\Settings</Filter>
-    </ClInclude>
-    <ClInclude Include="json.h">
-      <Filter>Header Files\Settings</Filter>
-    </ClInclude>
-    <ClInclude Include="Color.h">
-      <Filter>Header Files\Settings</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files\WoW\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Singleton.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>Header Files\Menu\Drawing</Filter>
     </ClInclude>
-    <ClInclude Include="XorStr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Configs.h">
       <Filter>Header Files\Menu</Filter>
     </ClInclude>
-    <ClInclude Include="Vector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Radar.h">
-      <Filter>Source Files\Menu\Drawing</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityList.h">
-      <Filter>Source Files\Menu\Drawing</Filter>
-    </ClInclude>
     <ClInclude Include="Lua\GameMethods.h">
-      <Filter>Header Files\WoW\LUA</Filter>
+      <Filter>Header Files\WoW\ObjectManager</Filter>
     </ClInclude>
-    <ClInclude Include="Lua\LuaBase.h">
-      <Filter>Header Files\WoW\LUA</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\LuaScript.h">
-      <Filter>Header Files\WoW\LUA</Filter>
+    <ClInclude Include="Lua\ObjectManager.h">
+      <Filter>Header Files\WoW\ObjectManager</Filter>
     </ClInclude>
     <ClInclude Include="WObject.h">
-      <Filter>Header Files\WoW\LUA</Filter>
+      <Filter>Header Files\WoW\ObjectManager</Filter>
     </ClInclude>
     <ClInclude Include="DllMain.h">
       <Filter>Source Files\WoW</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>Source Files\Funcs</Filter>
-    </ClInclude>
-    <ClInclude Include="icons.h">
-      <Filter>Header Files\Settings</Filter>
-    </ClInclude>
     <ClInclude Include="Hacks.h">
       <Filter>Source Files\WoW</Filter>
-    </ClInclude>
-    <ClInclude Include="WoWTypes.h">
-      <Filter>Header Files\WoW\More WoW Stuff</Filter>
-    </ClInclude>
-    <ClInclude Include="SharedDefines.h">
-      <Filter>Header Files\WoW\More WoW Stuff</Filter>
-    </ClInclude>
-    <ClInclude Include="Location.hpp">
-      <Filter>Header Files\WoW\More WoW Stuff</Filter>
     </ClInclude>
     <ClInclude Include="bot\FishingBot.h">
       <Filter>Header Files\WoW\Bot</Filter>
@@ -192,7 +138,124 @@
       <Filter>Header Files\WoW\Global</Filter>
     </ClInclude>
     <ClInclude Include="Constants.h">
-      <Filter>Header Files\WoW\LUA</Filter>
+      <Filter>Header Files\WoW\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourAlloc.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourAssert.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourCommon.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourCrowd.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourLocalBoundary.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourMath.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourNavMesh.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourNavMeshBuilder.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourNavMeshQuery.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourNode.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourObstacleAvoidance.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourPathCorridor.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourPathQueue.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourProximityGrid.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="Detour\Include\DetourStatus.h">
+      <Filter>Header Files\Detours\Detheader</Filter>
+    </ClInclude>
+    <ClInclude Include="nav\AmeisonNavigation.h">
+      <Filter>Header Files\nav</Filter>
+    </ClInclude>
+    <ClInclude Include="nav.h">
+      <Filter>Header Files\nav</Filter>
+    </ClInclude>
+    <ClInclude Include="Radar.h">
+      <Filter>Header Files\Menu\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityList.h">
+      <Filter>Header Files\Menu\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Settings\Settings.h">
+      <Filter>Header Files\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imconfig.h">
+      <Filter>Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui.h">
+      <Filter>Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_dx11.h">
+      <Filter>Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_win32.h">
+      <Filter>Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_internal.h">
+      <Filter>Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_rectpack.h">
+      <Filter>Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_textedit.h">
+      <Filter>Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_truetype.h">
+      <Filter>Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="WoWTypes.h">
+      <Filter>Header Files\Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedDefines.h">
+      <Filter>Header Files\Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="offsets.h">
+      <Filter>Header Files\Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="Settings\json.h">
+      <Filter>Header Files\Settings\Trash</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>Header Files\Settings\Trash</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files\Settings\Trash</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files\Settings\Trash</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>Header Files\Settings\Trash</Filter>
+    </ClInclude>
+    <ClInclude Include="XorStr.h">
+      <Filter>Header Files\Settings\Trash</Filter>
+    </ClInclude>
+    <ClInclude Include="GInterface.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -217,9 +280,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files\WoW</Filter>
     </ClCompile>
-    <ClCompile Include="INonCopyable.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files\Funcs</Filter>
     </ClCompile>
@@ -235,9 +295,6 @@
     <ClCompile Include="Settings\Settings.cpp">
       <Filter>Source Files\Settings</Filter>
     </ClCompile>
-    <ClCompile Include="Settings\json.cpp">
-      <Filter>Source Files\Settings</Filter>
-    </ClCompile>
     <ClCompile Include="Settings\Color.cpp">
       <Filter>Source Files\Settings</Filter>
     </ClCompile>
@@ -250,26 +307,80 @@
     <ClCompile Include="EntityList.cpp">
       <Filter>Source Files\Menu\Drawing</Filter>
     </ClCompile>
-    <ClCompile Include="Lua\LuaBase.cpp">
-      <Filter>Header Files\WoW\LUA</Filter>
-    </ClCompile>
-    <ClCompile Include="Lua\LuaScript.cpp">
-      <Filter>Header Files\WoW\LUA</Filter>
-    </ClCompile>
     <ClCompile Include="Hacks.cpp">
       <Filter>Source Files\WoW</Filter>
     </ClCompile>
-    <ClCompile Include="bot\FishingBot.cpp">
-      <Filter>Header Files\WoW\Bot</Filter>
+    <ClCompile Include="Detour\Source\DetourAlloc.cpp">
+      <Filter>Header Files\Detours\Det</Filter>
     </ClCompile>
-    <ClCompile Include="bot\GrindBot.cpp">
-      <Filter>Header Files\WoW\Bot</Filter>
+    <ClCompile Include="Detour\Source\DetourAssert.cpp">
+      <Filter>Header Files\Detours\Det</Filter>
+    </ClCompile>
+    <ClCompile Include="Detour\Source\DetourCommon.cpp">
+      <Filter>Header Files\Detours\Det</Filter>
+    </ClCompile>
+    <ClCompile Include="Detour\Source\DetourCrowd.cpp">
+      <Filter>Header Files\Detours\Det</Filter>
+    </ClCompile>
+    <ClCompile Include="Detour\Source\DetourLocalBoundary.cpp">
+      <Filter>Header Files\Detours\Det</Filter>
+    </ClCompile>
+    <ClCompile Include="Detour\Source\DetourNavMesh.cpp">
+      <Filter>Header Files\Detours\Det</Filter>
+    </ClCompile>
+    <ClCompile Include="Detour\Source\DetourNavMeshBuilder.cpp">
+      <Filter>Header Files\Detours\Det</Filter>
+    </ClCompile>
+    <ClCompile Include="Detour\Source\DetourNavMeshQuery.cpp">
+      <Filter>Header Files\Detours\Det</Filter>
+    </ClCompile>
+    <ClCompile Include="Detour\Source\DetourNode.cpp">
+      <Filter>Header Files\Detours\Det</Filter>
+    </ClCompile>
+    <ClCompile Include="Detour\Source\DetourObstacleAvoidance.cpp">
+      <Filter>Header Files\Detours\Det</Filter>
+    </ClCompile>
+    <ClCompile Include="Detour\Source\DetourPathCorridor.cpp">
+      <Filter>Header Files\Detours\Det</Filter>
+    </ClCompile>
+    <ClCompile Include="Detour\Source\DetourPathQueue.cpp">
+      <Filter>Header Files\Detours\Det</Filter>
+    </ClCompile>
+    <ClCompile Include="Detour\Source\DetourProximityGrid.cpp">
+      <Filter>Header Files\Detours\Det</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\ObjectManager.cpp">
+      <Filter>Source Files\WoW\ObjectManager</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>Header Files\WoW\Camera</Filter>
+      <Filter>Source Files\WoW\Camera</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="struct.txt" />
+    <ClCompile Include="bot\GrindBot.cpp">
+      <Filter>Source Files\WoW\Bot</Filter>
+    </ClCompile>
+    <ClCompile Include="bot\FishingBot.cpp">
+      <Filter>Source Files\WoW\Bot</Filter>
+    </ClCompile>
+    <ClCompile Include="Globals.cpp">
+      <Filter>Source Files\WoW\Global</Filter>
+    </ClCompile>
+    <ClCompile Include="nav\AmeisonNavigation.cpp">
+      <Filter>Source Files\nav</Filter>
+    </ClCompile>
+    <ClCompile Include="nav.cpp">
+      <Filter>Source Files\nav</Filter>
+    </ClCompile>
+    <ClCompile Include="offsets.cpp">
+      <Filter>Source Files\Defines</Filter>
+    </ClCompile>
+    <ClCompile Include="Settings\json.cpp">
+      <Filter>Header Files\Settings\Trash</Filter>
+    </ClCompile>
+    <ClCompile Include="INonCopyable.h">
+      <Filter>Header Files\Settings\Trash</Filter>
+    </ClCompile>
+    <ClCompile Include="GInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

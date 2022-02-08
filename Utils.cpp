@@ -1,64 +1,45 @@
 #include "Utils.h"
 #include "Settings/settings.h"
-#include <algorithm>
-#include <cctype>
-#include <fcntl.h>
-#include "Xorstr.h"
+#include "Globals.h"
 
 
-bool Utils::approxEqual(float v1, float v2)
-{
-	return abs(v1 - v2) < pow(10, -7);
-}
+bool Utils::IsUnitEnemy(WObject* unit) { return GameMethods::GetUnitReaction(unit) <= 3; }
+bool Utils::IsUnitFriendly(WObject* unit) { return !IsUnitEnemy(unit); }
 
+bool Utils::approxEqual(float v1, float v2) { return abs(v1 - v2) < pow(10, -7); }
+bool Utils::InRangeOf(WObject* Entity, const Vector3& v, float distance) { return Entity->GetUnitPosition().Distance(v) <= distance; }
+float Utils::GetDistance2D(float fLocation2X, float fLocation1X, float fLocation2Y, float fLocation1Y) { return sqrt(((fLocation2X - fLocation1X) * (fLocation2X - fLocation1X)) + ((fLocation2Y - fLocation1Y) * (fLocation2Y - fLocation1Y))); }
+float Utils::GetDistance(Vector3 Pos) { return GetDistance2D(Pos.x, Globals::LocalPlayer->GetUnitPosition().x, Pos.y, Globals::LocalPlayer->GetUnitPosition().y); }
 
-float Utils::GetDistance2D(float fLocation2X, float fLocation1X, float fLocation2Y, float fLocation1Y)
-{
-	return sqrt(((fLocation2X - fLocation1X) * (fLocation2X - fLocation1X)) + ((fLocation2Y - fLocation1Y) * (fLocation2Y - fLocation1Y)));
-}
-
-float Utils::GetDistance(C3Vector Pos)
-{
-	return GetDistance2D(Pos.x, LuaScript::ActivePlayer->GetUnitPosition().x, Pos.y, LuaScript::ActivePlayer->GetUnitPosition().y);
-}
-
-bool Utils::ValidCoord(WObject* entity)
-{
+bool Utils::ValidCoord(WObject* entity) {
 	if ((entity->GetUnitPosition().x == 0 && entity->GetUnitPosition().y == 0 && entity->GetUnitPosition().z == 0) || GetDistance(entity->GetUnitPosition()) >= 100000) return FALSE;
 	return TRUE;
 }
 
-long Utils::GetEpochTime()
-{
+long Utils::GetEpochTime() {
 	using namespace std::chrono;
 	milliseconds ms = duration_cast<milliseconds>(
 		system_clock::now().time_since_epoch()
 		);
-
 	return ms.count();
 }
 
-ImColor Utils::GetFactionColor(WObject* player)
-{
-	int RaceID = player->sUnitField->RaceID;
-	int TypeID = (int)player->GetType();
-	ImColor FactionColor;
 
-	if (TypeID == (int)TypeId::CGPlayer || TypeID == (int)TypeId::CGActivePlayer)
+
+ImColor Utils::GetFactionColor(WObject* Player) {
+	ImColor FactionColor;
+	if (Player->IsPlayer() || Player->IsLocalPlayer())
 	{
-		if (RaceID == WoWRace::Undead || RaceID == WoWRace::Troll || RaceID == WoWRace::TrollFemale || RaceID == WoWRace::Tauren || RaceID == WoWRace::Orc)
+		if (Player->GetFactionID() == TeamID::Horde)
 			FactionColor = ImColor(1.00f, 0.0f, 0.0f, 1.0f);
-		else if (RaceID == WoWRace::Human || RaceID == WoWRace::Dwarf || RaceID == WoWRace::Gnome || RaceID == WoWRace::NightElf)
+		else
 			FactionColor = ImColor(0.00f, 0.0f, 1.0f, 1.0f);
 	}
 	else { FactionColor; }
-
 	return FactionColor;
 }
 
-
-ImColor Utils::GetClassColor(WObject* entity)
-{
+ImColor Utils::GetClassColor(WObject* entity) {
 	int RaceID = entity->sUnitField->ClassID;
 	ImColor Class;
 
@@ -77,8 +58,8 @@ ImColor Utils::GetClassColor(WObject* entity)
 
 	return Class;
 }
-ImColor Utils::GetRainbowColor(float speed)
-{
+
+ImColor Utils::GetRainbowColor(float speed) {
 	speed = 0.002f * speed;
 	long now = Utils::GetEpochTime();
 	float hue = (now % (int)(1.0f / speed)) * speed;
@@ -86,8 +67,7 @@ ImColor Utils::GetRainbowColor(float speed)
 	return ImColor::HSV(hue, 1.0f, 1.0f);
 }
 
-Color Utils::GetHealthColor(int hp)
-{
+Color Utils::GetHealthColor(int hp) {
 	return Color(
 		min(510 * (100 - hp) / 100, 255),
 		min(510 * hp / 100, 255),
@@ -95,8 +75,7 @@ Color Utils::GetHealthColor(int hp)
 	);
 }
 
-Color Utils::GetHealthColor(WObject* player)
-{
+Color Utils::GetHealthColor(WObject* player) {
 	return Color(
 		min(510 * (player->sUnitField->MaxHealth - player->sUnitField->Health) / player->sUnitField->MaxHealth, 255),
 		min(510 * player->sUnitField->Health / player->sUnitField->MaxHealth, 255),
@@ -104,85 +83,39 @@ Color Utils::GetHealthColor(WObject* player)
 	);
 }
 
-std::string Utils::GetHealth(WObject* entity)
-{
+std::string Utils::GetHealth(WObject* Entity) {
 	std::string HealthStr;
-	int TypeID = (int)entity->GetType();
-	if (TypeID == (int)TypeId::CGPlayer || TypeID == (int)TypeId::CGUnit || TypeID == (int)TypeId::CGActivePlayer)
-	{
-		HealthStr = std::to_string(entity->sUnitField->Health) + "/" + std::to_string(entity->sUnitField->MaxHealth);
+	if (Entity->IsUnit() || Entity->IsPlayer() || Entity->IsLocalPlayer()) {
+		HealthStr = std::to_string(Entity->sUnitField->Health) + "/" + std::to_string(Entity->sUnitField->MaxHealth);
 	}
 	return HealthStr;
 }
 
-std::string Utils::GetEnergyOrMana(WObject* entity)
-{	
+std::string Utils::GetEnergyOrMana(WObject* Entity) {
 	std::string EnergyOrManaStr;
-	int TypeID = (int)entity->GetType();
-	if (TypeID == (int)TypeId::CGPlayer || TypeID == (int)TypeId::CGUnit || TypeID == (int)TypeId::CGActivePlayer)
-	{
-		EnergyOrManaStr = std::to_string(entity->sUnitField->Energy) + "/" + std::to_string(entity->sUnitField->MaxEnergy);
+	if (Entity->IsUnit() || Entity->IsPlayer() || Entity->IsLocalPlayer()) {
+		EnergyOrManaStr = std::to_string(Entity->sUnitField->Energy) + "/" + std::to_string(Entity->sUnitField->MaxEnergy);
 	}
 	return EnergyOrManaStr;
 }
 
-
-bool Utils::IsEntityAlive(WObject* entity)
-{
-	int TypeID = (int)entity->GetType();
-	if (TypeID == (int)TypeId::CGPlayer || TypeID == (int)TypeId::CGUnit || TypeID == (int)TypeId::CGActivePlayer)
-	{
-		if (entity->sUnitField->Health > 0)
-			return false;
-	}
-	return true;
-}
-
-
-int Utils::IsFriendlyOrEnemy(WObject* entity)
-{
-	int RaceID = entity->sUnitField->RaceID;
-	int TypeID = (int)entity->GetType();
-
-	if (TypeID == (int)TypeId::CGPlayer || TypeID == (int)TypeId::CGActivePlayer)
-	{
-		if (RaceID == WoWRace::Undead || RaceID == WoWRace::Troll || RaceID == WoWRace::TrollFemale || RaceID == WoWRace::Tauren || RaceID == WoWRace::Orc)
-			return (int)TeamID::Horde;
-		else if (RaceID == WoWRace::Human || RaceID == WoWRace::Dwarf || RaceID == WoWRace::Gnome || RaceID == WoWRace::NightElf)
-			return (int)TeamID::Alliance;
-	}
-	return RaceID;
-}
-
-
-std::string Utils::IsHordeOrAlliance(WObject* player)
-{
-	int RaceID = player->sUnitField->RaceID;
-	int TypeID = (int)player->GetType();
+std::string Utils::IsHordeOrAlliance(WObject* Player) {
 	std::string Result;
+	if (Player->IsPlayer() || Player->IsLocalPlayer()) {
 
-
-	if (TypeID == (int)TypeId::CGPlayer || TypeID == (int)TypeId::CGActivePlayer)
-	{
-		if (RaceID == WoWRace::Undead || RaceID == WoWRace::Troll || RaceID == WoWRace::TrollFemale || RaceID == WoWRace::Tauren || RaceID == WoWRace::Orc)
+		if (Player->GetFactionID() == TeamID::Horde)
 			Result = "Horde";
-		else if (RaceID == WoWRace::Human || RaceID == WoWRace::Dwarf || RaceID == WoWRace::Gnome || RaceID == WoWRace::NightElf)
+		else
 			Result = "Alliance";
 	}
 	else { Result = ""; }
-	
 	return Result;
 }
 
-
-
-std::string Utils::GetRace(WObject* entity)
-{
-	int RaceID = entity->sUnitField->RaceID;
-	int TypeID = (int)entity->GetType();
+std::string Utils::GetRace(WObject* Entity) {
 	std::string Race;
-	if (TypeID == (int)TypeId::CGPlayer || TypeID == (int)TypeId::CGActivePlayer)
-	{		
+	if (Entity->IsPlayer() || Entity->IsLocalPlayer()) {
+		int RaceID = Entity->sUnitField->RaceID;
 		if (RaceID == WoWRace::Undead) { Race = "Undead"; }
 		else if (RaceID == WoWRace::Troll) { Race = "Troll"; }
 		else if (RaceID == WoWRace::TrollFemale) { Race = "Troll"; }
@@ -200,17 +133,14 @@ std::string Utils::GetRace(WObject* entity)
 		else if (RaceID == WoWRace::Broken) { Race = "Broken"; }
 		else if (RaceID == WoWRace::BloodElf) { Race = "BloodElf"; }
 	}
-		return Race;
+	else { Race = ""; }
+	return Race;
 }
 
-std::string Utils::GetClass(WObject* entity)
-{
-	int RaceID = entity->sUnitField->ClassID;
-	int TypeID = (int)entity->GetType();
+std::string Utils::GetClass(WObject* Entity) {
 	std::string Class;
-
-	if (TypeID == (int)TypeId::CGPlayer || TypeID == (int)TypeId::CGActivePlayer)
-	{
+	if (Entity->IsPlayer() || Entity->IsLocalPlayer()) {
+		int RaceID = Entity->sUnitField->ClassID;
 		if (RaceID == WoWClass::None) { Class = "None"; }
 		else if (RaceID == WoWClass::Warrior) { Class = "Warrior"; }
 		else if (RaceID == WoWClass::Paladin) { Class = "Paladin"; }
@@ -223,11 +153,12 @@ std::string Utils::GetClass(WObject* entity)
 		else if (RaceID == WoWClass::Warlock) { Class = "Warlock"; }
 		else if (RaceID == WoWClass::Druid) { Class = "Druid"; }
 	}
+	else { Class = ""; }
 	return Class;
 }
 
-std::string Utils::GetObjType(WObject* entity)
-{
+
+std::string Utils::GetObjType(WObject* entity) {
 	int TypeID = (int)entity->GetType();
 	std::string Object;
 	if (TypeID == (int)TypeId::CGActivePlayer) { Object = "CGActivePlayer"; }
@@ -237,6 +168,7 @@ std::string Utils::GetObjType(WObject* entity)
 	else if (TypeID == (int)TypeId::CGCorpse) { Object = "CGCorpse"; }
 	else if (TypeID == (int)TypeId::CGDynamicObject) { Object = "CGDynamicObj"; }
 	else if (TypeID == (int)TypeId::CGObject) { Object = "CGObj"; }
+	else { Object = ""; }
 	return Object;
 }
 
@@ -244,3 +176,4 @@ int Utils::filterException(int code, PEXCEPTION_POINTERS ex) {
 	std::cout << "[!] Filtering " << std::hex << code << std::endl;
 	return EXCEPTION_EXECUTE_HANDLER;
 }
+

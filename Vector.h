@@ -2,6 +2,9 @@
 #include <math.h>
 #include <stdlib.h>
 #include <intrin.h>
+#include <math.h>
+#include <string>
+#include <d3dx9math.h>
 
 
 #define CHECK_VALID( _v ) 0
@@ -130,23 +133,23 @@ public:
 
 	bool operator!() { return !x && !y && !z; }
 
-	Vector Vector::Normalized() const
-	{
-		Vector res = *this;
-		float l = res.Length();
-		if (l != 0.0f) {
-			res /= l;
-		}
-		else {
-			res.x = res.y = res.z = 0.0f;
-		}
-		return res;
-	}
+	//Vector Vector::Normalized() const
+	//{
+	//	Vector res = *this;
+	//	float l = res.Length();
+	//	if (l != 0.0f) {
+	//		res /= l;
+	//	}
+	//	else {
+	//		res.x = res.y = res.z = 0.0f;
+	//	}
+	//	return res;
+	//}
 
-	Vector Direction()
-	{
-		return Vector(cos(y * M_PI / 180.0f) * cos(x * M_PI / 180.0f), sin(y * M_PI / 180.0f) * cos(x * M_PI / 180.0f), sin(-x * M_PI / 180.0f)).Normalized();
-	}
+	//Vector Direction()
+	//{
+	//	return Vector(cos(y * M_PI / 180.0f) * cos(x * M_PI / 180.0f), sin(y * M_PI / 180.0f) * cos(x * M_PI / 180.0f), sin(-x * M_PI / 180.0f)).Normalized();
+	//}
 	void VectorCrossProduct(const Vector& a, const Vector& b, Vector& result)
 	{
 		result.x = a.y * b.z - a.z * b.y;
@@ -592,31 +595,207 @@ inline bool IsFinite(float f)
 }
 
 
-class Vector3 final
+struct Vector3
 {
-public:
+	float x, y, z;
 
-	float x = 0, y = 0, z = 0;
-	Vector3() = default;
-	Vector3(const float x, const float y, const float z) : x(x), y(y), z(z) {}
-	Vector3 operator + (const Vector3& rhs) const { return Vector3(x + rhs.x, y + rhs.y, z + rhs.z); }
-	Vector3 operator - (const Vector3& rhs) const { return Vector3(x - rhs.x, y - rhs.y, z - rhs.z); }
-	Vector3 operator * (const float& rhs) const { return Vector3(x * rhs, y * rhs, z * rhs); }
-	Vector3 operator / (const float& rhs) const { return Vector3(x / rhs, y / rhs, z / rhs); }
-	bool operator == (const Vector3& rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z; }
-	bool operator != (const Vector3& rhs) const { return x != rhs.x || y != rhs.y || z != rhs.z; }
-	Vector3& operator += (const Vector3& rhs) { return *this = *this + rhs; }
-	Vector3& operator -= (const Vector3& rhs) { return *this = *this - rhs; }
-	Vector3& operator *= (const float& rhs) { return *this = *this * rhs; }
-	Vector3& operator /= (const float& rhs) { return *this = *this / rhs; }
-	void Invert() { *this *= -1; }
-	[[nodiscard]] float Length() const { return x * x + y * y + z * z; }
+	Vector3() : x(0.f), y(0.f), z(0.f) {}
+
+	Vector3(float values[3]) : x(values[0]), y(values[1]), z(values[2]) {}
+
+	Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
+
+	float* ToArray() {
+		float f[3]{ x, y, z };
+		return f;
+	}
+
+	friend std::ostream& operator<<(std::ostream& os, Vector3 const& vector) {
+		return os << "[" << vector.x << ", " << vector.y << ", " << vector.z << "]";
+	}
+	//----------------------------------------------------------------------------
+	inline Vector3& operator= (const Vector3& rkVector) {
+		x = rkVector.x;
+		y = rkVector.y;
+		z = rkVector.z;
+		return *this;
+	}
+
+	//----------------------------------------------------------------------------
+	inline bool operator== (const Vector3& rkVector) const {
+		return (x == rkVector.x && y == rkVector.y && z == rkVector.z);
+	}
+
+	//----------------------------------------------------------------------------
+	inline bool operator!= (const Vector3& rkVector) const {
+		return (x != rkVector.x || y != rkVector.y || z != rkVector.z);
+	}
+
+	//----------------------------------------------------------------------------
+	inline Vector3 operator+ (const Vector3& rkVector) const {
+		return Vector3(x + rkVector.x, y + rkVector.y, z + rkVector.z);
+	}
+
+	//----------------------------------------------------------------------------
+	inline Vector3 operator- (const Vector3& rkVector) const {
+		return Vector3(x - rkVector.x, y - rkVector.y, z - rkVector.z);
+	}
+
+	//----------------------------------------------------------------------------
+	inline Vector3 operator* (const Vector3& rkVector) const {
+		return Vector3(x * rkVector.x, y * rkVector.y, z * rkVector.z);
+	}
+
+	inline Vector3 operator*(float f) const {
+		return Vector3(x * f, y * f, z * f);
+	}
+
+	//----------------------------------------------------------------------------
+	inline Vector3 operator/ (const Vector3& rkVector) const {
+		return Vector3(x / rkVector.x, y / rkVector.y, z / rkVector.z);
+	}
+
+	//----------------------------------------------------------------------------
+	inline Vector3 operator- () const {
+		return Vector3(-x, -y, -z);
+	}
+
+	//----------------------------------------------------------------------------
+	inline Vector3& operator+= (const Vector3& rkVector) {
+		x += rkVector.x;
+		y += rkVector.y;
+		z += rkVector.z;
+		return *this;
+	}
+
+	//----------------------------------------------------------------------------
+	inline Vector3& operator-= (const Vector3& rkVector) {
+		x -= rkVector.x;
+		y -= rkVector.y;
+		z -= rkVector.z;
+		return *this;
+	}
+
+	//----------------------------------------------------------------------------
+	inline Vector3& operator*= (float fScalar) {
+		x *= fScalar;
+		y *= fScalar;
+		z *= fScalar;
+		return *this;
+	}
+
+	//----------------------------------------------------------------------------
+	inline Vector3& operator*= (const Vector3& rkVector) {
+		x *= rkVector.x;
+		y *= rkVector.y;
+		z *= rkVector.z;
+		return *this;
+	}
+
+	//----------------------------------------------------------------------------
+	inline Vector3& operator/= (const Vector3& rkVector) {
+		x /= rkVector.x;
+		y /= rkVector.y;
+		z /= rkVector.z;
+		return *this;
+	}
+
+	//----------------------------------------------------------------------------
+	inline bool Invalid() const
+	{
+		return (!x && !y && !z);
+	}
+	
+	//----------------------------------------------------------------------------
+	inline float DistanceTo(const Vector3& loc) const
+	{
+		return sqrt(pow(x - loc.x, 2) + pow(y - loc.y, 2) + pow(z - loc.z, 2));
+	}
+
+	//----------------------------------------------------------------------------
+	inline float Distance2D(const Vector3& loc) const
+	{
+		return sqrt(pow(x - loc.x, 2) + pow(y - loc.y, 2));
+	}
+
+	//----------------------------------------------------------------------------
+	inline float Length() const
+	{
+		return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+	}
+
+	//----------------------------------------------------------------------------
+	inline float Angle() const
+	{
+		return atan2(y, x);
+	}
+
+	//----------------------------------------------------------------------------
+	inline std::string ToString() const
+	{
+		return "[" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + "]";
+	}
+
+	//----------------------------------------------------------------------------
+	inline bool zero() const {
+		return x == 0 && y == 0 && z == 0;
+	}
+
+	//----------------------------------------------------------------------------
+	inline float squaredMagnitude() const {
+		return x * x + y * y + z * z;
+	}
+
+	//----------------------------------------------------------------------------
+	inline float squaredLength() const {
+		return squaredMagnitude();
+	}
+
+	//----------------------------------------------------------------------------
+	inline float magnitude() const {
+		return ::sqrtf(x * x + y * y + z * z);
+	}
+
+	//----------------------------------------------------------------------------
+	inline float length() const {
+		return magnitude();
+	}
+
+	//----------------------------------------------------------------------------
+	inline Vector3 direction() const {
+		const float lenSquared = squaredMagnitude();
+		const float invSqrt = 1.0f / sqrtf(lenSquared);
+		return Vector3(x * invSqrt, y * invSqrt, z * invSqrt);
+	}
+
+	//----------------------------------------------------------------------------
+	inline float dot(const Vector3& rkVector) const {
+		return x * rkVector.x + y * rkVector.y + z * rkVector.z;
+	}
+
+	//----------------------------------------------------------------------------
+	inline Vector3 cross(const Vector3& rkVector) const {
+		return Vector3(y * rkVector.z - z * rkVector.y, z * rkVector.x - x * rkVector.z,
+			x * rkVector.y - y * rkVector.x);
+	}
+
+	inline Vector3 normalize() const {
+		auto len = sqrt(x * x + y * y + z * z); // todo: cleanup
+		float xx = 0.0;
+		float yy = 0.0;
+		float zz = 0.0f;
+
+		xx = x / len;
+		yy = y / len;
+		zz = z / len;
+
+		return Vector3(xx, yy, zz);
+	}
+
 	[[nodiscard]] float SquaredLength() const { return std::sqrt(Length()); }
 	[[nodiscard]] Vector3 Normalize() const { return *this * (1 / SquaredLength()); }
 	[[nodiscard]] float Distance(const Vector3& rhs) const { return (*this - rhs).SquaredLength(); }
 	[[nodiscard]] const char* ToString(const int d) const { static char buffer[128]; snprintf(buffer, 128, "[%.*f, %.*f, %.*f]", d, x, d, y, d, z); return buffer; }
-	[[nodiscard]] bool Invalid() const { return x == 0 && y == 0 && z == 0; }
-	static Vector3 zero() { return Vector3(); }
 };
 
 //=========================================================
@@ -1376,681 +1555,14 @@ inline Vector2D operator*(float fl, const Vector2D& v)
 	return v * fl;
 }
 
-class QAngleByValue;
-class QAngle
-{
-public:
-	// Members
-	float x, y, z;
-
-	// Construction/destruction
-	QAngle(void);
-	QAngle(float X, float Y, float Z);
-	//      QAngle(RadianEuler const &angles);      // evil auto type promotion!!!
-
-	// Allow pass-by-value
-	operator QAngleByValue& () { return *((QAngleByValue*)(this)); }
-	operator const QAngleByValue& () const { return *((const QAngleByValue*)(this)); }
-
-	// Initialization
-	void Init(float ix = 0.0f, float iy = 0.0f, float iz = 0.0f);
-	void Random(float minVal, float maxVal);
-
-	// Got any nasty NAN's?
-	bool IsValid() const;
-	void Invalidate();
-
-	// array access...
-	float operator[](int i) const;
-	float& operator[](int i);
-
-	// Base address...
-	float* Base();
-	float const* Base() const;
-
-	// equality
-	bool operator==(const QAngle& v) const;
-	bool operator!=(const QAngle& v) const;
-
-	// arithmetic operations
-	QAngle& operator+=(const QAngle& v);
-	QAngle& operator-=(const QAngle& v);
-	QAngle& operator*=(float s);
-	QAngle& operator/=(float s);
-
-	// Get the vector's magnitude.
-	float   Length() const;
-	float   LengthSqr() const;
-
-	// negate the QAngle components
-	//void  Negate();
-
-	// No assignment operators either...
-	QAngle& operator=(const QAngle& src);
-
-#ifndef VECTOR_NO_SLOW_OPERATIONS
-	// copy constructors
-
-	// arithmetic operations
-	QAngle  operator-(void) const;
-
-	QAngle  operator+(const QAngle& v) const;
-	QAngle  operator-(const QAngle& v) const;
-	QAngle  operator*(float fl) const;
-	QAngle  operator/(float fl) const;
-#else
-
-private:
-	// No copy constructors allowed if we're in optimal mode
-	QAngle(const QAngle& vOther);
-
-#endif
-};
-
-//-----------------------------------------------------------------------------
-// constructors
-//-----------------------------------------------------------------------------
-inline QAngle::QAngle(void)
-{
-#ifdef _DEBUG
-#ifdef VECTOR_PARANOIA
-	// Initialize to NAN to catch errors
-	x = y = z = VEC_T_NAN;
-#endif
-#endif
-}
-
-inline QAngle::QAngle(float X, float Y, float Z)
-{
-	x = X; y = Y; z = Z;
-	CHECK_VALID(*this);
-}
-
-//-----------------------------------------------------------------------------
-// initialization
-//-----------------------------------------------------------------------------
-inline void QAngle::Init(float ix, float iy, float iz)
-{
-	x = ix; y = iy; z = iz;
-	CHECK_VALID(*this);
-}
-
-inline void QAngle::Random(float minVal, float maxVal)
-{
-	x = minVal + ((float)rand() / RAND_MAX) * (maxVal - minVal);
-	y = minVal + ((float)rand() / RAND_MAX) * (maxVal - minVal);
-	z = minVal + ((float)rand() / RAND_MAX) * (maxVal - minVal);
-	CHECK_VALID(*this);
-}
-
-//-----------------------------------------------------------------------------
-// assignment
-//-----------------------------------------------------------------------------
-inline QAngle& QAngle::operator=(const QAngle& vOther)
-{
-	CHECK_VALID(vOther);
-	x = vOther.x; y = vOther.y; z = vOther.z;
-	return *this;
-}
-
-//-----------------------------------------------------------------------------
-// comparison
-//-----------------------------------------------------------------------------
-inline bool QAngle::operator==(const QAngle& src) const
-{
-	CHECK_VALID(src);
-	CHECK_VALID(*this);
-	return (src.x == x) && (src.y == y) && (src.z == z);
-}
-
-inline bool QAngle::operator!=(const QAngle& src) const
-{
-	CHECK_VALID(src);
-	CHECK_VALID(*this);
-	return (src.x != x) || (src.y != y) || (src.z != z);
-}
-
-//-----------------------------------------------------------------------------
-// standard math operations
-//-----------------------------------------------------------------------------
-inline QAngle& QAngle::operator+=(const QAngle& v)
-{
-	CHECK_VALID(*this);
-	CHECK_VALID(v);
-	x += v.x; y += v.y; z += v.z;
-	return *this;
-}
-
-inline QAngle& QAngle::operator-=(const QAngle& v)
-{
-	CHECK_VALID(*this);
-	CHECK_VALID(v);
-	x -= v.x; y -= v.y; z -= v.z;
-	return *this;
-}
-
-inline QAngle& QAngle::operator*=(float fl)
-{
-	x *= fl;
-	y *= fl;
-	z *= fl;
-	CHECK_VALID(*this);
-	return *this;
-}
-
-inline QAngle& QAngle::operator/=(float fl)
-{
-	Assert(fl != 0.0f);
-	float oofl = 1.0f / fl;
-	x *= oofl;
-	y *= oofl;
-	z *= oofl;
-	CHECK_VALID(*this);
-	return *this;
-}
-
-//-----------------------------------------------------------------------------
-// Base address...
-//-----------------------------------------------------------------------------
-inline float* QAngle::Base()
-{
-	return (float*)this;
-}
-
-inline float const* QAngle::Base() const
-{
-	return (float const*)this;
-}
-
-//-----------------------------------------------------------------------------
-// Array access
-//-----------------------------------------------------------------------------
-inline float& QAngle::operator[](int i)
-{
-	Assert((i >= 0) && (i < 3));
-	return ((float*)this)[i];
-}
-
-inline float QAngle::operator[](int i) const
-{
-	Assert((i >= 0) && (i < 3));
-	return ((float*)this)[i];
-}
-
-//-----------------------------------------------------------------------------
-// length
-//-----------------------------------------------------------------------------
-inline float QAngle::Length() const
-{
-	CHECK_VALID(*this);
-	return (float)FastSqrt(LengthSqr());
-}
-
-
-inline float QAngle::LengthSqr() const
-{
-	CHECK_VALID(*this);
-	return x * x + y * y + z * z;
-}
-
-
-//-----------------------------------------------------------------------------
-// arithmetic operations (SLOW!!)
-//-----------------------------------------------------------------------------
-#ifndef VECTOR_NO_SLOW_OPERATIONS
-
-inline QAngle QAngle::operator-(void) const
-{
-	return QAngle(-x, -y, -z);
-}
-
-inline QAngle QAngle::operator+(const QAngle& v) const
-{
-	QAngle res;
-	res.x = x + v.x;
-	res.y = y + v.y;
-	res.z = z + v.z;
-	return res;
-}
-
-inline QAngle QAngle::operator-(const QAngle& v) const
-{
-	QAngle res;
-	res.x = x - v.x;
-	res.y = y - v.y;
-	res.z = z - v.z;
-	return res;
-}
-
-inline QAngle QAngle::operator*(float fl) const
-{
-	QAngle res;
-	res.x = x * fl;
-	res.y = y * fl;
-	res.z = z * fl;
-	return res;
-}
-
-inline QAngle QAngle::operator/(float fl) const
-{
-	QAngle res;
-	res.x = x / fl;
-	res.y = y / fl;
-	res.z = z / fl;
-	return res;
-}
-
-inline QAngle operator*(float fl, const QAngle& v)
-{
-	return v * fl;
-}
-
-#endif // VECTOR_NO_SLOW_OPERATIONS
-
-
-//QANGLE SUBTRAC
-inline void QAngleSubtract(const QAngle& a, const QAngle& b, QAngle& c)
-{
-	CHECK_VALID(a);
-	CHECK_VALID(b);
-	c.x = a.x - b.x;
-	c.y = a.y - b.y;
-	c.z = a.z - b.z;
-}
-
-//QANGLEADD
-inline void QAngleAdd(const QAngle& a, const QAngle& b, QAngle& c)
-{
-	CHECK_VALID(a);
-	CHECK_VALID(b);
-	c.x = a.x + b.x;
-	c.y = a.y + b.y;
-	c.z = a.z + b.z;
-}
-
-
 
 #define CHECK_VALID(_v) 0
 #define Assert(_exp) ((void)0)
 
 
-//
-//class Vector3
-//{
-//public:
-//
-//	float X, Y, Z;
-//
-//	Vector3() {};
-//	Vector3(float X, float Y, float Z) : X{ X }, Y{ Y }, Z{ Z } {}
-//	Vector3(float* xyz) { X = xyz[0]; Y = xyz[1]; Z = xyz[2]; }
-//	Vector3(const Vector3& v) { X = v.X; Y = v.Y; Z = v.Z; }
-//	Vector3(Vector3&& v) : X(0), Y(0), Z(0)
-//	{
-//		X = v.X;
-//		Y = v.Y;
-//		Z = v.Z;
-//
-//		v.X = 0;
-//		v.Y = 0;
-//		v.Z = 0;
-//	}
-//
-//	~Vector3() {};
-//
-//	inline void init(float X, float Y, float Z)
-//	{
-//		this->X = X; this->Y = Y; this->Z = Z;
-//	}
-//
-//	inline float* base()
-//	{
-//		return (float*)this;
-//	}
-//
-//	inline float const* base() const
-//	{
-//		return (float const*)this;
-//	}
-//
-//	inline float operator[](int i) const
-//	{
-//		return ((float*)this)[i];
-//	}
-//
-//	inline float& operator[](int i)
-//	{
-//		return ((float*)this)[i];
-//	}
-//
-//	//inline float length()
-//	//{
-//	//	float root = 0.0f;
-//
-//	//	float sqsr = (this->X * this->X) + (this->Y * this->Y) + (this->Z * this->Z);
-//
-//	//	_asm
-//	//	{
-//	//		sqrtss xmm0, sqsr
-//	//		movss root, xmm0
-//	//	}
-//
-//	//	return root;
-//	//}
-//
-//	/*inline Vector3 normalize()
-//	{
-//		Vector3 vekt;
-//		float len = this->length();
-//
-//		if (len != 0)
-//		{
-//			vekt.X = this->X / len;
-//			vekt.Y = this->Y / len;
-//			vekt.Z = this->Z / len;
-//		}
-//		else
-//		{
-//			vekt.X = vekt.Y = 0.0f;
-//			vekt.Z = 1.0f;
-//		}
-//
-//		return vekt;
-//	}*/
-//
-//	/*inline float normalizeInPlace()
-//	{
-//		Vector3& vekt = *this;
-//
-//		float iradius = 1.f / (this->length() + 1.192092896e-07F);
-//
-//		vekt.X *= iradius;
-//		vekt.Y *= iradius;
-//		vekt.Z *= iradius;
-//	}*/
-//
-//	/*inline float length2d()
-//	{
-//		float root = 0.0f;
-//		float sqs = (this->X * this->X) + (this->Y * this->Y);
-//
-//		_asm
-//		{
-//			sqrtss xmm0, sqs
-//			movss root, xmm0
-//		}
-//		return root;
-//	}*/
-//
-//	inline float lengthSqr()
-//	{
-//		return (pow(this->X, 2) + pow(this->Y, 2) + pow(this->Z, 2));
-//	}
-//
-//	inline void clearVekt()
-//	{
-//		this->X = this->Y = this->Z = 0.0f;
-//	}
-//
-//	inline bool Vector3::operator==(const Vector3& src) const
-//	{
-//		CHECK_VALID(src);
-//		CHECK_VALID(*this);
-//		return (src.X == X) && (src.Y == Y) && (src.Z == Z);
-//	}
-//
-//	inline Vector3 operator+(const Vector3& v) const
-//	{
-//		return Vector3(this->X + v.X, this->Y + v.Y, this->Z + v.Z);
-//	}
-//
-//	inline Vector3 operator-(const Vector3& v) const
-//	{
-//		return Vector3(this->X - v.X, this->Y - v.Y, this->Z - v.Z);
-//	}
-//
-//	inline Vector3 operator*(const Vector3& v) const
-//	{
-//		return Vector3(this->X * v.X, this->Y * v.Y, this->Z * v.Z);
-//	}
-//
-//	inline Vector3 operator*(float f) const
-//	{
-//		return Vector3(this->X * f, this->Y * f, this->Z * f);
-//	}
-//
-//	inline Vector3 operator/(const Vector3& v) const
-//	{
-//		return Vector3(this->X / v.X, this->Y / v.Y, this->Z / v.Z);
-//	}
-//
-//	inline Vector3 operator/(float f) const
-//	{
-//		return Vector3(this->X / f, this->Y / f, this->Z / f);
-//	}
-//
-//	inline Vector3& operator+=(const Vector3& v)
-//	{
-//		this->X += v.X;
-//		this->Y += v.Y;
-//		this->Z += v.Z;
-//
-//		return *this;
-//	}
-//
-//	inline Vector3& operator-=(const Vector3& v)
-//	{
-//		this->X -= v.X;
-//		this->Y -= v.Y;
-//		this->Z -= v.Z;
-//
-//		return *this;
-//	}
-//
-//	inline Vector3& operator*=(const Vector3& v)
-//	{
-//		this->X *= v.X;
-//		this->Y *= v.Y;
-//		this->Z *= v.Z;
-//
-//		return *this;
-//	}
-//
-//	inline Vector3& operator/=(const Vector3& v)
-//	{
-//		this->X /= v.X;
-//		this->Y /= v.Y;
-//		this->Z /= v.Z;
-//
-//		return *this;
-//	}
-//
-//	inline Vector3& operator*=(float f)
-//	{
-//		this->X *= f;
-//		this->Y *= f;
-//		this->Z *= f;
-//
-//		return *this;
-//	}
-//
-//	inline Vector3& operator/=(float f)
-//	{
-//		this->X /= f;
-//		this->Y /= f;
-//		this->Z /= f;
-//
-//		return *this;
-//	}
-//
-//	inline bool operator==(const Vector3& src)
-//	{
-//		return (src.X == X) && (src.Y == Y) && (src.Z == Z);
-//	}
-//
-//	inline bool operator!=(const Vector3& src)
-//	{
-//		return (src.X != X) || (src.Y != Y) || (src.Z != Z);
-//	}
-//
-//	inline bool operator!()
-//	{
-//		return !X && !Y && !Z;
-//	}
-//
-//	inline Vector3& operator=(Vector3&& v)
-//	{
-//		if (this != &v)
-//		{
-//			X = 0;
-//			Y = 0;
-//			Z = 0;
-//
-//			X = v.X;
-//			Y = v.Y;
-//			Z = v.Z;
-//
-//			v.X = 0;
-//			v.Y = 0;
-//			v.Z = 0;
-//		}
-//
-//		return *this;
-//	}
-//
-//	inline Vector3& operator=(const Vector3& v)
-//	{
-//		if (this != &v)
-//		{
-//			X = v.X;
-//			Y = v.Y;
-//			Z = v.Z;
-//		}
-//
-//		return *this;
-//	}
-//};
-//
-//inline Vector3 operator*(float fl, const Vector3& v) { return v * fl; }
-//
-//class __declspec(align(16)) Vector3Aligned : public Vector3
-//{
-//public:
-//
-//	Vector3Aligned() {}
-//	Vector3Aligned(float X, float Y, float Z)
-//	{
-//		this->X = X;
-//		this->Y = Y;
-//		this->Z = Z;
-//	}
-//
-//	explicit Vector3Aligned(const Vector3& v)
-//	{
-//		this->X = v.X;
-//		this->Y = v.Y;
-//		this->Z = v.Z;
-//	}
-//
-//	inline Vector3Aligned& operator=(const Vector3& v)
-//	{
-//		this->X = v.X;
-//		this->Y = v.Y;
-//		this->Z = v.Z;
-//
-//		return *this;
-//	}
-//
-//	inline Vector3Aligned& operator=(const Vector3Aligned& v)
-//	{
-//		_mm_store_ps(this->base(), _mm_load_ps(v.base()));
-//
-//		return *this;
-//	}
-//
-//	float w;
-//};
-//
-//inline void VectorMA(const Vector3& start, float scale, const Vector3& direction, Vector3& dest)
-//{
-//	CHECK_VALID(start);
-//	CHECK_VALID(direction);
-//
-//	dest.X = start.X + scale * direction.X;
-//	dest.Y = start.Y + scale * direction.Y;
-//	dest.Z = start.Z + scale * direction.Z;
-//}
-//
-//typedef unsigned __int32		uint32;
-//
-//inline uint32 const FloatBits(const float& f)
-//{
-//	union Convertor_t
-//	{
-//		float f;
-//		uint32 ul;
-//	}tmp;
-//	tmp.f = f;
-//	return tmp.ul;
-//}
-//
-//inline bool IsFinite(const float& f)
-//{
-//#if _X360
-//	return f == f && fabs(f) <= FLT_//MAX;
-//#else
-//	return ((FloatBits(f) & 0x7F800000) != 0x7F800000);
-//#endif
-//}
-//
-//inline void VectorMultiply(const Vector3& a, float b, Vector3& c)
-//{
-//	CHECK_VALID(a);
-//	Assert(IsFinite(b));
-//	c.X = a.X * b;
-//	c.Y = a.Y * b;
-//	c.Z = a.Z * b;
-//}
-//
-//inline void CrossProduct(const Vector3& a, const Vector3& b, Vector3& result)
-//{
-//	CHECK_VALID(a);
-//	CHECK_VALID(b);
-//	Assert(&a != &result);
-//	Assert(&b != &result);
-//	result.X = a.Y * b.Z - a.Z * b.Y;
-//	result.Y = a.Z * b.X - a.X * b.Z;
-//	result.Z = a.X * b.Y - a.Y * b.X;
-//}
-//
-//inline void VectorAdd(const Vector3& a, const Vector3& b, Vector3& c)
-//{
-//	CHECK_VALID(a);
-//	CHECK_VALID(b);
-//	c.X = a.X + b.X;
-//	c.Y = a.Y + b.Y;
-//	c.Z = a.Z + b.Z;
-//}
-//
-//inline void VectorSubtract(const Vector3& a, const Vector3& b, Vector3& c)
-//{
-//	CHECK_VALID(a);
-//	CHECK_VALID(b);
-//	c.X = a.X - b.X;
-//	c.Y = a.Y - b.Y;
-//	c.Z = a.Z - b.Z;
-//}
-//
-////inline float VectorNormalize(Vector3& v)
-////{
-////	float l = v.length();
-////	if (l != 0.0f)
-////	{
-////		v /= l;
-////	}
-////	else
-////	{
-////		v.X = v.Y = v.Z = 0.0f;
-////	}
-////	return l;
-////}
+struct C2Vector
+{
+	float x;
+	float y;
+};
+
