@@ -1,7 +1,6 @@
 // DllMain.cpp : Defines the exported functions for the DLL application.
 
 #include "DllMain.h"
-
 // Detours imports
 #include "detours.h"
 // DX11 imports
@@ -11,17 +10,19 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "detours.lib")
+
+
 #define SAFE_RELEASE(p)      { if(p) { (p)->Release(); (p)=NULL; } }
 // D3X HOOK DEFINITIONS
-typedef HRESULT(__fastcall *IDXGISwapChainPresent)(IDXGISwapChain *pSwapChain, UINT SyncInterval, UINT Flags);
-typedef void(__stdcall *ID3D11DrawIndexed)(ID3D11DeviceContext* pContext, UINT IndexCount, UINT StartIndexLocation, INT BaseVertexLocation);
+typedef HRESULT(__fastcall* IDXGISwapChainPresent)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
+typedef void(__stdcall* ID3D11DrawIndexed)(ID3D11DeviceContext* pContext, UINT IndexCount, UINT StartIndexLocation, INT BaseVertexLocation);
 // Definition of WndProc Hook. Its here to avoid dragging dependencies on <windows.h> types.
 
 // Main D3D11 Objects
-ID3D11DeviceContext *pContext = NULL;
-ID3D11Device *pDevice = NULL;
-ID3D11RenderTargetView *mainRenderTargetView;
-static IDXGISwapChain*  pSwapChain = NULL;
+ID3D11DeviceContext* pContext = NULL;
+ID3D11Device* pDevice = NULL;
+ID3D11RenderTargetView* mainRenderTargetView;
+static IDXGISwapChain* pSwapChain = NULL;
 static WNDPROC OriginalWndProcHandler = nullptr;
 HWND window = nullptr;
 IDXGISwapChainPresent fnIDXGISwapChainPresent;
@@ -29,16 +30,82 @@ DWORD_PTR* pDeviceContextVTable = NULL;
 ID3D11DrawIndexed fnID3D11DrawIndexed;
 // Boolean
 BOOL g_bInitialised = false;
-bool g_ShowMenu = false;
 bool g_PresentHooked = false;
+bool Settings::UI::Windows::Menu::g_ShowMenu = false;
 //imgui
-ColorVar Settings::UI::accentColor = ImColor(43, 115, 178, 74);  //    |-»
+ColorVar Settings::UI::accentColor = ImColor(43, 115, 178, 74);
 ColorVar Settings::UI::mainColor = ImColor(46, 133, 200, 255);
 ColorVar Settings::UI::bodyColor = ImColor(28, 33, 32, 228);
 ColorVar Settings::UI::fontColor = ImColor(255, 255, 255, 255);
 
-namespace ImGui
-{
+
+
+void pDll::bot() {
+
+	if (Globals::LocalPlayer->IsDead()) {
+		if (Globals::update)
+		GameMethods::RepopMe();
+	}
+
+	if (Globals::LocalPlayer->IsGhost()) {
+		Globals::CorpsePos = *reinterpret_cast<Vector3*>(Offsets::Corpsex);
+
+			bool InRange = Utils::InRangeOf(Globals::LocalPlayer, Globals::CorpsePos, 20);
+			if (InRange) {
+				nav::StartNavigator = false;
+				return;
+			}
+		
+		if (!nav::StartNavigator)
+		{
+			bool FindPath = nav::GetPath(Globals::LocalPlayer); // ez 
+			if (FindPath)
+			{
+				printf("Corpse pos at: X:%fY:%fZ:%f\n", Globals::CorpsePos.x, Globals::CorpsePos.y, Globals::CorpsePos.z);
+				nav::StartNavigator = true;
+			}
+		}
+		return;
+	}
+
+	if (Settings::bot::fishing::Enabled) {
+		WoW::FishBot::Fish();
+		Settings::bot::Grinding::Enabled = false;
+	}
+	if (Settings::bot::Grinding::Enabled) {
+		WoW::GrindBot::Fight();
+		Settings::bot::fishing::Enabled = false;
+	}
+	else {
+		//WoW::GrindBot::TargetList.clear();
+		WoW::GrindBot::mobList.clear();
+	}
+}
+
+
+void pDll::LoopFuncs() {
+
+	if (WoWObjectManager::InGame() || GameMethods::ObjMgrIsValid(1))
+	{
+		WoWObjectManager::LoopObjectManager();
+		WoW::Hacks::GExecute_IGFunctions();
+
+		pDll::bot();
+
+		if (!Globals::Objects.empty()) {
+			Globals::update = false;
+			if ((Globals::timeSinceEpochMillisec() - Globals::last_update) >= Globals::next_update_delta) {
+				Globals::next_update_delta = Globals::timeSinceEpochMillisec() + 1000;
+				Globals::last_update = Globals::timeSinceEpochMillisec();
+				Globals::update = true;
+				Globals::last_update = 0;
+			}
+		}
+	}
+}
+
+
+namespace ImGui {
 
 	static auto vector_getter = [](void* vec, int idx, const char** out_text)
 	{
@@ -64,13 +131,10 @@ namespace ImGui
 	class Tab
 	{
 	private:
-
 		std::vector<std::string> labels;
-
 	public:
 
-		void add(std::string name)
-		{
+		void add(std::string name) {
 			labels.push_back(name);
 		}
 
@@ -114,8 +178,7 @@ namespace ImGui
 }
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-LRESULT CALLBACK hWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
+LRESULT CALLBACK hWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	ImGuiIO& io = ImGui::GetIO();
 	POINT mPos;
 	GetCursorPos(&mPos);
@@ -127,16 +190,16 @@ LRESULT CALLBACK hWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if (wParam == VK_INSERT)
 		{
-			g_ShowMenu = !g_ShowMenu;
+			Settings::UI::Windows::Menu::g_ShowMenu = !Settings::UI::Windows::Menu::g_ShowMenu;
 
-			if (g_ShowMenu)
+			if (Settings::UI::Windows::Menu::g_ShowMenu)
 				io.MouseDrawCursor = true;
 			else
 				io.MouseDrawCursor = false;
 		}
 	}
 
-	if (g_ShowMenu)
+	if (Settings::UI::Windows::Menu::g_ShowMenu)
 	{
 		ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
 
@@ -146,13 +209,11 @@ LRESULT CALLBACK hWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return CallWindowProc(OriginalWndProcHandler, hWnd, uMsg, wParam, lParam);
 }
 
-void __stdcall hookD3D11DrawIndexed(ID3D11DeviceContext* pContext, UINT IndexCount, UINT StartIndexLocation, INT BaseVertexLocation)
-{
+void __stdcall hookD3D11DrawIndexed(ID3D11DeviceContext* pContext, UINT IndexCount, UINT StartIndexLocation, INT BaseVertexLocation) {
 	fnID3D11DrawIndexed(pContext, IndexCount, StartIndexLocation, BaseVertexLocation);
 }
 
-HRESULT GetDeviceAndCtxFromSwapchain(IDXGISwapChain *pSwapChain, ID3D11Device **ppDevice, ID3D11DeviceContext **ppContext)
-{
+HRESULT GetDeviceAndCtxFromSwapchain(IDXGISwapChain* pSwapChain, ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext) {
 	HRESULT ret = pSwapChain->GetDevice(__uuidof(ID3D11Device), (PVOID*)ppDevice);
 
 	if (SUCCEEDED(ret))
@@ -161,7 +222,7 @@ HRESULT GetDeviceAndCtxFromSwapchain(IDXGISwapChain *pSwapChain, ID3D11Device **
 	return ret;
 }
 
-HRESULT __fastcall Present(IDXGISwapChain *pChain, UINT SyncInterval, UINT Flags)
+HRESULT __fastcall Present(IDXGISwapChain* pChain, UINT SyncInterval, UINT Flags)
 {
 	if (!g_bInitialised) {
 		g_PresentHooked = true;
@@ -183,7 +244,7 @@ HRESULT __fastcall Present(IDXGISwapChain *pChain, UINT SyncInterval, UINT Flags
 		ImGui_ImplWin32_Init(window);
 		ImGui_ImplDX11_Init(pDevice, pContext);
 		ImGui::GetIO().ImeWindowHandle = window;
-		
+
 		ID3D11Texture2D* pBackBuffer;
 
 		pChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
@@ -276,23 +337,24 @@ HRESULT __fastcall Present(IDXGISwapChain *pChain, UINT SyncInterval, UINT Flags
 		style.Colors[ImGuiCol_PlotHistogramHovered] = mainColorHovered;
 		style.Colors[ImGuiCol_TextSelectedBg] = mainColorHovered;
 		style.Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(0.0f, 0.0f, 0.0f, 0.75f);
-	//	Executeonce = true; // If you want static colors 
+		//	Executeonce = true; // If you want static colors 
 	}
 
-	Radar::RenderWindow();
-	ShowEntityList::RenderWindow();
+	Draw::Radar().RenderWindow();
+	Draw::EntityList().RenderWindow();
 
-	if (g_ShowMenu) {
+	if (Settings::UI::Windows::Menu::g_ShowMenu) {
 		ImGui::GetIO().MouseDrawCursor = 1;
 		Configs::RenderWindow();
-		GMenu::Menu(g_ShowMenu);
+		GMenu::Menu(Settings::UI::Windows::Menu::g_ShowMenu);
 	}
 
 	else { ImGui::GetIO().MouseDrawCursor = 0; }
 
-	Draw::Renderer::Pointer()->BeginScene(); 
+	Draw::Renderer::Pointer()->BeginScene();
 	////Draw in EndScene.
-	Draw::Renderer::Pointer()->EndScene(); 
+
+	Draw::Renderer::Pointer()->EndScene();
 
 	ImGui::Render();
 
@@ -302,8 +364,7 @@ HRESULT __fastcall Present(IDXGISwapChain *pChain, UINT SyncInterval, UINT Flags
 	return fnIDXGISwapChainPresent(pChain, SyncInterval, Flags);
 }
 
-void detourDirectXPresent()
-{
+void detourDirectXPresent() {
 	std::cout << "[+] Calling fnIDXGISwapChainPresent Detour" << std::endl;
 	DetourTransactionBegin();
 	std::cout << "Poszlo detour transaction\n";
@@ -315,8 +376,7 @@ void detourDirectXPresent()
 	DetourTransactionCommit();
 }
 
-void detourDirectXDrawIndexed()
-{
+void detourDirectXDrawIndexed() {
 	std::cout << "[+] Calling fnID3D11DrawIndexed Detour" << std::endl;
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
@@ -325,23 +385,22 @@ void detourDirectXDrawIndexed()
 	DetourTransactionCommit();
 }
 
-void retrieveValues()
-{
+void retrieveValues() {
 	DWORD_PTR hDxgi = (DWORD_PTR)GetModuleHandle("dxgi.dll");
-	#if defined(ENV64BIT)
-		fnIDXGISwapChainPresent = (IDXGISwapChainPresent)((DWORD_PTR)hDxgi + 0x5070);
-	#elif defined (ENV32BIT)
-		fnIDXGISwapChainPresent = (IDXGISwapChainPresent)((DWORD_PTR)hDxgi + 0x10230);
-	#endif
+#if defined(ENV64BIT)
+	fnIDXGISwapChainPresent = (IDXGISwapChainPresent)((DWORD_PTR)hDxgi + 0x5070);
+#elif defined (ENV32BIT)
+	fnIDXGISwapChainPresent = (IDXGISwapChainPresent)((DWORD_PTR)hDxgi + 0x10230);
+#endif
 	std::cout << "[+] Present Addr: " << std::hex << fnIDXGISwapChainPresent << " test test test" << std::endl;
 }
 
-void printValues()
-{
+
+void printValues() {
 	std::cout << "[+] ID3D11DeviceContext Addr: " << std::hex << pContext << std::endl;
 	std::cout << "[+] ID3D11Device Addr: " << std::hex << pDevice << std::endl;
 	std::cout << "[+] ID3D11RenderTargetView Addr: " << std::hex << mainRenderTargetView << std::endl;
-	std::cout << "[+] IDXGISwapChain Addr: " << std::hex << pSwapChain << std::endl;		
+	std::cout << "[+] IDXGISwapChain Addr: " << std::hex << pSwapChain << std::endl;
 }
 
 LRESULT CALLBACK DXGIMsgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { return DefWindowProc(hwnd, uMsg, wParam, lParam); }
@@ -370,9 +429,9 @@ void GetPresent()
 	UINT numFeatureLevelsRequested = 1;
 	D3D_FEATURE_LEVEL FeatureLevelsSupported;
 	HRESULT hr;
-	IDXGISwapChain *swapchain = 0;
-	ID3D11Device *dev = 0;
-	ID3D11DeviceContext *devcon = 0;
+	IDXGISwapChain* swapchain = 0;
+	ID3D11Device* dev = 0;
+	ID3D11DeviceContext* devcon = 0;
 	if (FAILED(hr = D3D11CreateDeviceAndSwapChain(NULL,
 		D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
@@ -398,34 +457,16 @@ void GetPresent()
 	Sleep(2000);
 }
 
-void * SwapChain[18];
-void * Device[40];
-void * Context[108];
+void* SwapChain[18];
+void* Device[40];
+void* Context[108];
 
 
-void ConsoleSetup()
+
+HMODULE ModuleInUse;
+DWORD WINAPI MainThread(LPVOID lpReserved)
 {
-	// With this trick we'll be able to print content to the console, and if we have luck we could get information printed by the game.
-	AllocConsole();
-	SetConsoleTitle("[+] XHOOK");
-	freopen("CONOUT$", "w", stdout);
-	freopen("CONOUT$", "w", stderr);
-	freopen("CONIN$", "r", stdin);
-}
-
-
-void LoopFuncs()
-{
-	while (true)
-	{
-		WoW::Hacks::GExecute_IGFunctions();		
-	}
-}
-
-
-int WINAPI main()
-{
-	ConsoleSetup();
+	GInterface::Init(ModuleInUse);
 	GetPresent();
 
 	// If GetPresent failed we have this backup method to get Present Address
@@ -439,7 +480,7 @@ int WINAPI main()
 	while (!g_bInitialised) {
 		Sleep(1000);
 	}
-
+	
 	printValues();
 
 	std::cout << "[+] pDeviceContextVTable0 Addr: " << std::hex << pContext << std::endl;
@@ -454,11 +495,9 @@ int WINAPI main()
 	std::cout << "[+] fnID3D11DrawIndexed Addr: " << std::hex << fnID3D11DrawIndexed << std::endl;
 	//detourDirectXDrawIndexed();
 
-	//Execute our WoW Funcs
-	LoopFuncs();
-
-	Sleep(4000);
+	return TRUE;
 }
+
 
 BOOL APIENTRY DllMain(HMODULE hModule,
 	DWORD  ul_reason_for_call,
@@ -469,8 +508,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	{
 	case DLL_PROCESS_ATTACH:
 	{
+		ModuleInUse = hModule;
 		DisableThreadLibraryCalls(hModule);
-		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)main, NULL, NULL, NULL);
+		CreateThread(nullptr, 0, MainThread, hModule, 0, nullptr);
 	}
 	case DLL_THREAD_ATTACH:
 	case DLL_THREAD_DETACH:

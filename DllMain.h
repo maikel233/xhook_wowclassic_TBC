@@ -11,13 +11,23 @@
 #include <unordered_set>
 #include <mutex>
 
-#include "detours.h"
-
 #include <iostream>
 #include <fstream>
+#include <stdio.h>
+#include <vector>
+#include <iostream>
+#include <vector>
+#include <TlHelp32.h>
+#include <tchar.h>
+#include <map>
+
 #include "detours.h"
 
-#include "IncludeHeaders.h"
+
+#include "Settings/Settings.h"
+#include "Settings/Color.h"
+
+#include "Configs.h"
 
 //ImGUI imports
 #include "imgui/imgui.h"
@@ -27,16 +37,6 @@
 
 #include "Menu.h"
 
-#include <stdio.h>
-#include <vector>
-
-#include <iostream>
-#include <vector>
-#include <TlHelp32.h>
-#include <tchar.h>
-
-#include "Lua/LuaBase.h"
-#include "Lua/LuaScript.h"
 #include "Renderer.h"
 #include "Singleton.h"
 #include "Offsets.h"
@@ -47,5 +47,13 @@
 #include "bot/FishingBot.h"
 #include "bot/GrindBot.h"
 #include "WoWTypes.h"
-#include "Location.hpp"
 #include "Globals.h"
+#include "GInterface.h"
+#include "Utils.h"
+
+
+class pDll {
+public:
+	static void bot();
+	static void LoopFuncs();
+};
