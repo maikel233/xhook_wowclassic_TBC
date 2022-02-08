@@ -1,14 +1,11 @@
 ﻿#include "Menu.h"
-#include "Radar.h"
-#include "Camera.h"
-#include "Hacks.h"
-#include <inttypes.h>
 
 #define IM_ARRAYSIZE(_ARR)      ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
 char ConfigNames[128] = "";
 bool ColorPicker(float* col, bool alphabar)
 {
+
     const int EDGE_SIZE = 200;
     const ImVec2 SV_PICKER_SIZE = ImVec2(EDGE_SIZE, EDGE_SIZE);
     const float SPACING = ImGui::GetStyle().ItemInnerSpacing.x;
@@ -230,7 +227,6 @@ struct ColorListVar
     }
 };
 
-
 ColorListVar colors[] = {
     { "UI Main", &Settings::UI::mainColor },
     { "UI Body", &Settings::UI::bodyColor },
@@ -247,51 +243,80 @@ ColorListVar colors[] = {
     { "Alliance", &Settings::Drawing::AllianceColor},
 };
 const char* colorNames[IM_ARRAYSIZE(colors)];
-static auto runOnce = true;
-void GMenu::InitObjmgr()
-{
 
-    //if (runOnce)
-    //{
-    //    runOnce = false;
-    //    Settings::Objectmanager::ObjMgrisdone = true;
-    //    srand(time(0));
-    //    //This is broken atm... Feel free to find a workaround...
-    //    //LuaScript::RegisterHandler("iterObjects", LuaScript::IterateObjects);
-    //    //LuaScript::RegisterHandler("fish", LuaScript::Fish);
-    //    //LuaScript::RegisterHandler("after", LuaScript::ExecuteAfterMS);
-    //    //LuaScript::RegisterHandler("every", LuaScript::ExecuteEveryMS);
-    //    //LuaScript::RegisterHandler("ctm", LuaScript::ClickToMove);
-    //    //LuaScript::RegisterHandler("getPosition", LuaScript::GetPlayerPosition);
-    //    ////// For later
-    //    //LuaScript::RegisterHandler("fakeTeleport", LuaScript::fakeTeleport);
-    //    //LuaScript::RegisterHandler("goToCorpse", LuaScript::GoToCorpse);
-    //    //LuaBase::PushLua();
-    //}
- //  LuaBase::Execute();
-
-}
-
-const char* GMenu::MenuTabs[] = {
-    "Misc",
-    "Config"
-};
-
+const char* NavPathType[] = { "Straight", "Random" };
+const char* NavPathFlag[] = { "None", "PathCatmullRom", "ChaikinCurve" };
+const char* GMenu::MenuTabs[] = { "Misc", "Config" };
 const char* PlayerState[] = { "Ground", "Swimming", "UnderWaterWalking", "WaterWalking", "NoFallDmg", "CanFly", "DisableCollision", "Rooted", "Loggedoff", "DisableGravity" };
 
-void Render()
-{
+bool is_selected = false;
+bool isItemselected = false;
+bool GetList = false;
+static WObject* selected = 0;
+static WObject* selectedItem = 0;
+static CGGuid* selected_index;
+
+
+bool IsSelectingFood = false;
+bool IsSelectingDrink = false;
+
+bool Settings::UI::Windows::Menu::GetInvItems = false;
+
+void GMenu::GetInventoryItem() {
+
+    if (!Settings::UI::Windows::Menu::GetInvItems || Globals::Objects.empty())
+        return;
+
+
+    ImGui::Begin("Select Inventory item", &Settings::UI::Windows::Menu::GetInvItems);
+    if (ImGui::BeginPopupContextItem()) // <-- This is using IsItemHovered()
+    {
+        if (ImGui::MenuItem("Close")) { Settings::UI::Windows::Menu::GetInvItems = false; }
+        ImGui::EndPopup();
+    }
+    ImGui::PushItemWidth(-1);
+    if (ImGui::ListBoxHeader("##ItemList", Globals::Objects.size())) {
+        for (auto& [guid, Item] : Globals::Objects)
+        {
+            if (!Item->isValid())
+                continue;
+            if (!Item->IsItem())
+                continue;
+
+            isItemselected = (selectedItem == Item);
+
+            if (ImGui::Selectable(Item->GetObjectName(), isItemselected)) {
+                selectedItem = Item;
+            }
+        }
+        ImGui::ListBoxFooter();
+    }
+    ImGui::PopItemWidth();
+
+    ImGui::Separator();
+
+    ImGui::NewLine();
+
+    if (ImGui::Button("Add food", ImVec2(200, 0))) {
+        Settings::UI::Windows::Menu::GetInvItems = false;
+        Settings::bot::Grinding::FoodName = selectedItem->GetObjectName();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Add Drink", ImVec2(200, 0))) {
+        Settings::bot::Grinding::DrinkName = selectedItem->GetObjectName();
+        Settings::UI::Windows::Menu::GetInvItems = false;
+    }
+
+
+    ImGui::End();
 
 }
 
-bool tempbool = false;
+        
+
+
 void GMenu::Menu(bool p_open)
 {
-    /*if (!Settings::HWID::LoggedIn)
-    {
-        Auth::Authentication();
-        return;
-    }*/
 
     static int page = 0;
 
@@ -299,12 +324,12 @@ void GMenu::Menu(bool p_open)
     ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
 
-    if (!ImGui::Begin("XHOOK for World of Warcraft 2.5.2.41446", &p_open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))
-    {
+    if (!ImGui::Begin("XHOOK for World of Warcraft 2.5.2.41510", &p_open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))  {
         // Early out if the window is collapsed, as an optimization.
         ImGui::End();
         return;
     }
+
     for (int i = 0; i < IM_ARRAYSIZE(GMenu::MenuTabs); i++)
     {
         int distance = i == page ? 0 : i > page ? i - page : page - i;
@@ -316,27 +341,27 @@ void GMenu::Menu(bool p_open)
             ImGui::SameLine();
     }
 
+    GetInventoryItem();
+
     switch (page)
     {
     case 0:
         ImGui::BeginChild("COL1", ImVec2(0, 0), true);
         {
+
             ImGui::Text("Misc");
             ImGui::BeginChild("MISC", ImVec2(0, 0), true);
             ImGui::Separator();
-            
+
             ImGui::Columns(2, NULL, true);
             {
                 ImGui::PushItemWidth(100);
-                if (LuaScript::ActivePlayer)
+                if (Globals::LocalPlayer)
                 {
-                    ImGui::Text("Hello Maikel233, LocalPlayer is located at: %p\n", LuaScript::ActivePlayer->Ptr());
-                  //  ImGui::Text("Casting %i and %i", LuaScript::ActivePlayer->sUnitField->SpellID, LuaScript::ActivePlayer->GetSpellCastID());
-                    ImGui::Text("Coordinates: X:%f Y:%f Z:%f R:%f MapID:%i", LuaScript::ActivePlayer->GetUnitPosition().x, LuaScript::ActivePlayer->GetUnitPosition().y, LuaScript::ActivePlayer->GetUnitPosition().z, LuaScript::ActivePlayer->GetFacing(), GameMethods::ClntObjMgr__GetMapId());    
-                 //   ImGui::Text("Radar Dir: X:%f Y:%f Z:%f", LuaScript::ActivePlayer->direction.x, LuaScript::ActivePlayer->direction.y, LuaScript::ActivePlayer->direction.z);
-                 //   ImGui::Text("Radar_2D Dir: X:%f Y:%f", LuaScript::ActivePlayer->direction_2d.x, LuaScript::ActivePlayer->direction_2d.y);              
-                 //   ImGui::Text("AncorPos Dir: X:%f Y:%f Z:%f", LuaScript::ActivePlayer->anchor_position.x, LuaScript::ActivePlayer->anchor_position.y, LuaScript::ActivePlayer->anchor_position.z);
-                  //  ImGui::Text("Current speed: %f", LuaScript::ActivePlayer->CurrentSpeed);
+                    ImGui::Text("Hello Maikel233, LocalPlayer is located at: %p\n", Globals::LocalPlayer->Ptr());
+                    //  ImGui::Text("Casting %i and %i", Globals::LocalPlayer->sUnitField->SpellID, Globals::LocalPlayer->GetSpellCastID());
+                    ImGui::Text("Coordinates: X:%f Y:%f Z:%f R:%f MapID:%i", Globals::LocalPlayer->GetUnitPosition().x, Globals::LocalPlayer->GetUnitPosition().y, Globals::LocalPlayer->GetUnitPosition().z, Globals::LocalPlayer->GetFacing(), GameMethods::ClntObjMgr__GetMapId());
+                    //   ImGui::Text("Current speed: %f", Globals::LocalPlayer->CurrentSpeed);
                     ImGui::Text("X:");
                     ImGui::SameLine();
                     ImGui::InputFloat(XorStr("##X"), &Settings::Hacks::Movement::NextPos.x, 10.01f, 0.0f, 2.0f);
@@ -365,70 +390,130 @@ void GMenu::Menu(bool p_open)
                         WoW::Hacks::fakeTeleport(1);
                     }
 
-                    if (ImGui::Button("Reload objmgr"))
-                    {                   
-                        LuaScript::ReInitObjMgr();        
+                    ImGui::PushItemWidth(478);
+
+                    ImGui::Checkbox("NoFall & MultiJump", &Settings::Hacks::Movement::JumpState);
+                    SetTooltip("Jump to a height altitude and use superslowfall to maintain altitude.\n Dont use this above water! Instant dc");
+                    if (Settings::Hacks::Movement::JumpState) {
+                        ImGui::Checkbox("Superslowfall", &Settings::Hacks::Movement::SuperSlowFall);
+                        SetTooltip("Dont use this on ground level or above the water!");
+                        ImGui::SliderInt("SlowFallValue", &Settings::Hacks::Movement::SuperSlowSleepTime, 0, 100, "SlowFall SleepTime %i");
+                    }
+                    else {
+                        Settings::Hacks::Movement::SuperSlowFall = false;
+                    }
+                    ImGui::Combo("##PLAYERSTATETYPE", (int*)&Settings::Hacks::Movement::CurrentPlayerState, PlayerState, IM_ARRAYSIZE(PlayerState));
+                    ImGui::SameLine();
+                    ImGui::Checkbox("Playerstate", &Settings::Hacks::Movement::TogglePlayerState);
+                    SetTooltip("This option freezes your current playerstate.\n Enable the option go in the water set playerstate to swimming. and now you're flying in air.\n");
+                    //ImGui::NewLine();
+                    //ImGui::SliderFloat("##WALKSPEED", &Settings::Hacks::Movement::max_walkspeed, 0, 9999, "Walk speed %0.3f");
+                    //ImGui::SameLine();
+                    //if (ImGui::Button("set##1")) {
+                    //    Globals::LocalPlayer->WalkSpeed = Settings::Hacks::Movement::max_walkspeed;
+                    //}
+                    //SetTooltip("Warning!\nThis option will dc you if you go faster than normal!");
+                    //ImGui::SliderFloat("##RUNSPEED", &Settings::Hacks::Movement::max_runspeed, -10, 10, "Run speed %0.3f");
+                    //ImGui::SameLine();
+                    //if (ImGui::Button("set##2")) {
+                    //    Globals::LocalPlayer->RunForwardSpeed = Settings::Hacks::Movement::max_runspeed;
+                    //};
+                    //SetTooltip("Warning!\nThis option will dc you if you go faster than normal!\n Try increasing in small steps and test it out.");
+                    ImGui::SliderFloat("##ROTATIONSPEED", &Settings::Hacks::Movement::player_rotationspeed, 0, 10, "Rotation speed %0.3f");
+                    ImGui::SameLine();
+                    if (ImGui::Button("set##3")) {
+                        Globals::LocalPlayer->Player_rotationspeed = Settings::Hacks::Movement::player_rotationspeed;
                     }
 
-                    ImGui::Checkbox("FishBot", &Settings::bot::fishing::Enabled);
-                    //ImGui::Checkbox("Pool detection", &PoolDetection);
-                    //SetTooltip("NavMesh is currently disabled.");
-                    ImGui::Checkbox("GrindBot", &Settings::bot::Grinding::Enabled);
-                    SetTooltip("Still a work in progress. Dont use!");
+                    ImGui::PopItemWidth();
+
+
                     ImGui::NextColumn();
                     {
-                        ImGui::PushItemWidth(478);
 
-                        ImGui::InputFloat(XorStr("##ms11"), &Settings::Hacks::Movement::jumpHeight, 3.01f, 1.0f, 2.0f);
+                        ImGui::Checkbox("FishBot", &Settings::bot::fishing::Enabled);
+                        ImGui::Checkbox("GrindBot", &Settings::bot::Grinding::Enabled);
+                        SetTooltip("A simple grindbot\nSupported classes: Druid lvl 1-10!\nRequires mmaps and tiles else it the bot wont work!\n");
                         ImGui::SameLine();
-                        ImGui::Checkbox("JumpHeight", &Settings::Hacks::Movement::JumpStatev2);
-                        ImGui::SameLine();
-                        ImGui::Checkbox("CTM", &Settings::Hacks::Movement::CTM);       
-                        SetTooltip("When you're dead this will auto ress/release you and walks back to the corpse position.\nBefore you use this enable click to move. Escape->Interface options->Mouse->Click-To-Move,\n");
-                        ImGui::Checkbox("NoFall & MultiJump", &Settings::Hacks::Movement::JumpState);  
-                        SetTooltip("Use spacebar to use this option!\n Warning dont use this above water!");
-                        if (Settings::Hacks::Movement::JumpState)
-                        {
-                            ImGui::Checkbox("Superslowfall", &Settings::Hacks::Movement::SuperSlowFall);
-                            SetTooltip("This option allows you to maintain High altitude.\nDont use this on the ground or above the water!");
-                            ImGui::SliderInt("SlowFallValue", &Settings::Hacks::Movement::SuperSlowSleepTime, 0, 100, "SlowFall SleepTime %i");                         
-                        }
-                        else
-                        {
-                            Settings::Hacks::Movement::SuperSlowFall = false;
-                        }
-                        ImGui::Combo("##PLAYERSTATETYPE", (int*)&Settings::Hacks::Movement::CurrentPlayerState, PlayerState, IM_ARRAYSIZE(PlayerState));
-                        ImGui::SameLine();
-                        ImGui::Checkbox("Playerstate", &Settings::Hacks::Movement::TogglePlayerState);
-                        SetTooltip("This option freezes your current playerstate.\n Enable the option go in the water set playerstate to swimming. and now you're flying in air.\n");
-                        ImGui::NewLine();                     
-                        ImGui::SliderFloat("##WALKSPEED", &Settings::Hacks::Movement::max_walkspeed, 0, 9999, "Walk speed %0.3f");
-                        ImGui::SameLine();
-                        if (ImGui::Button("set##1"))
-                        {
-                               LuaScript::ActivePlayer->WalkSpeed = Settings::Hacks::Movement::max_walkspeed;
-                        }
-                        SetTooltip("Warning!\nThis option will dc you if you go faster than normal!");
-                        ImGui::SliderFloat("##RUNSPEED", &Settings::Hacks::Movement::max_runspeed, -10, 10, "Run speed %0.3f");
-                        ImGui::SameLine();
-                        if (ImGui::Button("set##2"))
-                        {
-                            LuaScript::ActivePlayer->RunForwardSpeed = Settings::Hacks::Movement::max_runspeed;
-                        };           
-                        SetTooltip("Warning!\nThis option will dc you if you go faster than normal!\n Try increasing in small steps and test it out.");
-                        ImGui::SliderFloat("##ROTATIONSPEED", &Settings::Hacks::Movement::player_rotationspeed, 0, 10, "Rotation speed %0.3f");
-                        ImGui::SameLine();
-                        if (ImGui::Button("set##3"))
-                        {
-                            LuaScript::ActivePlayer->Player_rotationspeed = Settings::Hacks::Movement::player_rotationspeed;
-                        }
-                        ImGui::SliderFloat("##PLAYERSCALE", &Settings::Hacks::Misc::ScaleHeight, -1000, 1000, "Player scale %0.3f");
-                        ImGui::SameLine();                                  
-                        if (ImGui::Button("set##4"))
-                        {
-                            LuaScript::ActivePlayer->Player_scale = Settings::Hacks::Misc::ScaleHeight;
-                        }
-                        ImGui::PopItemWidth();
+
+                        ImGui::PushItemWidth(-1.0f);
+                        if (Settings::bot::Grinding::Enabled) {
+                            ImGui::NewLine();
+
+                           // ImGui::InputText(XorStr("##FOOD"), Settings::bot::Grinding::FoodName, 30);
+                            ImGui::Text("FoodName: %s", Settings::bot::Grinding::FoodName);
+                            ImGui::SameLine();
+                            if (ImGui::Button("Find##0")) {
+                                Settings::UI::Windows::Menu::GetInvItems = true;
+                            }
+                            ImGui::Text("ManaName: %s", Settings::bot::Grinding::DrinkName);
+                   
+
+                            ImGui::SliderFloat("##RestHealthPercent", &Settings::bot::Grinding::mRestHealthPercent, 10, 100);
+                            ImGui::SliderFloat("##RestManaPercent", &Settings::bot::Grinding::mRestManaPercent, 10, 100);
+
+                            ImGui::Checkbox("SkinMobs", &Settings::bot::Grinding::SkinMobs);
+
+                            if (!WoW::GrindBot::mobList.empty())
+                            {
+                                if (ImGui::ListBoxHeader("##TargettingList", WoW::GrindBot::mobList.size())) {
+                                    ImGui::TextColored(ImColor(1.00f, 0.0f, 0.0f, 1.0f), "TargetList:");
+                                    for (auto& npc : WoW::GrindBot::mobList) {
+                                        ImGui::Text("%s", npc.c_str());
+                                    }
+                                    ImGui::ListBoxFooter();
+                                }
+                            }
+              
+                            if (!Globals::Objects.empty())
+                            {
+                                if (ImGui::ListBoxHeader("##MobList", Globals::Objects.size())) {
+                                    for (auto& [guid, npc] : Globals::Objects)
+                                    {
+                                        if (!npc->isValid())
+                                            continue;
+                                        if (!npc->IsUnit())
+                                            continue;                  
+                                        if (npc->IsDead())
+                                            continue;
+                                        if (!Utils::ValidCoord(npc))
+                                            continue;
+                                        if (Utils::IsUnitEnemy(npc))
+                                            continue;
+
+                                        is_selected = (selected == npc);
+
+                                        //TODO: 
+                                        //Add color to the strings if they exist in moblist vector?
+                                        if (ImGui::Selectable(npc->GetObjectName(), is_selected)) {
+                                            selected = npc;
+                                            selected_index = npc->GetGuid();
+                                        }
+
+                                        if (is_selected) {
+                                            ImGui::SetItemDefaultFocus();
+                                        }
+                                    }
+                                    ImGui::ListBoxFooter();
+                                }
+                            }
+                                
+                            ImGui::PopItemWidth();
+                            ImGui::PushItemWidth(-1);
+                            if (selected && !selected_index->isEmpty()) { /*Settings for each target->Name */
+                                if (std::find(WoW::GrindBot::mobList.begin(), WoW::GrindBot::mobList.end(), selected->GetObjectName()) != WoW::GrindBot::mobList.end()) {
+                                    if (ImGui::Button("Remove")) {
+                                        WoW::GrindBot::mobList.erase(find(WoW::GrindBot::mobList.begin(), WoW::GrindBot::mobList.end(), selected->GetObjectName()));
+                                    }
+                                }
+                                else {
+                                    if (ImGui::Button("Add")) {
+                                        WoW::GrindBot::mobList.push_back(selected->GetObjectName());
+                                    }
+                                }
+                            }
+                        }              
+                            ImGui::PopItemWidth();
                     }
 
                     ImGui::Columns(1);
@@ -444,29 +529,29 @@ void GMenu::Menu(bool p_open)
                         {
                             if (WoW::camera::GCamera == nullptr) WoW::camera::Init();
                             else
-                            WoW::camera::GCamera->cameraptr->FOV = Settings::Hacks::Camera::Camera_fov;
+                                WoW::camera::GCamera->cameraptr->FOV = Settings::Hacks::Camera::Camera_fov;
                         }
                         ImGui::NewLine();
-                        ImGui::SliderFloat("##ZOOMOUT", &Settings::Hacks::Camera::Camera_zoomout, 0, 100000, "Zoomout: %0.3f");                   
+                        ImGui::SliderFloat("##ZOOMOUT", &Settings::Hacks::Camera::Camera_zoomout, 0, 100000, "Zoomout: %0.3f");
                         ImGui::SameLine();
                         if (ImGui::Button("set##101"))
                         {
                             if (WoW::camera::GCamera == nullptr) WoW::camera::Init();
                             else
-                            WoW::camera::GCamera->cameraptr->Camera_zoomin = Settings::Hacks::Camera::Camera_zoomin;
-                        }                
+                                WoW::camera::GCamera->cameraptr->Camera_zoomin = Settings::Hacks::Camera::Camera_zoomin;
+                        }
                         ImGui::SliderFloat("##ZOOMIN", &Settings::Hacks::Camera::Camera_zoomin, 0, 100000, "Zoomin: %0.3f");
                         ImGui::SameLine();
                         if (ImGui::Button("set##103"))
                         {
                             if (WoW::camera::GCamera == nullptr) WoW::camera::Init();
                             else
-                            WoW::camera::GCamera->cameraptr->Camera_zoomout = Settings::Hacks::Camera::Camera_zoomout;
+                                WoW::camera::GCamera->cameraptr->Camera_zoomout = Settings::Hacks::Camera::Camera_zoomout;
                         }
-                        ImGui::Checkbox("EntityViewer", &Settings::EntityViewer::Enabled);
-                        ImGui::PopItemWidth();                   
+                        ImGui::Checkbox("EntityViewer", &Settings::Drawing::EntityViewer::Enabled);
+                        ImGui::PopItemWidth();
                     }
-                 
+
                     ImGui::NextColumn();
                     {
                         ImGui::Checkbox("Toggle ESP", &Settings::Drawing::Enabled);
@@ -476,13 +561,15 @@ void GMenu::Menu(bool p_open)
                         ImGui::SameLine();
                         ImGui::Checkbox("Lvl", &Settings::Drawing::Lvl);
                         ImGui::SameLine();
-                        ImGui::Checkbox("Health", &Settings::Drawing::Health);           
+                        ImGui::Checkbox("Health", &Settings::Drawing::Health);
                         ImGui::SameLine();
                         ImGui::Checkbox("Energy & Mana", &Settings::Drawing::EnergyAndMana);
                         ImGui::SameLine();
                         ImGui::Checkbox("Race", &Settings::Drawing::Race);
                         ImGui::SameLine();
                         ImGui::Checkbox("Distance", &Settings::Drawing::Distance);
+                        ImGui::SameLine();
+                        ImGui::Checkbox("Waypoints", &Settings::Drawing::WayPoints);
                         ImGui::Text("Filter");
                         ImGui::Checkbox("LocalPlayer##1", &Settings::Drawing::LocalPlayer);
                         ImGui::SameLine();
@@ -494,20 +581,45 @@ void GMenu::Menu(bool p_open)
                         ImGui::SameLine();
                         ImGui::Checkbox("GObjects", &Settings::Drawing::GameObject);
                         ImGui::SameLine();
-                        ImGui::Checkbox("DeadEntitys", &Settings::Drawing::DrawDeadEntity);                   
-                      /*ImGui::Checkbox("Objects", &Settings::Drawing::Object);     
+                        ImGui::Checkbox("DeadEntitys", &Settings::Drawing::DrawDeadEntity);
                         ImGui::SameLine();
-                        ImGui::Checkbox("DObjects", &Settings::Drawing::DynamicObject);*/
-                        ImGui::Text("Player faction filter:");
-                        ImGui::Checkbox("Enemy", &Settings::Drawing::Enemy);
+                        ImGui::Checkbox("Objects", &Settings::Drawing::Object);
                         ImGui::SameLine();
-                        ImGui::Checkbox("Friendly", &Settings::Drawing::Ally);
+                        ImGui::Checkbox("DObjects", &Settings::Drawing::DynamicObject);
+                        ImGui::Checkbox("TraceLine", &Settings::Drawing::TraceLine);
+                        ImGui::Checkbox("GuidString", &Settings::Drawing::GuidStr);
+
+                        ImGui::Text("Hostile filter");
+                        SetTooltip("Hostile filter\nThis will only render attackable Units/Players");
+                        ImGui::Checkbox("Units#2", &Settings::Drawing::HostileUnits);
+                        ImGui::SameLine();
+                        ImGui::Checkbox("Players#2", &Settings::Drawing::HostilePlayers);
+                        //ImGui::Text("Player faction filter:");
+                        //SetTooltip("Player faction filter\n Will only draw Ally or Horde obj.");
+                        //ImGui::Checkbox("Enemy", &Settings::Drawing::Enemy);
+                        //ImGui::SameLine();
+                        //ImGui::Checkbox("Friendly", &Settings::Drawing::Ally);
+
+
                         ImGui::Text("Radar:");
                         ImGui::PushItemWidth(-1);
                         ImGui::Checkbox("Enable", &Settings::Drawing::Radar::Enabled);
+                        ImGui::NewLine();
+                        ImGui::Text("Draws only Attackable units");
+                        ImGui::Checkbox("Units#3", &Settings::Drawing::Radar::HostileUnits);
                         ImGui::SameLine();
-                        ImGui::Checkbox("Name", &Settings::Drawing::Radar::name);  
+                        ImGui::Checkbox("Players#3", &Settings::Drawing::Radar::HostilePlayers);
+
+                        //Remove 2 of the 4???
+                        //ImGui::Text("Player faction filter:");
+                        //SetTooltip("Player faction filter\n Will only draw Ally or Horde obj.");
+                        //ImGui::Checkbox("Enemy#1", &Settings::Drawing::Radar::Enemy);
+                        //ImGui::SameLine();
+                        //ImGui::Checkbox("Friendly#1", &Settings::Drawing::Radar::Ally);
+
                         ImGui::Text("Filter");
+                        ImGui::Checkbox("Name", &Settings::Drawing::Radar::name);
+                        ImGui::SameLine();
                         ImGui::Checkbox("Players##1", &Settings::Drawing::Radar::Player);
                         ImGui::SameLine();
                         ImGui::Checkbox("Npc##1", &Settings::Drawing::Radar::Unit);
@@ -520,24 +632,21 @@ void GMenu::Menu(bool p_open)
                         ImGui::SliderFloat("##RADARZOOM", &Settings::Drawing::Radar::zoom, 0.f, 100.f, "Zoom: %0.f");
                         ImGui::SliderFloat("##RADARICONSSCALE", &Settings::Drawing::Radar::iconsScale, 2, 16, "Icons Scale: %0.1f");
                         ImGui::PopItemWidth();
+
                     }
                 }
                 else
                 {
                     ImGui::Text("Log into your character.");
-
-                    if (ImGui::Button("Go!"))
-                    {            
-                        runOnce = true;
-                        InitObjmgr();
-                        LuaScript::ReInitObjMgr();
-                       
+                    if (WoWObjectManager::InGame() || GameMethods::ObjMgrIsValid(1))
+                    {
+                            WoWObjectManager::CycleObjects(true);                    
                     }
                 }
                 ImGui::EndChild();
                 ImGui::EndChild();
             }
-            break;      
+            break;
     case 1:
         // for this
        // ImGui::Text("Config tab");
@@ -551,7 +660,7 @@ void GMenu::Menu(bool p_open)
             ImGui::PushItemWidth(-1);
             ImGui::ListBox("##COLORSELECTION", &colorSelected, colorNames, IM_ARRAYSIZE(colorNames), 12);
             ImGui::PopItemWidth();
-      
+
             ImGui::Checkbox("Config window", &Configs::showWindow);
         }
         ImGui::NextColumn();
@@ -575,7 +684,6 @@ void GMenu::Menu(bool p_open)
                 SetTooltip("Makes the color an animated rainbow.");
                 ImGui::PushItemWidth(-1);
                 ImGui::SliderFloat("##RAINBOWSPEED", &colors[colorSelected].colorVarPtr->rainbowSpeed, 0.f, 1.f, "Rainbow Speed: %0.3f");
-                ImGui::Checkbox("ClassColors", &Settings::Drawing::ClassColor);
             }
         }
         break;
