@@ -188,33 +188,6 @@ public:
 
 	virtual ~WObject() {}
 
-
-	Vector3 GetObjectNamePosition()
-	{
-		typedef int64_t(__fastcall* GetPosition)(int64_t, int64_t);
-
-		uintptr_t* vTable = *(uintptr_t**)this;
-		auto getPosPtr = (uintptr_t)vTable[0x36];
-		auto getPos = (GetPosition)getPosPtr;
-
-		Vector3 v = Vector3(0, 0, 0);
-		getPos((uintptr_t)this, (int64_t)&v);
-		return v;
-	}
-
-	Vector3 GetUnitPosition() const
-	{
-		typedef int64_t(__fastcall* GetPosition)(int64_t, int64_t);
-
-		uintptr_t* vTable = *(uintptr_t**)this;
-		auto getPosPtr = (uintptr_t)vTable[0x38];
-		auto getPos = (GetPosition)getPosPtr;
-
-		Vector3 v = Vector3(0.0, 0.0, 0.0);
-		getPos((uintptr_t)this, (int64_t)&v);
-		return v;
-	}
-
 	CGGuid* GetOwner() { return reinterpret_cast<CGGuid*>((uintptr_t)this + Offsets::Owner); }
 	CGGuid* GetGuid() { return reinterpret_cast<CGGuid*>((uintptr_t)this + Offsets::Guid); }
 	TypeId GetType() { return *reinterpret_cast<TypeId*>((uintptr_t)this + Offsets::Type); }
@@ -306,6 +279,31 @@ public:
 	}
 
 	//Vtable funcs
+	
+	Vector3 GetObjectNamePosition() {
+		typedef int64_t(__fastcall* GetPosition)(int64_t, int64_t);
+
+		uintptr_t* vTable = *(uintptr_t**)this;
+		auto getPosPtr = (uintptr_t)vTable[0x36];
+		auto getPos = (GetPosition)getPosPtr;
+
+		Vector3 v = Vector3(0, 0, 0);
+		getPos((uintptr_t)this, (int64_t)&v);
+		return v;
+	}
+
+	Vector3 GetUnitPosition() const {
+		typedef int64_t(__fastcall* GetPosition)(int64_t, int64_t);
+
+		uintptr_t* vTable = *(uintptr_t**)this;
+		auto getPosPtr = (uintptr_t)vTable[0x38];
+		auto getPos = (GetPosition)getPosPtr;
+
+		Vector3 v = Vector3(0.0, 0.0, 0.0);
+		getPos((uintptr_t)this, (int64_t)&v);
+		return v;
+	}
+	
 	void Interact() {
 		typedef DWORD* (__fastcall* InteractWith)(uintptr_t);
 
