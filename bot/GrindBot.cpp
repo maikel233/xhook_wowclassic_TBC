@@ -220,12 +220,6 @@ namespace WoW {
 				return false;
 			}
 		}
-		//else if (RaceID == WoWClass::Paladin) {
-		//}
-		//else if (RaceID == WoWClass::Priest) {
-		//}
-		//else if (RaceID == WoWClass::Shaman) {
-		//}
 		return true;
 	}
 
@@ -247,11 +241,12 @@ namespace WoW {
 			CastSpell(LocalPlayer, Spell_HealingTouchR1);
 			return 0;
 		}
+		//Entry Attack
 		else if (Target->HealthPercent() == 100) {
 			printf("Spell=Wrath Target is FullHP\n");
 			return Spell_WrathR1;
 		}
-		else if (Target->HealthPercent() < 5 && GameMethods::Spell_C_HaveSpellPower(Spell_MoonFireR1) || !Target->pHasAura("Moonfire") && GameMethods::Spell_C_HaveSpellPower(Spell_MoonFireR1)) {
+		else if (Target->HealthPercent() < 25 && !Target->pHasAura("Moonfire") && GameMethods::Spell_C_HaveSpellPower(Spell_MoonFireR1)) {
 			printf("Spell=MoonFire\n");
 			return Spell_MoonFireR1;
 		}
@@ -260,11 +255,11 @@ namespace WoW {
 			return Spell_WrathR1; // Return default casting spell
 		}
 		else
-			printf("zero!!!\n");
+			printf("No mana? Trying melee attack or CGCooldown skill..\n");
 			return 0;
 	}
 
-	void GrindBot::DistCheck(WObject* LocalPlayer, WObject* Target, int SpellID, float DistTo) 
+	bool GrindBot::DistCheck(WObject* LocalPlayer, WObject* Target, int SpellID, float DistTo) 
 	{
 		printf("[CASTSPELL] GetMinMaxSpellRange\n");
 		float_t minstop = 0;
@@ -277,6 +272,7 @@ namespace WoW {
 			if (FindPath) {
 				nav::StartNavigator = true;
 				printf("[DISTCHECK] We are still to far away from the target. Moving to target....\n");
+				return false;
 			}
 		}
 		else if (nav::StartNavigator && WoW::camera::TraceLine(LocalPlayer, Target->GetUnitPosition(), IntersectFlags::LineOfSight)
@@ -284,12 +280,15 @@ namespace WoW {
 			&& DistTo < 30) {
 
 			printf("Distcheck TraceLine\n");
-			nav::StartNavigator = false;
+
 			nav::Waypoints.clear(); //Startnavigator=false doesnt clear the vector fast enough maybe because of the tick delay?
 			if (nav::Waypoints.empty()) {
 				Hacks::CTMLP(LocalPlayer);
+				return true;
 			}
 		}
+
+		return true;
 	}
 
 
@@ -384,37 +383,21 @@ namespace WoW {
 
 			// if (0) we cant cast so meleeattack or stun target.
 			if (spellID == 0) {
-				bool pGetCoolDown = GameMethods::GetCoolDown();
-				if (pGetCoolDown) {
-					if (LocalPlayer->sUnitField->RaceID == WoWRace::Tauren && DistTo <= 6 && !LocalPlayer->pHasCoolDown("Warstomp")) {
+				if (!GameMethods::Spell_C_IsCurrentSpell(6603) && GameMethods::CGUnit_C_IsInCombat && DistTo <= 6) { printf("CGUnit_C_OnAttackIconPressed\n");
+					GameMethods::CGUnit_C_OnAttackIconPressed(Target->GetGuid());
+				}
+				else if (GameMethods::GetCoolDown()) { if (LocalPlayer->sUnitField->RaceID == WoWRace::Tauren && DistTo <= 6 && !LocalPlayer->pHasCoolDown("Warstomp")) {
 						static int Warstomp = 20549;
 						CastSpell(LocalPlayer, Warstomp);
 						printf("No cooldown!!\n");
 					}
 				}
-				else if (!GameMethods::Spell_C_IsCurrentSpell(6603) && GameMethods::CGUnit_C_IsInCombat && DistTo <= 6) {
-					printf("CGUnit_C_OnAttackIconPressed\n");
-					GameMethods::CGUnit_C_OnAttackIconPressed(Target->GetGuid());
-					return;
-				}
 			}
-
-
 			printf("DistCheck Before\n");
-			DistCheck(LocalPlayer, Target, spellID, DistTo); //Distance check Findpath to target if we are far away or not in los.					
-			printf("After DistCheck\n");
 
-			if (nav::StartNavigator
-				|| LocalPlayer->IsPlayerMoving()
-				|| LocalPlayer->GetChannelID() != 0) {
-				printf("Not going to cast!\n");
-				return;
+			if (DistCheck(LocalPlayer, Target, spellID, DistTo)) { //Distance check Findpath to target if we are far away or not in los.					
+				CastSpell(Target, spellID);
 			}
-
-
-			printf("After Mana\n");
-			CastSpell(Target, spellID);
-			printf("[+] After castSpell? \n");
 
 		}
 		else if (Target->IsDead()) {
