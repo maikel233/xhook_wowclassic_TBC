@@ -54,7 +54,7 @@ public:
 
 	//__int64 __fastcall CGPlayer_C::HandleRepopRequest(__int64 a1, char a2)
 	static int64_t RepopMe() {
-		return reinterpret_cast<int64_t(__fastcall*)(int64_t, int32_t)>(Offsets::RepopMe)(Globals::LocalPlayer->Ptr(), 1);
+		return reinterpret_cast<int64_t(__fastcall*)(int64_t, int32_t)>(Offsets::CGPlayer_C_HandleRepopRequest)(Globals::LocalPlayer->Ptr(), 1);
 	}
 	//CGPlayer_C::AcceptResurrectRequest(RESURRECT_CLIENT_RESPONSE)
 	//static int64_t RetrieveCorpse(int64_t activePlayerPtr, int32_t ClientResponse) {
