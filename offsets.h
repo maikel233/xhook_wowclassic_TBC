@@ -81,8 +81,8 @@ namespace Offsets
 	// Unit struct
 	static inline uint8_t Type = 0x20;
 	static inline uint16_t Guid = 0x58;
-	static inline uint16_t AnimationStatus = 0x14C;
-	inline static uint16_t	GatherStatus = 0x6B0;
+	static inline uint16_t AnimationStatus = 0xA0; //// Script_GetInventoryItemTexture test dword ptr [rax+0A0h
+	inline static uint16_t	GatherStatus = 0x1A8; //Maybe 0x448  |    Older Builds 36.xxx, 37.xxx: 0x6B0;
 	static inline uint16_t DisplayID = 0x003C;
 	static inline uint16_t Owner = 0x534;
 	static inline uintptr_t AuraCount = 0x6C0; // 3B 91 ? ? ? ? 73 14 8B C2 48 69 D0 ? ? ? ? 48 8D 81 ? ? ? ? 48 03 C2 C3 33 C0 C3
