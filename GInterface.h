@@ -9,8 +9,8 @@ class GInterface
 {
 
 public:
-	//Removed anti crash
-  //Removed crash warning
+  //Removed anticrash handler
+	static LONG VectoredHandler(EXCEPTION_POINTERS* ExceptionInfo);
 	static void Init(HMODULE);
 	static void WaitForReload();
 	static void Monitor(HMODULE);
