@@ -11,6 +11,8 @@
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "detours.lib")
 
+#include "discord.hpp"
+
 
 #define SAFE_RELEASE(p)      { if(p) { (p)->Release(); (p)=NULL; } }
 // D3X HOOK DEFINITIONS
@@ -40,17 +42,29 @@ ColorVar Settings::UI::fontColor = ImColor(255, 255, 255, 255);
 
 
 
-void pDll::bot() {
+void pDll::bot(WObject* LocalPlayer) {
 
-	if (Globals::LocalPlayer->IsDead()) {
-		if (Globals::update)
+
+	if (Globals::update)
+		return;
+
+
+	//if (!Globals::LocalPlayer->IsJumpingUp()) {
+	//	GameMethods::CGUnit_C_OnJumpLocal();
+
+	//}
+	//
+
+
+	if (LocalPlayer->IsDead()) {
+	
 		GameMethods::RepopMe();
 	}
 
-	if (Globals::LocalPlayer->IsGhost()) {
-		Globals::CorpsePos = *reinterpret_cast<Vector3*>(Offsets::Corpsex);
+	if (LocalPlayer->IsGhost()) {
+		Globals::CorpsePos = *reinterpret_cast<Vector3*>(Offsets::CorpsePosition);
 
-			bool InRange = Utils::InRangeOf(Globals::LocalPlayer, Globals::CorpsePos, 20);
+			bool InRange = Utils::InRangeOf(LocalPlayer, Globals::CorpsePos, 20);
 			if (InRange) {
 				nav::StartNavigator = false;
 				return;
@@ -58,7 +72,7 @@ void pDll::bot() {
 		
 		if (!nav::StartNavigator)
 		{
-			bool FindPath = nav::GetPath(Globals::LocalPlayer); // ez 
+			bool FindPath = nav::GetPath(LocalPlayer); // ez 
 			if (FindPath)
 			{
 				printf("Corpse pos at: X:%fY:%fZ:%f\n", Globals::CorpsePos.x, Globals::CorpsePos.y, Globals::CorpsePos.z);
@@ -82,15 +96,59 @@ void pDll::bot() {
 	}
 }
 
+bool FoundOne = false;
+WObject* PlaceHolder = nullptr;
+void GetTotalObj(WObject* localplayer) {
+
+		for (auto& [guid, o] : Globals::Objects)
+		{
+			if (!o->isValid())
+				continue;
+			int TypeID = (int)o->GetType();
+			if (!TypeID)
+				continue;
+			if (!Utils::ValidCoord(o))
+				continue;
+
+			if (o->IsUnit()) {
+
+				//GetUnitcount
+				Settings::bot::TotalUnits++;
+
+				if (!WoW::GrindBot::mobList.empty())
+					if (!o->IsDead() && !o->IsTapped() && string(o->GetObjectName()) == WoW::GrindBot::GetMobName()) {
+						Settings::bot::NPCEXIST = true; //To test if our target is actually our Target(I)
+					}
+
+			}
+			else if (o->IsGameObject()) {
+				Settings::bot::TotalObjects++;
+			}
+			else if (o->IsPlayer()) {
+				Settings::bot::TotalPlayers++;
+			}
+		}
+}
 
 void pDll::LoopFuncs() {
 
-	if (WoWObjectManager::InGame() || GameMethods::ObjMgrIsValid(1))
-	{
-		WoWObjectManager::LoopObjectManager();
-		WoW::Hacks::GExecute_IGFunctions();
+	DiscordPresence().run();
 
-		pDll::bot();
+	if (WoWObjectManager::InGame() && GameMethods::ObjMgrIsValid(0))
+	{
+
+		WoWObjectManager::LoopObjectManager();
+
+		WObject* localplayer = (WObject*)Globals::LocalPlayer;
+		if (!localplayer) {
+			return;
+		}
+
+		GetTotalObj(localplayer);
+
+		
+		WoW::Hacks::GExecute_IGFunctions(localplayer);
+		pDll::bot(localplayer);
 
 		if (!Globals::Objects.empty()) {
 			Globals::update = false;
@@ -101,6 +159,9 @@ void pDll::LoopFuncs() {
 				Globals::last_update = 0;
 			}
 		}
+	}
+	else {
+		Settings::bot::TotalUnits = 0, Settings::bot::TotalPlayers = 0, Settings::bot::TotalObjects = 0;
 	}
 }
 
@@ -208,7 +269,7 @@ LRESULT CALLBACK hWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 	return CallWindowProc(OriginalWndProcHandler, hWnd, uMsg, wParam, lParam);
 }
-
+//
 void __stdcall hookD3D11DrawIndexed(ID3D11DeviceContext* pContext, UINT IndexCount, UINT StartIndexLocation, INT BaseVertexLocation) {
 	fnID3D11DrawIndexed(pContext, IndexCount, StartIndexLocation, BaseVertexLocation);
 }
@@ -221,6 +282,8 @@ HRESULT GetDeviceAndCtxFromSwapchain(IDXGISwapChain* pSwapChain, ID3D11Device** 
 
 	return ret;
 }
+
+
 
 HRESULT __fastcall Present(IDXGISwapChain* pChain, UINT SyncInterval, UINT Flags)
 {
@@ -241,6 +304,7 @@ HRESULT __fastcall Present(IDXGISwapChain* pChain, UINT SyncInterval, UINT Flags
 		//Set OriginalWndProcHandler to the Address of the Original WndProc function
 		OriginalWndProcHandler = (WNDPROC)SetWindowLongPtr(window, GWLP_WNDPROC, (LONG_PTR)hWndProc);
 
+
 		ImGui_ImplWin32_Init(window);
 		ImGui_ImplDX11_Init(pDevice, pContext);
 		ImGui::GetIO().ImeWindowHandle = window;
@@ -256,7 +320,7 @@ HRESULT __fastcall Present(IDXGISwapChain* pChain, UINT SyncInterval, UINT Flags
 
 
 	ImGui_ImplWin32_NewFrame();
-	//Draw::Renderer::Pointer()->Initialize();
+	Draw::Renderer::Pointer()->Initialize();
 	ImGui_ImplDX11_NewFrame();
 
 
@@ -342,7 +406,7 @@ HRESULT __fastcall Present(IDXGISwapChain* pChain, UINT SyncInterval, UINT Flags
 
 	Draw::Radar().RenderWindow();
 	Draw::EntityList().RenderWindow();
-
+	Draw::InfoWindow().RenderWindow();
 	if (Settings::UI::Windows::Menu::g_ShowMenu) {
 		ImGui::GetIO().MouseDrawCursor = 1;
 		Configs::RenderWindow();
@@ -457,17 +521,33 @@ void GetPresent()
 	Sleep(2000);
 }
 
+
+
+void PrintOffsets() {
+	//Console
+	FILE* pFile = nullptr;
+	AllocConsole();
+	freopen_s(&pFile, "CONOUT$", "w", stdout);
+	printf("Please wait. This can take a few minutes...\n");
+	//Removed pattern scanner and dumper.
+}
+
+
+
 void* SwapChain[18];
 void* Device[40];
 void* Context[108];
-
-
-
 HMODULE ModuleInUse;
 DWORD WINAPI MainThread(LPVOID lpReserved)
 {
+
+	//PrintOffsets();
+
+//
+//#ifndef NDEBUG
 	GInterface::Init(ModuleInUse);
 	GetPresent();
+
 
 	// If GetPresent failed we have this backup method to get Present Address
 	if (!g_PresentHooked) {
@@ -492,9 +572,9 @@ DWORD WINAPI MainThread(LPVOID lpReserved)
 	fnID3D11DrawIndexed = (ID3D11DrawIndexed)pDeviceContextVTable[12];
 
 	std::cout << "[+] pDeviceContextVTable Addr: " << std::hex << pDeviceContextVTable << std::endl;
-	std::cout << "[+] fnID3D11DrawIndexed Addr: " << std::hex << fnID3D11DrawIndexed << std::endl;
+	//std::cout << "[+] fnID3D11DrawIndexed Addr: " << std::hex << fnID3D11DrawIndexed << std::endl;
 	//detourDirectXDrawIndexed();
-
+//#endif
 	return TRUE;
 }
 
@@ -519,4 +599,3 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	}
 	return TRUE;
 }
-
