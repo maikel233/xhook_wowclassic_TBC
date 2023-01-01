@@ -14,7 +14,8 @@ namespace WoW {
 			journeyman = 7731,
 			expert = 7732,
 			artisan = 18248,
-			master = 33095
+			master = 33095,
+			GrandMaster = 51294
 		};
 	};
 }
