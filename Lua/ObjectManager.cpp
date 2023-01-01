@@ -10,23 +10,27 @@ void WoWObjectManager::CycleObjects(bool Refresh)
 		Globals::Objects.clear();
 	}
 
-	GameMethods::Invoke<char>(Offsets::ClntObjMgrEnumVisibleObjectsPtr, WoWObjectManager::EnumVisibleObjCb, (int)TypeId::CGItem);
-	GameMethods::Invoke<char>(Offsets::ClntObjMgrEnumVisibleObjectsPtr, WoWObjectManager::EnumVisibleObjCb, (int)TypeId::CGUnit);
-	GameMethods::Invoke<char>(Offsets::ClntObjMgrEnumVisibleObjectsPtr, WoWObjectManager::EnumVisibleObjCb, (int)TypeId::CGPlayer);
-	GameMethods::Invoke<char>(Offsets::ClntObjMgrEnumVisibleObjectsPtr, WoWObjectManager::EnumVisibleObjCb, (int)TypeId::CGActivePlayer);
-	GameMethods::Invoke<char>(Offsets::ClntObjMgrEnumVisibleObjectsPtr, WoWObjectManager::EnumVisibleObjCb, (int)TypeId::CGGameObject);
-	GameMethods::Invoke<char>(Offsets::ClntObjMgrEnumVisibleObjectsPtr, WoWObjectManager::EnumVisibleObjCb, (int)TypeId::CGCorpse);
+	Settings::bot::TotalUnits = 0;
+	Settings::bot::TotalObjects = 0;
+	Settings::bot::TotalPlayers = 0;
+	Settings::bot::NPCEXIST = false;
+
+
+	GameMethods::Invoke<char>(Offsets::Base + Offsets::ClntObjMgrEnumVisibleObjectsPtr, WoWObjectManager::EnumVisibleObjCb, (int)TypeId::CGItem);
+	GameMethods::Invoke<char>(Offsets::Base + Offsets::ClntObjMgrEnumVisibleObjectsPtr, WoWObjectManager::EnumVisibleObjCb, (int)TypeId::CGUnit);
+	GameMethods::Invoke<char>(Offsets::Base + Offsets::ClntObjMgrEnumVisibleObjectsPtr, WoWObjectManager::EnumVisibleObjCb, (int)TypeId::CGPlayer);
+	GameMethods::Invoke<char>(Offsets::Base + Offsets::ClntObjMgrEnumVisibleObjectsPtr, WoWObjectManager::EnumVisibleObjCb, (int)TypeId::CGActivePlayer);
+	GameMethods::Invoke<char>(Offsets::Base + Offsets::ClntObjMgrEnumVisibleObjectsPtr, WoWObjectManager::EnumVisibleObjCb, (int)TypeId::CGGameObject);
+	GameMethods::Invoke<char>(Offsets::Base + Offsets::ClntObjMgrEnumVisibleObjectsPtr, WoWObjectManager::EnumVisibleObjCb, (int)TypeId::CGCorpse);
 }
 
 void WoWObjectManager::LoopObjectManager()
 {
 	CycleObjects(false);
 
-	if (!Globals::LocalPlayer) {
-		return;
+	if (Globals::LocalPlayer) {
+	//	nav::Move(); //Move our LocalPlayer
 	}
-
-	nav::Move(); //Move our LocalPlayer
 }
 
 unsigned int WoWObjectManager::EnumVisibleObjCb(int64_t objectPtr, int64_t filter) {
@@ -37,11 +41,12 @@ unsigned int WoWObjectManager::EnumVisibleObjCb(int64_t objectPtr, int64_t filte
 
 		char guidStr[MAX_PATH];
 
-		if (iType < (int)TypeId::Invalid && iType == filter)
+		if (iType < (int)TypeId::CGConversation && iType == filter) // CGConversation if lower than go..?
 		{
 			if (iType == (int)TypeId::CGActivePlayer && !Globals::LocalPlayer) {
 				Globals::LocalPlayer = object;
-				std::cout << "[+] LocalPlayer address:" << std::hex << Globals::LocalPlayer << std::endl;
+				std::cout << "[+] LocalPlayer address:" << std::hex << Globals::LocalPlayer << std::endl;		
+				
 			}
 			
 			GameMethods::GuidToString(object->GetGuid(), guidStr);
@@ -55,11 +60,11 @@ unsigned int WoWObjectManager::EnumVisibleObjCb(int64_t objectPtr, int64_t filte
 }
 
 bool WoWObjectManager::InGame() {
-	return *reinterpret_cast<int8_t*>(Offsets::IsPlayerInWorld) != 0 ? true : false;
+	return *reinterpret_cast<int8_t*>(Offsets::Base + Offsets::IsPlayerInWorld) != 0 ? true : false;
 }
 
 void WoWObjectManager::SetHardwareEvent() {
-	static uintptr_t hardwareEventPtr = Offsets::HardwareEventPtr;
+	static uintptr_t hardwareEventPtr = Offsets::Base + Offsets::HardwareEventPtr;
 
 	LARGE_INTEGER frequency;
 	LARGE_INTEGER perfCount;
@@ -69,6 +74,3 @@ void WoWObjectManager::SetHardwareEvent() {
 	const long currentTime = (perfCount.QuadPart * 1000) / frequency.QuadPart;
 	*reinterpret_cast<uintptr_t*>(hardwareEventPtr) = currentTime;
 }
-
-
-
