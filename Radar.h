@@ -9,6 +9,7 @@ namespace Draw
 	class Radar {
 	public:
 		void RenderWindow();
+		void DrawObj(WObject* localplayer, WObject* entity, ImColor color, ImDrawList* draw_list, ImVec2 winpos, ImVec2 winsize);
 	private:
 		float RadianToDegree(float Rotation);
 		enum EntityShape_t : int
