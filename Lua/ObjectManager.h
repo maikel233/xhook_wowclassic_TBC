@@ -10,12 +10,8 @@ public:
     static bool InGame();
     // helpers
     static unsigned int EnumVisibleObjCb(int64_t, int64_t);
-
     static void SetHardwareEvent();
-   // static long getCurrentTime();
-
     static void LoopObjectManager();
-
     static void CycleObjects(bool Refresh);
 };
 
