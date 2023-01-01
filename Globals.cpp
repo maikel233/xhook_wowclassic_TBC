@@ -2,6 +2,5 @@
 
 bool Globals::isLootWindowOpen()
 {
-	return (*reinterpret_cast<uintptr_t*>(Offsets::Base + 0x3124670)) != 0L; // 0xB71B48
+	return (*reinterpret_cast<uintptr_t*>(Offsets::Base + Offsets::IsLootWindowOpen)) != 0L; // 0xB71B48
 }
-
