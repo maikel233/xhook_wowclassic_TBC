@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "Constants.h"
 #include "WoWTypes.h"
-
+//#include "WoWInventory.h"
 enum class TeamID : int {
 	Horde,
 	Alliance,
@@ -99,7 +99,7 @@ public:
 	virtual ~WObject() {}
 
 	//Removed Player
-	not my code cant include srry (:
+	//not my code cant include srry (:
 
 
  //Size: 0xEDDC
