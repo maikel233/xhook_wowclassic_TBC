@@ -6,22 +6,9 @@ std::string Status = "Off";
 std::string Status2 = "Off";
 namespace Draw
 {
-    //std::int64_t os_get_async_time_ms()
-    //{
-    //    return 1;
-    //}
-
-    //time_point timestamp()
-    //{
-    //    //QueryPerformanceCounter(nullptr);
-    //    const auto count = Offsets::Base + 0xDB6710; //memory::read_offset(offsets::time::timestamp);
-    //    return time_point(duration(count));
-    //}
-
 
 	void InfoWindow::RenderWindow()
 	{
-        //
 
         float ms = 1.0f;
         float result = 1.0f;;
