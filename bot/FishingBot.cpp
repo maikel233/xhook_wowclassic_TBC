@@ -7,6 +7,39 @@ bool Settings::bot::fishing::PoolDetection = false;
 
 namespace WoW {
 
+
+	//Vector3 GetMinNodeVec(string nodeName)
+	//{
+	//	auto minDist = INT_MAX;
+	//	auto position = Vector3(0, 0, 0);
+
+	//	WObject* closestObject = nullptr;
+
+
+	//	for (auto& [guid, o] : )
+	//	{
+	//		if (o->GetType() == ActivePlayer)
+	//			position = o->GetObjectPosition();
+
+	//		if (string(o->GetObjectName()) == nodeName && o->GetType() == TypeId::GameObject && o->GetGatherStatus() == 1)
+	//		{
+	//			auto destQuery = o->GetObjectPosition();
+	//			float dist = sqrt(pow(destQuery.x - position.x, 2) + pow(destQuery.y - position.y, 2) + pow(destQuery.z - position.z, 2) * 1.0);
+	//			if (dist < minDist)
+	//			{
+	//				minDist = dist;
+	//				closestObject = o;
+	//			}
+	//		}
+	//	}
+
+	//	if (closestObject && closestObject->GetGatherStatus() == 1)
+	//		return closestObject->GetObjectDisplayHeight();
+	//	else
+	//		return Vector3(0.0, 0.0, 0.0);
+	//}
+	//
+
 	int FishBot::GetFishingLevel() {
 		if (GameMethods::IsSpellKnown(FishBot::FishingLevels::master))
 			return FishBot::FishingLevels::master;
