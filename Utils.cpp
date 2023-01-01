@@ -1,3 +1,5 @@
+//#include <Psapi.h>
+
 #include "Utils.h"
 #include "Settings/settings.h"
 #include "Globals.h"
@@ -24,13 +26,11 @@ long Utils::GetEpochTime() {
 	return ms.count();
 }
 
-
-
 ImColor Utils::GetFactionColor(WObject* Player) {
 	ImColor FactionColor;
 	if (Player->IsPlayer() || Player->IsLocalPlayer())
 	{
-		if (Player->GetFactionID() == TeamID::Horde)
+		if (Player->GetFactionID() == FactionID::Horde)
 			FactionColor = ImColor(1.00f, 0.0f, 0.0f, 1.0f);
 		else
 			FactionColor = ImColor(0.00f, 0.0f, 1.0f, 1.0f);
@@ -40,7 +40,7 @@ ImColor Utils::GetFactionColor(WObject* Player) {
 }
 
 ImColor Utils::GetClassColor(WObject* entity) {
-	int RaceID = entity->sUnitField->ClassID;
+	int RaceID = entity->GetClassID();
 	ImColor Class;
 
 	if (RaceID == WoWClass::None) { Class = ImColor(0.0f, 0.0f, 0.0f, 1.0f); }
@@ -77,8 +77,8 @@ Color Utils::GetHealthColor(int hp) {
 
 Color Utils::GetHealthColor(WObject* player) {
 	return Color(
-		min(510 * (player->sUnitField->MaxHealth - player->sUnitField->Health) / player->sUnitField->MaxHealth, 255),
-		min(510 * player->sUnitField->Health / player->sUnitField->MaxHealth, 255),
+		min(510 * (player->MaxHealth() - player->Health()) / player->MaxHealth(), 255),
+		min(510 * player->Health() / player->MaxHealth(), 255),
 		25
 	);
 }
@@ -86,15 +86,21 @@ Color Utils::GetHealthColor(WObject* player) {
 std::string Utils::GetHealth(WObject* Entity) {
 	std::string HealthStr;
 	if (Entity->IsUnit() || Entity->IsPlayer() || Entity->IsLocalPlayer()) {
-		HealthStr = std::to_string(Entity->sUnitField->Health) + "/" + std::to_string(Entity->sUnitField->MaxHealth);
+		HealthStr = std::to_string(Entity->Health()) + "/" + std::to_string(Entity->MaxHealth());
 	}
 	return HealthStr;
 }
 
-std::string Utils::GetEnergyOrMana(WObject* Entity) {
+std::string Utils::GetPower(WObject* Entity) {
 	std::string EnergyOrManaStr;
 	if (Entity->IsUnit() || Entity->IsPlayer() || Entity->IsLocalPlayer()) {
-		EnergyOrManaStr = std::to_string(Entity->sUnitField->Energy) + "/" + std::to_string(Entity->sUnitField->MaxEnergy);
+
+		if (Entity->getPowerString() == "Mana") {
+			EnergyOrManaStr = std::to_string(Entity->Mana()) + "/" + std::to_string(Entity->MaxMana());
+		}
+		else {
+			EnergyOrManaStr = std::to_string(Entity->Energy()) + "/" + std::to_string(Entity->MaxEnergy());
+		}
 	}
 	return EnergyOrManaStr;
 }
@@ -103,7 +109,7 @@ std::string Utils::IsHordeOrAlliance(WObject* Player) {
 	std::string Result;
 	if (Player->IsPlayer() || Player->IsLocalPlayer()) {
 
-		if (Player->GetFactionID() == TeamID::Horde)
+		if (Player->GetFactionID() == FactionID::Horde)
 			Result = "Horde";
 		else
 			Result = "Alliance";
@@ -115,7 +121,7 @@ std::string Utils::IsHordeOrAlliance(WObject* Player) {
 std::string Utils::GetRace(WObject* Entity) {
 	std::string Race;
 	if (Entity->IsPlayer() || Entity->IsLocalPlayer()) {
-		int RaceID = Entity->sUnitField->RaceID;
+		int RaceID = Entity->GetRaceID();
 		if (RaceID == WoWRace::Undead) { Race = "Undead"; }
 		else if (RaceID == WoWRace::Troll) { Race = "Troll"; }
 		else if (RaceID == WoWRace::TrollFemale) { Race = "Troll"; }
@@ -137,21 +143,33 @@ std::string Utils::GetRace(WObject* Entity) {
 	return Race;
 }
 
+std::string Utils::GetSex(WObject* Entity) {
+	if (Entity->IsPlayer() || Entity->IsLocalPlayer()) {
+		switch (Entity->GetSex()) {
+		case 0: return "Male";
+		case 1: return "Female";
+		case 2: return "Unknown";
+		default: return "";
+		}
+	}
+	return "";
+}
+
 std::string Utils::GetClass(WObject* Entity) {
 	std::string Class;
 	if (Entity->IsPlayer() || Entity->IsLocalPlayer()) {
-		int RaceID = Entity->sUnitField->ClassID;
-		if (RaceID == WoWClass::None) { Class = "None"; }
-		else if (RaceID == WoWClass::Warrior) { Class = "Warrior"; }
-		else if (RaceID == WoWClass::Paladin) { Class = "Paladin"; }
-		else if (RaceID == WoWClass::Hunter) { Class = "Hunter"; }
-		else if (RaceID == WoWClass::Rogue) { Class = "Rogue"; }
-		else if (RaceID == WoWClass::Priest) { Class = "Priest"; }
-		else if (RaceID == WoWClass::DeathKnight) { Class = "Deathknight"; }
-		else if (RaceID == WoWClass::Shaman) { Class = "Shaman"; }
-		else if (RaceID == WoWClass::Mage) { Class = "Mage"; }
-		else if (RaceID == WoWClass::Warlock) { Class = "Warlock"; }
-		else if (RaceID == WoWClass::Druid) { Class = "Druid"; }
+		int ClassID = Entity->GetClassID();
+		if (ClassID == WoWClass::None) { Class = "None"; }
+		else if (ClassID == WoWClass::Warrior) { Class = "Warrior"; }
+		else if (ClassID == WoWClass::Paladin) { Class = "Paladin"; }
+		else if (ClassID == WoWClass::Hunter) { Class = "Hunter"; }
+		else if (ClassID == WoWClass::Rogue) { Class = "Rogue"; }
+		else if (ClassID == WoWClass::Priest) { Class = "Priest"; }
+		else if (ClassID == WoWClass::DeathKnight) { Class = "Deathknight"; }
+		else if (ClassID == WoWClass::Shaman) { Class = "Shaman"; }
+		else if (ClassID == WoWClass::Mage) { Class = "Mage"; }
+		else if (ClassID == WoWClass::Warlock) { Class = "Warlock"; }
+		else if (ClassID == WoWClass::Druid) { Class = "Druid"; }
 	}
 	else { Class = ""; }
 	return Class;
@@ -176,4 +194,3 @@ int Utils::filterException(int code, PEXCEPTION_POINTERS ex) {
 	std::cout << "[!] Filtering " << std::hex << code << std::endl;
 	return EXCEPTION_EXECUTE_HANDLER;
 }
-
