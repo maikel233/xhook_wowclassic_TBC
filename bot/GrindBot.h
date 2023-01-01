@@ -1,14 +1,9 @@
-#pragma once
-#include "DllMain.h"
-#include "Hacks.h"
-#include "Lua/GameMethods.h"
-#include "nav.h"
-
 namespace WoW {
 
 	class GrindBot {
 	public:
 		static vector<string> mobList;
+		static std::string GetMobName();
 		static void Fight();
 	private:
 		static void WalkToTarget(WObject* localplayer, WObject* Target);
@@ -17,12 +12,11 @@ namespace WoW {
 		static bool Buff(WObject* localplayer);
 		static void CleanUp();
 	
-		static WObject* HostileUnit_TargetingUs(CGGuid* NPCGUID);
+		static WObject* HostileUnit_TargetingUs(/*CGGuid* NPCGUID*/);
 		static WObject* GetClosestMob();
+		static WObject* GetClosestDeathMob();
 		static void CastSpell(WObject* Unit, int SpellID);
-		//static void CastSpell(WObject* Unit, int SpellID);
 		static int GetSpellID(WObject* LocalPlayer, WObject* Target);
 
 	};
 }
-
