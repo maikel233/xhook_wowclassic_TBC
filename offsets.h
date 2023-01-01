@@ -55,7 +55,7 @@ T ReadOffset(void* base, uintptr_t offset)
 namespace Offsets
 {
 	////////////////////////
-	//     2.5.3 44833   //
+	//   2.5.? 47168      //
 	////////////////////////
 
 
