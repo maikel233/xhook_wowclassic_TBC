@@ -12,20 +12,19 @@
 #include <vector>
 #include <Windows.h>
 #include <cstdio>
-
-
+#include <unordered_map>
+#include <iomanip>
+#include <ctime>
+#include <filesystem>
+#include <iostream>
+#include <map>
+#include <sstream>
 #include <d3d12.h>
 #include <dxgi1_4.h>
-
 #include "XorStr.h"
 #include "Vector.h"
 #include "Offsets.h"
 
-#include<map>
-//#include <boost/optional.hpp>
-//#include <boost/any.hpp>
 
-//using boost::none;
-//using boost::optional;
-//using boost::any;
 
+//Settings.h and util.h configs.cpp gamemethods
