@@ -55,16 +55,19 @@ public:
 	uint32_t SpellID; //0x0010
 	uint32_t ItemID; //0x0014
 	char pad_0018[4]; //0x0018
-	uint32_t RecoveryStart; //0x001C
-	uint32_t Recovery1; //0x0020
-	char pad_0024[4]; //0x0024
-	uint32_t CatRecoveryStart; //0x0028
-	uint32_t Recovery2; //0x002C
+	uint32_t CooldownStartTim; //0x001C
+	uint32_t CooldownSpellCooldownDuration; //0x0020
+	uint32_t CooldownSpellCategoryId; //0x0024
+	uint32_t CooldownCategoryCooldownStartTime; //0x0028
+	uint32_t CooldownCategoryCooldownDuration; //0x002C
 	char pad_0030[4]; //0x0030
-	uint32_t GcdRecoveryStart; //0x0034
-	char pad_0038[72]; //0x0038
+	uint32_t CooldownGCDStartTime; //0x0034
+	uint32_t CooldownGCDCategoryId; //0x0038
+	uint32_t CooldownGCDDuration; //0x003C
+	uint32_t CooldownEntrySize; //0x0040
+	char pad_0044[68]; //0x0044
 }; //Size: 0x0080
-static_assert(sizeof(CoolDownStruct) == 0x80);
+static_assert(sizeof(CoolDownStruct) == 0x88);
 #pragma pack(pop)
 
 inline static std::vector<CoolDownStruct>(Cooldowns);
@@ -87,109 +90,99 @@ public:
 }; //Size: 0x0184
 #pragma pack(pop)
 
-#pragma pack(push, 1)
-class UnitField
-{
-public:
-	char pad_0000[20]; //0x0000
-	uint32_t DynamicFlags; //0x0014
-	char pad_0018[36]; //0x0018
-	uint32_t GameObjectDisPlayID; //0x003C
-	uint32_t GameObjectFlag; //0x0040
-	char pad_0044[8]; //0x0044
-	CGGuid CritterOrCharmerGuid; //0x004C
-	CGGuid SummonedBy; //0x005C
-	CGGuid CreatorGuid; //0x006C
-	CGGuid MasterGuid; //0x007C
-	char pad_0084[16]; //0x0084
-	CGGuid TargetGuid; //0x009C
-	char pad_00A4[24]; //0x00A4
-	uint32_t UNK;//SpellID; //0x00C4
-	uint32_t UNKK; //0x00C8
-	char pad_00CC[4]; //0x00CC  5
-	uint8_t Race; //0x00D0
-	uint8_t ClassID; //0x00D1
-	uint8_t PlayerClassID; //0x00D2
-	uint8_t Sex; //0x00D3
-	uint32_t DisplayPower; //0x00D4
-	uint32_t OverrideDisplayPowerID; //0x00D8
-	uint32_t Health; //0x00DC
-	char pad_00E0[4]; //0x00E0
-	uint32_t Energy; //0x00E4
-	uint32_t Power2; //0x00E8
-	uint32_t Power3; //0x00EC
-	uint32_t Power4; //0x00F0
-	char pad_00F4[12]; //0x00F4
-	uint32_t MaxHealth; //0x0100
-	char pad_0104[4]; //0x0104
-	uint32_t MaxEnergy; //0x0108
-	uint32_t MaxPower2; //0x010C
-	uint32_t MaxPower3; //0x0110
-	uint32_t MaxPower4; //0x0114
-	char pad_0118[40]; //0x0118
-	uint32_t Level; //0x0140
-	char pad_0144[32]; //0x0144
-	uint32_t RaceID; //0x0164
-	uint32_t FactionTemplate;
-	char pad_0168[20]; //0x0168
-	uint32_t UnitFlag1; //0x0180
-	uint32_t UnitFlag2; //0x0184
-	uint32_t UnitFlag3; //0x0188
-	char pad_018C[24]; //0x018C
-	uint32_t DisplayID; //0x01A4
-	char pad_01A8[12]; //0x01A8
-	uint32_t MountID; //0x01B4
-	char pad_01B8[64]; //0x01B8
-	uint32_t NPCFLAG; //0x01F8
-	char pad_01FC[652]; //0x01FC
-}; //Size: 0x339D0
-//static_assert(sizeof(UnitField) == 0x339D0);
-#pragma pack(pop)
 
-
-#pragma pack(push, 1)
+//#pragma pack(push, 1)
 class WObject
 {
 public:
-	char pad_0008[8]; //0x0008
-	class UnitField* sUnitField; //0x0010
-	char pad_0018[8]; //0x0018
-	TypeId Type; //0x0020
-	char pad_0021[55]; //0x0021
-	CGGuid Guid; //0x0058
-	char pad_0060[5528]; //0x0060
-	Vector3 GetUnitPositionModify; //0x1600  
-	char pad_160C[56]; //0x160C
-	Vector3 anchor_position; //
-	float anchor_facing; //0x1650
-	float anchor_pitch; //0x1654
-	uint32_t MoveTime;
-	Vector3 direction;
-	Vector2 direction_2d;
-	float unk01;
-	float unk02;
-	float unk03;
-	uint32_t StopFall;
-	float fall_start_elev_1; //DC
-	float CurrentSpeed; //0x1684
-	float WalkSpeed;    //0x1688
-	float RunForwardSpeed; //0x168C
-	float RunBackwardsSpeed; //0x1690
-	float SwimmingSpeed; //0x1694
-	float SwimBackwardsSpeed; //0x1698
-	float FlyForwardSpeed; //0x169C
-	float FlyBackwardsSpeed2; //0x16A0
-	float Player_rotationspeed; //0x16A4 //Below this offset are invalid ones they need a update...
-	char pad_165C[8]; 
-	float StartofJumpHeight; //  Sets Starting jumpheight will dc you after a few ms... // 16B0
-	char pad_16B4[60]; //0x16B4
-	uint32_t MovementFlags; //0x16F0
-	char pad_16F4[6548]; //0x16F4
 
 	virtual ~WObject() {}
 
+	//Removed Player
+	not my code cant include srry (:
+
+
+ //Size: 0xEDDC
+	Vector3 GetObjectNamePosition()
+	{
+		typedef int64_t(__fastcall* GetPosition)(int64_t, int64_t);
+
+		uintptr_t* vTable = *(uintptr_t**)this;
+		auto getPosPtr = (uintptr_t)vTable[0x36];
+		auto getPos = (GetPosition)getPosPtr;
+
+		Vector3 v = Vector3(0, 0, 0);
+		getPos((uintptr_t)this, (int64_t)&v);
+		return v;
+	}
+
+	Vector3 GetUnitPosition() const
+	{
+		typedef int64_t(__fastcall* GetPosition)(int64_t, int64_t);
+
+		uintptr_t* vTable = *(uintptr_t**)this;
+		auto getPosPtr = (uintptr_t)vTable[0x38];
+		auto getPos = (GetPosition)getPosPtr;
+
+		Vector3 v = Vector3(0.0, 0.0, 0.0);
+		getPos((uintptr_t)this, (int64_t)&v);
+		return v;
+	}
+
+	PowerTypeId Power_Type() { return *reinterpret_cast<PowerTypeId*>((uintptr_t)this + Offsets::UnitPowerType); }
+
+	std::string getPowerString()
+	{
+		switch (this->Power_Type())
+		{
+		case PowerTypeId::mana:
+			return "Mana";
+			break;
+
+		case PowerTypeId::rage:
+			return "Rage";
+			break;
+
+		case PowerTypeId::energy:
+			return "Energy";
+			break;
+
+		case PowerTypeId::runicpower:
+			return "Runic Power";
+			break;
+		}
+
+		return "Unknown Power Type";
+	}
+
+	//Unit stuff for Wrath
+	uint32_t Health() const { return *reinterpret_cast<uint32_t*>((uintptr_t)this + Offsets::Health); }
+	uint32_t MaxHealth() const { return *reinterpret_cast<uint32_t*>((uintptr_t)this + Offsets::MaxHealth); }
+
+	uint32_t Mana() const { return *reinterpret_cast<uint32_t*>((uintptr_t)this + Offsets::Mana); }
+	uint32_t MaxMana() const { return *reinterpret_cast<uint32_t*>((uintptr_t)this + Offsets::MaxMana); }
+
+	uint32_t Energy() const { return *reinterpret_cast<uint32_t*>((uintptr_t)this + Offsets::Energy); }
+	uint32_t MaxEnergy() const { return *reinterpret_cast<uint32_t*>((uintptr_t)this + Offsets::MaxEnergy); }
+
+	uint8_t GetRaceID() const { return *reinterpret_cast<int8_t*>((uintptr_t)this + Offsets::Race); }
+	uint8_t GetClassID() const { return *reinterpret_cast<int8_t*>((uintptr_t)this + Offsets::Class); }
+	uint8_t GetSex() const { return *reinterpret_cast<int8_t*>((uintptr_t)this + Offsets::Sex); }
+
+	uint32_t DynamicFlags() const { return *reinterpret_cast<uint32_t*>((uintptr_t)this + Offsets::DynamicFlag); }
+	uint32_t UnitFlags() const { return *reinterpret_cast<uint32_t*>((uintptr_t)this + Offsets::UnitFlag3); }
+	
+
+	Vector3 Anchor_position() const { return *reinterpret_cast<Vector3*>((uintptr_t)this + Offsets::anchor_position); }
+	float Anchor_facing() const { return *reinterpret_cast<float*>((uintptr_t)this + Offsets::anchor_facing); }
+	float Anchor_pitch() const { return *reinterpret_cast<float*>((uintptr_t)this + Offsets::anchor_pitch); }
+	Vector3 direction() const { return *reinterpret_cast<Vector3*>((uintptr_t)this + Offsets::direction); }
+	Vector2 direction_2d() const { return *reinterpret_cast<Vector2*>((uintptr_t)this + Offsets::direction_2d); }
+
+
 	CGGuid* GetOwner() { return reinterpret_cast<CGGuid*>((uintptr_t)this + Offsets::Owner); }
 	CGGuid* GetGuid() { return reinterpret_cast<CGGuid*>((uintptr_t)this + Offsets::Guid); }
+	CGGuid* TargetGuid() { return reinterpret_cast<CGGuid*>((uintptr_t)this + Offsets::Target); }
 	TypeId GetType() { return *reinterpret_cast<TypeId*>((uintptr_t)this + Offsets::Type); }
 	bool GetAnimStatus() const { return *reinterpret_cast<int8_t*>((uintptr_t)this + Offsets::AnimationStatus); }
 	bool GetGatherStatus() const { return *reinterpret_cast<int8_t*>((uintptr_t)this + Offsets::GatherStatus); }
@@ -199,7 +192,14 @@ public:
 	uint32_t GetChannelID() const { return *reinterpret_cast<uint32_t*>((uintptr_t)this + 0x1A70);  /*1C08*/ } 	//Script_ChannelInfo 
 	uint32_t GetAuraCount() const { return *reinterpret_cast<int32_t*>((uintptr_t)this + Offsets::AuraCount); }
 	uintptr_t Ptr() const { return uintptr_t(this); }
-	
+
+	WoWObjTypeId GetWoWObjType() { return *reinterpret_cast<WoWObjTypeId*>((uintptr_t)this + Offsets::WoWObjTypeID); }
+
+
+	//Test values
+	float GetNoFallVal() const { return *reinterpret_cast<float*>((uintptr_t)this + 0x01C4);  } 	
+	float GetFallingAnim() const { return *reinterpret_cast<float*>((uintptr_t)this + 0x238); }
+
 
 	//WUnit.h!TypeID == (int)TypeId::CGUnit
 	bool owns(WObject* object, WObject* LocalPlayer) { return *object->GetOwner() == *LocalPlayer->GetGuid(); }
@@ -209,38 +209,55 @@ public:
 	bool IsLocalPlayer() { return this->GetType() == TypeId::CGActivePlayer; }
 	bool IsGameObject() { return this->GetType() == TypeId::CGGameObject; }
 	bool IsCorpse() { return this->GetType() == TypeId::CGCorpse; }
-	bool IsPlayerMoving() { return this->CurrentSpeed != 0; }
+	bool IsPlayerMoving() { return this->CurrentSpeed() != 0; }
+	bool IsJumpingUp() const { return *reinterpret_cast<int8_t*>((uintptr_t)this + Offsets::MovementShared_IsJumpingUp); } //  result = (float)(v1 / -19.291103) > (float)((float)*((signed int *)this + 35) * 0.001);
 
-	bool IsGhost() { return sUnitField->Health == 1; }
-	bool IsDead() { return (sUnitField->Health <= 0 || (sUnitField->DynamicFlags & UnitDynFlags::UNIT_DYNFLAG_DEAD) == UnitDynFlags::UNIT_DYNFLAG_DEAD); }
-	bool IsLootable() { return (sUnitField->DynamicFlags & UnitDynFlags::UNIT_DYNFLAG_LOOTABLE) == UnitDynFlags::UNIT_DYNFLAG_LOOTABLE; }
-	bool IsSkinnable() const { return (sUnitField->UnitFlag1 & UnitFlags::UNIT_FLAG_SKINNABLE) == UnitFlags::UNIT_FLAG_SKINNABLE; }
-	bool IsInCombat() const { return (sUnitField->UnitFlag1 & UnitFlags::UNIT_FLAG_IN_COMBAT) == UnitFlags::UNIT_FLAG_IN_COMBAT; }
-	bool IsTapped() const { return (sUnitField->DynamicFlags & UnitDynFlags::UNIT_DYNFLAG_TAPPED) == UnitDynFlags::UNIT_DYNFLAG_TAPPED; }
-	bool IsTappedByMe() const { return (sUnitField->DynamicFlags & UnitDynFlags::UNIT_DYNFLAG_TAPPEDBYME) == UnitDynFlags::UNIT_DYNFLAG_TAPPEDBYME; }
+
+
+	int Test() const { return *reinterpret_cast<uint32_t*>((uintptr_t)this + 0x23C) = 255; }
+	float CurrentSpeed() const { return *reinterpret_cast<float*>((uintptr_t)this + Offsets::CurrentSpeed); }
+
+
+	bool IsGhost() { return Health() == 1; }
+	bool IsDead() { return (Health() <= 0 || (DynamicFlags() & UnitDynFlags::UNIT_DYNFLAG_DEAD) == UnitDynFlags::UNIT_DYNFLAG_DEAD); }
+	bool IsLootable() { return (DynamicFlags() & UnitDynFlags::UNIT_DYNFLAG_LOOTABLE) == UnitDynFlags::UNIT_DYNFLAG_LOOTABLE; }
+	bool IsSkinnable() const { return (UnitFlags() & UnitFlags::UNIT_FLAG_SKINNABLE) == UnitFlags::UNIT_FLAG_SKINNABLE; }
+	bool IsInCombat() const { return (UnitFlags() & UnitFlags::UNIT_FLAG_IN_COMBAT) == UnitFlags::UNIT_FLAG_IN_COMBAT; }
+	bool IsTapped() const { return (DynamicFlags() & UnitDynFlags::UNIT_DYNFLAG_TAPPED) == UnitDynFlags::UNIT_DYNFLAG_TAPPED; }
+	bool IsTappedByMe() const { return (DynamicFlags() & UnitDynFlags::UNIT_DYNFLAG_TAPPEDBYME) == UnitDynFlags::UNIT_DYNFLAG_TAPPEDBYME; }
+
+	bool IsMounted() const { return (UnitFlags() & 0x08000000) > 0; }
 
 	bool IsEating() { return this->pHasAura("Food"); }
 	bool IsDrinking() { return this->pHasAura("Drink"); }
 
-	float HealthPercent() { return (float)(sUnitField->Health / (float)sUnitField->MaxHealth) * 100.0; }
-	float ManaPercent() const { return (float)(sUnitField->Energy / (float)sUnitField->MaxEnergy) * 100.0; }
+	float HealthPercent() { return (float)(Health() / (float)MaxHealth()) * 100.0; }
+	float ManaPercent() { 	
+		if (this->getPowerString() == "Mana") { return (float)(Mana() / (float)MaxMana()) * 100.0; }
+		else { return (float)(Energy() / (float)MaxEnergy()) * 100.0; }
+	}
 
-	TeamID GetFactionID() {
-		int RaceID = this->sUnitField->RaceID;
+
+	bool StopFall() const { return *reinterpret_cast<int64_t*>((uintptr_t)this + Offsets::NoFall); } //Tricky to achief stopfall nowadays most of the time DC
+	float NoColl() const { return *reinterpret_cast<float*>((uintptr_t)this + Offsets::NoColl); }    // Set to 255 fly through mountains/Buildings     Default Value: 0.3984375298
+
+	//Both vallues need to be adjusted.
+	float Wallclimb1() const { return *reinterpret_cast<float*>((uintptr_t)this + Offsets::Wallllimb1); } //Set to 255 Wallclimb Default Value: 0.00f
+	float Wallclimb2() const { return *reinterpret_cast<float*>((uintptr_t)this + Offsets::Wallllimb2); } //Set to 255 Wallclimb Default Value: 0.00f
+
+
+	
+	FactionID GetFactionID() {
+		int RaceID = this->GetRaceID();
 		if (RaceID == WoWRace::Undead || RaceID == WoWRace::Troll || RaceID == WoWRace::TrollFemale || RaceID == WoWRace::Tauren || RaceID == WoWRace::Orc) {
-			return TeamID::Horde;
+			return FactionID::Horde;
 		}
 		else if (RaceID == WoWRace::Human || RaceID == WoWRace::Dwarf || RaceID == WoWRace::Gnome || RaceID == WoWRace::NightElf || RaceID == WoWRace::Draenei || RaceID == WoWRace::Draeneis) {
-			return TeamID::Alliance;
+			return FactionID::Alliance;
 		}	
-		return TeamID::INVALID;
+		return FactionID::INVALID;
 	}
-
-	void UseItem(CGGuid* targetGuid) const { 
-		//WItem.h
-		CGGuid* unk = reinterpret_cast<CGGuid*>(Offsets::CGItem_UseItemParm);
-		reinterpret_cast<bool(__fastcall*)(uint64_t, CGGuid*, bool, CGGuid*)>(Offsets::CGItem_UseItem)((uintptr_t)this, targetGuid, 0, unk);
-	}
+	
 
 	//LocalPlayer only
 	bool pHasCoolDown(const std::string& aura) {	
@@ -278,32 +295,17 @@ public:
 		return mBuffs;
 	}
 
+
+	//Item stuff
+	void UseItem(CGGuid* targetGuid) const {
+		//WItem.h
+		CGGuid* unk = reinterpret_cast<CGGuid*>(Offsets::CGItem_UseItemParm);
+		reinterpret_cast<bool(__fastcall*)(uint64_t, CGGuid*, bool, CGGuid*)>(Offsets::CGItem_UseItem)((uintptr_t)this, targetGuid, 0, unk);
+	}
+
+	//Removed Sell/buy item not my code so cant include... (:
+
 	//Vtable funcs
-	
-	Vector3 GetObjectNamePosition() {
-		typedef int64_t(__fastcall* GetPosition)(int64_t, int64_t);
-
-		uintptr_t* vTable = *(uintptr_t**)this;
-		auto getPosPtr = (uintptr_t)vTable[0x36];
-		auto getPos = (GetPosition)getPosPtr;
-
-		Vector3 v = Vector3(0, 0, 0);
-		getPos((uintptr_t)this, (int64_t)&v);
-		return v;
-	}
-
-	Vector3 GetUnitPosition() const {
-		typedef int64_t(__fastcall* GetPosition)(int64_t, int64_t);
-
-		uintptr_t* vTable = *(uintptr_t**)this;
-		auto getPosPtr = (uintptr_t)vTable[0x38];
-		auto getPos = (GetPosition)getPosPtr;
-
-		Vector3 v = Vector3(0.0, 0.0, 0.0);
-		getPos((uintptr_t)this, (int64_t)&v);
-		return v;
-	}
-	
 	void Interact() {
 		typedef DWORD* (__fastcall* InteractWith)(uintptr_t);
 
@@ -356,8 +358,9 @@ public:
 		return "None";
 	}
 }; 
-//static_assert(sizeof(WObject) == 0x20A8);
+//static_assert(sizeof(WObject) == 0x4A0);
 #pragma pack(pop)
 
-
-
+//remove itemcache(*GetItemQuality, GetName
+//Removed Witem getitem stuff
+				 
