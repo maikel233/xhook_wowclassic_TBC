@@ -699,4 +699,4 @@ enum MovementFlags : uint32_t
 //	uint32 Duration;
 //	uint32 ExtraFlags;                                      // see ItemExtraFlags
 //}ItemPrototype;
-//
+/
