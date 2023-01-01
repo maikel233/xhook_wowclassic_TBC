@@ -1,7 +1,7 @@
 # xhook wowclassic TBC
 World of warcraft TBC classic multihack 
-Source code supported patch: 2.5.4.44883
-Prebuild .DLL supported patch: 2.5.4.44883 
+Source code is not up to date with the main branche there are some required modifcations needed to make this build work. Overtime i will will merge my build to this git.
+Prebuild .DLL supported patch:  47168 you can find this one in the BUILD folder.
 
 How to build the .DLL:
 Open C++, Build DebugX64 version, Open the game go to settings and set your directx version on dx11. Download a injector and inject.
