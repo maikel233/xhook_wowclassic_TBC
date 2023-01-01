@@ -1,4 +1,4 @@
-﻿#include "Menu.h"
+#include "Menu.h"
 
 #define IM_ARRAYSIZE(_ARR)      ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
@@ -237,10 +237,15 @@ ColorListVar colors[] = {
     { "Unit", &Settings::Drawing::UnitColor},
     { "Corpse", &Settings::Drawing::CorpseColor},
     { "GameObject", &Settings::Drawing::GameObjectColor},
-    { "Object", &Settings::Drawing::ObjectColor},
+    { "UnlockedGameObject", &Settings::Drawing::UnlockedGameObjectColor},
+    {"Object", &Settings::Drawing::ObjectColor},
     { "DynamicObject", &Settings::Drawing::DynamicObjectColor},
     { "Horde", &Settings::Drawing::HordeColor},
     { "Alliance", &Settings::Drawing::AllianceColor},
+
+
+
+
 };
 const char* colorNames[IM_ARRAYSIZE(colors)];
 
@@ -262,6 +267,9 @@ bool IsSelectingDrink = false;
 
 bool Settings::UI::Windows::Menu::GetInvItems = false;
 
+
+bool NoCollision = false;
+float WC1Original, WC2Original;
 void GMenu::GetInventoryItem() {
 
     if (!Settings::UI::Windows::Menu::GetInvItems || Globals::Objects.empty())
@@ -312,19 +320,19 @@ void GMenu::GetInventoryItem() {
 
 }
 
-        
-
+//#include "WayWard/Navigation.h"
+//#include "WayWard/MoveMap.h"
+//using namespace MMAP;
 
 void GMenu::Menu(bool p_open)
 {
-
     static int page = 0;
 
     // We specify a default position/size in case there's no data in the .ini file. Typically this isn't required! We only do it to make the Demo applications a little more welcoming.
     ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
 
-    if (!ImGui::Begin("XHOOK for World of Warcraft 2.5.2.41510", &p_open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))  {
+    if (!ImGui::Begin("XHOOK for World of Warcraft", &p_open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))  {
         // Early out if the window is collapsed, as an optimization.
         ImGui::End();
         return;
@@ -348,7 +356,6 @@ void GMenu::Menu(bool p_open)
     case 0:
         ImGui::BeginChild("COL1", ImVec2(0, 0), true);
         {
-
             ImGui::Text("Misc");
             ImGui::BeginChild("MISC", ImVec2(0, 0), true);
             ImGui::Separator();
@@ -359,9 +366,48 @@ void GMenu::Menu(bool p_open)
                 if (Globals::LocalPlayer)
                 {
                     ImGui::Text("Hello Maikel233, LocalPlayer is located at: %p\n", Globals::LocalPlayer->Ptr());
-                    //  ImGui::Text("Casting %i and %i", Globals::LocalPlayer->sUnitField->SpellID, Globals::LocalPlayer->GetSpellCastID());
+                  //   ImGui::Text("Casting %i and %i", Globals::LocalPlayer->GetSpellID(), Globals::LocalPlayer->GetSpellCastID());
                     ImGui::Text("Coordinates: X:%f Y:%f Z:%f R:%f MapID:%i", Globals::LocalPlayer->GetUnitPosition().x, Globals::LocalPlayer->GetUnitPosition().y, Globals::LocalPlayer->GetUnitPosition().z, Globals::LocalPlayer->GetFacing(), GameMethods::ClntObjMgr__GetMapId());
-                    //   ImGui::Text("Current speed: %f", Globals::LocalPlayer->CurrentSpeed);
+
+                   
+                            //Navigation* navigation = Navigation::GetInstance();
+                            //navigation->Initialize();
+
+                            //MMapManager* mapManager = MMapFactory::createOrGetMMapManager();
+                            //mapManager->InitializeMaps();
+
+                            ////X: -1184, Y: 485, Z: 11 MAPID: 1
+
+                            //int length;
+                            //auto xyz = navigation->CalculatePath(1, XYZ{ -1180, 485, 11 }, XYZ{ -1184, 485, 11 }, true, &length);
+
+         
+
+                    if (!NoCollision) {
+                        if (ImGui::Button("Enable NoClimb"))
+                        {
+                            WC1Original = Globals::LocalPlayer->Wallclimb1();
+                            WC2Original = Globals::LocalPlayer->Wallclimb2();
+
+                            *(float*)(Globals::LocalPlayer->Ptr() + Offsets::Wallllimb1) = 255.0f;
+                            *(float*)(Globals::LocalPlayer->Ptr() + Offsets::Wallllimb2) = 255.0f;
+                            NoCollision = true;
+                        }
+                       
+                    }
+                    else {
+                        if (ImGui::Button("Disable NoClimb"))
+                        {
+                            *(float*)(Globals::LocalPlayer->Ptr() + Offsets::Wallllimb1) = WC1Original;
+                            *(float*)(Globals::LocalPlayer->Ptr() + Offsets::Wallllimb2) = WC2Original;
+                            NoCollision = false;
+                        }
+                    }
+                                     
+
+        
+
+       
                     ImGui::Text("X:");
                     ImGui::SameLine();
                     ImGui::InputFloat(XorStr("##X"), &Settings::Hacks::Movement::NextPos.x, 10.01f, 0.0f, 2.0f);
@@ -389,6 +435,8 @@ void GMenu::Menu(bool p_open)
                     {
                         WoW::Hacks::fakeTeleport(1);
                     }
+                                 
+                    ImGui::SameLine();
 
                     ImGui::PushItemWidth(478);
 
@@ -419,10 +467,12 @@ void GMenu::Menu(bool p_open)
                     //    Globals::LocalPlayer->RunForwardSpeed = Settings::Hacks::Movement::max_runspeed;
                     //};
                     //SetTooltip("Warning!\nThis option will dc you if you go faster than normal!\n Try increasing in small steps and test it out.");
+      
+
                     ImGui::SliderFloat("##ROTATIONSPEED", &Settings::Hacks::Movement::player_rotationspeed, 0, 10, "Rotation speed %0.3f");
                     ImGui::SameLine();
                     if (ImGui::Button("set##3")) {
-                        Globals::LocalPlayer->Player_rotationspeed = Settings::Hacks::Movement::player_rotationspeed;
+                        //Globals::LocalPlayer->Player_rotationspeed = Settings::Hacks::Movement::player_rotationspeed;
                     }
 
                     ImGui::PopItemWidth();
@@ -430,7 +480,47 @@ void GMenu::Menu(bool p_open)
 
                     ImGui::NextColumn();
                     {
+                        if (ImGui::Button("Dismount")) {
 
+                            GameMethods::Player_Dismount();
+                        }
+
+                        if (Globals::LocalPlayer->IsMounted()) {
+                            ImGui::Text("Mounted");
+                        }
+                        else {
+                            ImGui::Text("Not Mounted");
+                        }
+
+                        if (!GameMethods::Spell_C_IsCurrentSpell(6603) && GameMethods::CGUnit_C_IsInCombat) {
+
+                            ImGui::Text("Not Fighting!");
+                        }
+                        else {
+                            ImGui::Text("We' Fighting!");
+                        }
+                        if (ImGui::Button("AddTestMob1##0")) {
+
+                            WoW::GrindBot::mobList.push_back("TestValue1");
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::Button("DeleteMob1##0")) {
+
+                            WoW::GrindBot::mobList.erase(find(WoW::GrindBot::mobList.begin(), WoW::GrindBot::mobList.end(), "TestValue2"));
+                        }
+                        if (ImGui::Button("AddTestMob2##0")) {
+
+                            WoW::GrindBot::mobList.push_back("TestValue2");
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::Button("DeleteMob22##0")) {
+
+                            WoW::GrindBot::mobList.erase(find(WoW::GrindBot::mobList.begin(), WoW::GrindBot::mobList.end(), "TestValue2"));
+
+                        }
+
+                  
+  
                         ImGui::Checkbox("FishBot", &Settings::bot::fishing::Enabled);
                         ImGui::Checkbox("GrindBot", &Settings::bot::Grinding::Enabled);
                         SetTooltip("A simple grindbot\nSupported classes: Druid lvl 1-10!\nRequires mmaps and tiles else it the bot wont work!\n");
@@ -467,24 +557,30 @@ void GMenu::Menu(bool p_open)
               
                             if (!Globals::Objects.empty())
                             {
+
+
+                                Globals::AttackList = Globals::Objects;
+
+
                                 if (ImGui::ListBoxHeader("##MobList", Globals::Objects.size())) {
                                     for (auto& [guid, npc] : Globals::Objects)
                                     {
                                         if (!npc->isValid())
                                             continue;
                                         if (!npc->IsUnit())
-                                            continue;                  
+                                            continue;        
+                                        if (!Utils::IsUnitEnemy(npc))
+                                            continue;
                                         if (npc->IsDead())
                                             continue;
                                         if (!Utils::ValidCoord(npc))
                                             continue;
-                                        if (Utils::IsUnitEnemy(npc))
-                                            continue;
-
+                                                                          
                                         is_selected = (selected == npc);
 
                                         //TODO: 
                                         //Add color to the strings if they exist in moblist vector?
+
                                         if (ImGui::Selectable(npc->GetObjectName(), is_selected)) {
                                             selected = npc;
                                             selected_index = npc->GetGuid();
@@ -635,14 +731,10 @@ void GMenu::Menu(bool p_open)
 
                     }
                 }
-                else
-                {
-                    ImGui::Text("Log into your character.");
-                    if (WoWObjectManager::InGame() || GameMethods::ObjMgrIsValid(1))
-                    {
-                            WoWObjectManager::CycleObjects(true);                    
-                    }
-                }
+                else if (WoWObjectManager::InGame() && GameMethods::ObjMgrIsValid(0)) {  WoWObjectManager::CycleObjects(true); }
+                else {
+                    ImGui::Text("Log into your character."); }
+
                 ImGui::EndChild();
                 ImGui::EndChild();
             }
