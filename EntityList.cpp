@@ -120,10 +120,6 @@ namespace Draw
 
 					WObject* Obj = (WObject*)Object;
 
-					//if (Utils::IsSameFaction(Obj) == Utils::IsSameFaction(localplayer) && !Settings::Drawing::Ally && Obj->IsPlayer())
-					//	continue;
-					//if (Utils::IsSameFaction(Obj) != Utils::IsSameFaction(localplayer) && !Settings::Drawing::Enemy && Obj->IsPlayer())
-					//	continue;
 					if (Utils::IsUnitEnemy(Obj) && Obj->IsUnit() && !Settings::Drawing::HostileUnits)
 						continue;
 					if (Utils::IsUnitEnemy(Obj) && Obj->IsPlayer() && !Settings::Drawing::HostileUnits)
