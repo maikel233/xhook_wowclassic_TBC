@@ -16,4 +16,3 @@ namespace GMenu
 			ImGui::SetTooltip("%s", text);
 	}
 }
-
