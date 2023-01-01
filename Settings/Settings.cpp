@@ -1,7 +1,6 @@
 #include "settings.h"
 
-
-PathType Settings::bot::Navigator::pPathType = PathType::STRAIGHT;
+PathTypes Settings::bot::Navigator::pPathType = PathTypes::STRAIGHT;
 PathRequestFlag Settings::bot::Navigator::pPathRequestFlag = PathRequestFlag::NONE;
 bool Settings::Drawing::EntityViewer::Enabled = false;
 bool Settings::Drawing::Enabled = true;
@@ -60,20 +59,20 @@ HealthColorVar Settings::Drawing::Radar::AllianceVisibleColor = ImColor(0, 255, 
 HealthColorVar Settings::Drawing::Radar::PlayerColor = ImColor(240, 248, 255);
 HealthColorVar Settings::Drawing::Radar::UnitColor = ImColor(255, 127, 80);
 ColorVar Settings::Drawing::Radar::GameObjectColor = ImColor(0, 157, 20);
+ColorVar Settings::Drawing::Radar::UnlockedGameObjectColor = ImColor(25, 57, 20);
 
 HealthColorVar Settings::Drawing::PlayerColor = ImColor(240, 248, 255);
 HealthColorVar Settings::Drawing::LocalPlayerColor = ImColor(15, 248, 255);
 HealthColorVar Settings::Drawing::UnitColor = ImColor(255, 127, 80);
 ColorVar Settings::Drawing::CorpseColor = ImColor(255, 0, 0);
 ColorVar Settings::Drawing::GameObjectColor = ImColor(0, 157, 20);
+ColorVar Settings::Drawing::UnlockedGameObjectColor = ImColor(0, 157, 20);
 HealthColorVar Settings::Drawing::HordeColor = ImColor(255, 0, 0);
 HealthColorVar Settings::Drawing::AllianceColor = ImColor(0, 0, 255);
 ColorVar Settings::Drawing::DynamicObjectColor = ImColor(0, 80, 60);
 ColorVar Settings::Drawing::ObjectColor = ImColor(0, 157, 20);
 
 PlayerState Settings::Hacks::Movement::CurrentPlayerState = PlayerState::Ground;
-TeamID Settings::Drawing::Radar::EntityTeamid = TeamID::Horde;
-
 
 //Camera
 bool Settings::Hacks::Camera::Enable = false;
@@ -358,8 +357,6 @@ void Settings::LoadSettings()
 	//static CHAR path[MAX_PATH];
 	strcat(paths, "C:\\Xhook\\wow");
 	std::string folder, file;
-
 	folder = std::string(paths) + "\\Configs\\";
-
 	CreateDirectoryA(folder.c_str(), NULL);
 }
