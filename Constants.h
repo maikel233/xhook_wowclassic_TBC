@@ -17,6 +17,8 @@ typedef uint16_t uint16;
 typedef uint8_t uint8;
 
 #pragma pack(push, 1)
+
+
 struct CGGuid
 {
     uint64_t high;
@@ -49,7 +51,7 @@ enum CGGameUI_isinworldID : uint8_t
     Loaded = 0x1010004
 };
 
-enum class TypeId : uint8_t
+enum class TypeIdTBC : uint8_t
 {
     CGObject = 0,
     CGItem = 1,
@@ -69,7 +71,106 @@ enum class TypeId : uint8_t
     Invalid = 15
 };
 
+//Wrath
+enum class TypeId : uint8_t
+{
+	CGObject = 0,
+	CGItem = 1,
+	CGContainer = 2,
+	CGAzeriteEmpoweredItem_C,
+	CGAzeriteItem_C,
+	CGUnit = 5,
+	CGPlayer = 6,
+	CGActivePlayer = 7,
+	CGGameObject = 8,
+	CGDynamicObject = 9,
+	CGCorpse = 10,
+	CGAreaTrigger = 11,
+	CGSceneObject = 12,
+	CGConversation = 13,
+	//AIGroup = 14,
+	//Scenario = 15,
+	//Loot = 16,
+	Invalid = 17
+};
 
+enum class WoWObjTypeId : uint8_t
+{
+	Door = 0,
+	Button = 1,
+	Questgiver = 2,
+	ChestHerbsMinerals = 3,// # Herbs, Minerals, Chests
+	Binder = 4,
+	Generic = 5,
+	Trap = 6,
+	Chair = 7,
+	SpellFocus = 8,
+	Text = 9,
+	Goober = 10,
+	TransportElevator = 11,
+	AreaDamage = 12,
+	Camera = 13,
+	Mapobject = 14,
+	MoTransportShip = 15,
+	DuelFlag = 16,
+	FishingNode = 17,
+	Ritual = 18,
+	Mailbox = 19,
+	DONOTUSE1 = 20,
+	GuardPost = 21,
+	SpellCaster = 22,
+	MeetingStone = 23,
+	FlagStand = 24,
+	FishingHole = 25,
+	FlagDrop = 26,
+	DONOTUSE2 = 27,
+	DONOTUSE3 = 28,
+	ControlZone = 29,
+	AuraGenerator = 30,
+	DungeonDifficulty = 31,
+	BarberChair = 32,
+	DestructibleBuilding = 33,
+	GuildBank = 34,
+	Trapdoor = 35,
+	Newflag = 36,
+	Newflagdrop = 37,
+	GarrisonBuilding = 38,
+	GarrisonPlot = 39,
+	ClientCreature = 40,
+	ClientItem = 41,
+	CapturePoint = 42,
+	PhaseableMO = 43,
+	GarrisonMonument = 44,
+	GarrisonShipment = 45,
+	GarrisonMonumentPlaque = 46,
+	NUM_GAMEOBJECT_TYPE = 47
+};
+
+
+enum class PowerTypeId : uint8_t
+{
+	mana = 0,
+	rage = 1,
+	focus = 2,
+	energy = 3,
+	happiness = 4,
+	runes = 5,
+	runicpower = 6,
+	SoulShards,
+	HolyPower,
+	Maelstrom,
+	Chi,
+	Insanity,
+	ComboPoints,
+	Obsolete2,
+	ArcaneCharges,
+	Fury,
+	Pain,
+	Essence,
+	RuneBlood,
+	RuneFrost,
+	RuneUnholy
+};
 
 enum WoWClass : uint8_t
 {
@@ -329,4 +430,18 @@ enum SPELL_FAILED_REASON : BYTE
 	TargetCannotBeResurrected = 186,
 	Unknownn = 187,
 	Ok = 0xFF
+};
+enum class ControlBits {
+	Nothing = 0x00000000,
+	CtmWalk = 0x00001000,
+	Front = 0x00000010,
+	Back = 0x00000020,
+	Jump = 0x00002000,
+	Left = 0x00000100,
+	Right = 0x00000200,
+	MovingFrontOrBack = 0x00010000,
+	StrafeLeft = 0x00000040,
+	StrafeRight = 0x00000080,
+	Strafing = 0x00020000,
+	Turning = 0x00040000
 };
