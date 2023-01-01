@@ -1,3 +1,7 @@
+[47168]
+Nothing much changed just updated the offsets and i added/removed a few things. 
+Added wallclimb & No col
+
 [2.5.3.42083]
 Objectmanager overhaul added more functions for fishbot and grindbot.
 
