@@ -2,6 +2,9 @@
 #include "Settings/Color.h"
 #include "Lua/GameMethods.h"
 #include <mutex>
+#include <psapi.h>
+#pragma comment( lib, "psapi.lib" )
+
 
 namespace Utils
 {
@@ -14,13 +17,14 @@ namespace Utils
 	Color GetHealthColor(WObject* player);
 	
 	//bool IsEntityAlive(WObject* entity);
-	int IsSameFaction(WObject* player);
+	//int IsSameFaction(WObject* player);
 	std::string IsHordeOrAlliance(WObject* player);
 	std::string GetRace(WObject* entity);
+	std::string GetSex(WObject* entity);
 	std::string GetClass(WObject* entity);
 	std::string GetObjType(WObject* entity);
 	std::string GetHealth(WObject* entity);
-	std::string GetEnergyOrMana(WObject* entity);
+	std::string GetPower(WObject* entity);
 
 	bool IsUnitFriendly(WObject* unit);
 	bool IsUnitEnemy(WObject* unit);
@@ -31,7 +35,6 @@ namespace Utils
 	float GetDistance2D(float fLocation2X, float fLocation1X, float fLocation2Y, float fLocation1Y);
 
 	bool InRangeOf(WObject* Entity, const Vector3& v, float distance);
-
 	//std::string FetchAuraNamew(int nAuraID);
-}
 
+}
