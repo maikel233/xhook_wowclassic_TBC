@@ -41,6 +41,7 @@
 #include "Singleton.h"
 #include "Offsets.h"
 #include "Radar.h"
+#include "GUI/Info.h"
 #include "Hacks.h"
 #include "EntityList.h"
 #include "Camera.h"
@@ -52,8 +53,10 @@
 #include "Utils.h"
 
 
+
+
 class pDll {
 public:
-	static void bot();
+	static void bot(WObject* localplayer);
 	static void LoopFuncs();
 };
