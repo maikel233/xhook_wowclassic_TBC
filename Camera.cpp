@@ -6,7 +6,7 @@ namespace WoW
 	CameraMgr* camera::GCamera = nullptr;
 
 	void camera::Init() {
-		uintptr_t Camera = *reinterpret_cast<uintptr_t*>(Offsets::CameraMgr);
+		uintptr_t Camera = *reinterpret_cast<uintptr_t*>(Offsets::Base + Offsets::CameraMgr);
 		auto* Camerasec = reinterpret_cast<CameraMgr*>(Camera);
 		GCamera = Camerasec;
 
@@ -19,7 +19,7 @@ namespace WoW
 
 	Vector2 camera::WorldToScreenv2(Vector3 pos) {
 		if (camera::GCamera == nullptr) camera::Init();
-		CameraMgr* pCameraBase = *reinterpret_cast<CameraMgr**>(Offsets::CameraMgr);
+		CameraMgr* pCameraBase = *reinterpret_cast<CameraMgr**>(Offsets::Base + Offsets::CameraMgr);
 		if (pCameraBase == nullptr || pCameraBase->cameraptr == nullptr) return Vector2{ 0,0 };
 		auto pCamera = pCameraBase->cameraptr;
 
@@ -58,7 +58,7 @@ namespace WoW
 		Vector3 end = Target;
 		Vector3 hit = Vector3(0.0, 0.0, 0.0);
 
-		bool collision = GameMethods::Invoke<bool>(Offsets::WorldFrameIntersect, GameMethods::Invoke<int64_t>(Offsets::GetWorld), &end, &start, &hit, &distance, intersectFlags);
+		bool collision = GameMethods::Invoke<bool>(Offsets::Base + Offsets::WorldFrame_Intersect, GameMethods::Invoke<int64_t>(Offsets::Base + Offsets::WorldFrame_GetWorld), &end, &start, &hit, &distance, intersectFlags);
 
 		if (hit.x != 0 && hit.y != 0) {
 		}
