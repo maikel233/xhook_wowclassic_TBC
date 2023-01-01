@@ -7,11 +7,12 @@
 class CameraMgr
 {
 public:
-    char pad_0000[14560]; //0x0000
-    class CameraMgrPtr* cameraptr; ////0x38E0
-    char pad_38E8[1944]; //0x38E8
+    char pad_0000[14568]; //0x0000
+    class CameraMgrPtr* cameraptr; //0x38E8
+    char pad_38F0[185552]; //0x38F0
+
 }; //Size: 0x4080
-static_assert(sizeof(CameraMgr) == 0x4080);
+static_assert(sizeof(CameraMgr) == 0x30DC0);
 #pragma pack(pop)
 
 #pragma pack(push, 1)
