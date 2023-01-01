@@ -70,15 +70,24 @@ namespace Draw
 				if (entity->GetType() == TypeId::CGPlayer || TypeID == (int)TypeId::CGActivePlayer) {
 					window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y - 40.f), Utils::GetClassColor(entity), entity->GetObjectName());				
 				}
-				else if (TypeID == (int)TypeId::CGUnit || TypeID == (int)TypeId::CGGameObject) { 
+				else if (entity->IsUnit()) {
 					window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y - 40.f), Colors.color, entity->GetObjectName());
 				}
-			}
+				else if (entity->IsGameObject()) {
+					//if (!GameMethods::CGGameObject_C_IsLocked(entity)) {
+				//	window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y - 40.f), Settings::Drawing::UnlockedGameObjectColor.Color(), entity->GetObjectName());
+				//	}
+				//	else {
+						window->DrawList->AddText(ImVec2(OPPos.x, OPPos.y - 40.f), Colors.color, entity->GetObjectName());
+				//	}
+				}			
+			}	
 
 			if ((TypeID == (int)TypeId::CGUnit) || TypeID == (int)TypeId::CGPlayer)
 			{
 
-				if (Globals::LocalPlayer->sUnitField->TargetGuid == *entity->GetGuid()) {
+
+				if (Globals::LocalPlayer->TargetGuid() == entity->GetGuid()) {
 					Colors = ImColor(1.4f, 0.1f, 0.0f, 1.0f);
 					window->DrawList->AddCircle(ImVec2(OPPos.x, OPPos.y), 10, Colors.color, 12, 1.0);
 				}
@@ -103,13 +112,8 @@ namespace Draw
 				if (entity->IsPlayer()) {
 					if (Settings::Drawing::EnergyAndMana)
 					{
-						//TO:DO Find alternative way
-						std::string UnitClass;
-						int RACEID = entity->sUnitField->RaceID;
-						if (RACEID == WoWClass::Rogue) { UnitClass = "Energy:"; }
-						else if (RACEID == WoWClass::Warrior) { UnitClass = "Rage:"; }
-						else { "Mana:"; }
-						string UnitEnergyAndManaStr = UnitClass + Utils::GetEnergyOrMana(entity);
+
+						string UnitEnergyAndManaStr = entity->getPowerString() + Utils::GetPower(entity);
 						const char* cUnitEnergyAndManaStr = UnitEnergyAndManaStr.c_str();
 						window->DrawList->AddText(ImVec2(OPPos.x + 100, OPPos.y - 30.f), Colors.color, cUnitEnergyAndManaStr);
 					}
@@ -164,12 +168,7 @@ namespace Draw
 					if (Utils::IsUnitEnemy(Object) && TypeID == (int)TypeId::CGUnit && !Settings::Drawing::HostileUnits)
 						continue;
 					if (Utils::IsUnitEnemy(Object) && TypeID == (int)TypeId::CGPlayer && !Settings::Drawing::HostileUnits)
-						continue;
-					////Filter player Faction
-					//if (Utils::IsSameFaction(Object) == Utils::IsSameFaction(Globals::LocalPlayer) && !Settings::Drawing::Ally && TypeID == (int)TypeId::CGPlayer)
-					//	continue;
-					//if (Utils::IsSameFaction(Object) != Utils::IsSameFaction(Globals::LocalPlayer) && !Settings::Drawing::Enemy && TypeID == (int)TypeId::CGPlayer)
-					//	continue;		
+						continue;	
 				}
 
 				if (Object->IsUnit() && Settings::Drawing::Unit) {
@@ -182,7 +181,7 @@ namespace Draw
 					}
 					Renderer::DrawObjects(Object, UnitColor);
 				}
-				else if (Settings::Drawing::LocalPlayer) {
+				else if (Object->IsLocalPlayer() && Settings::Drawing::LocalPlayer) {
 					ImColor LocalplayerColor;
 					LocalplayerColor = Settings::Drawing::LocalPlayerColor.Color(Object);
 					Renderer::DrawObjects(Globals::LocalPlayer, LocalplayerColor);
