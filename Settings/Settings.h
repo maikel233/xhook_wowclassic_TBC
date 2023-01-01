@@ -20,12 +20,11 @@
 #include "Utils.h"
 #include "Settings/Settings.h"
 
-enum class PathType : int
+enum class PathTypes : int
 {
 	STRAIGHT = 0,
 	RANDOM = 1,
 };
-
 
 enum class PathRequestFlag : int
 {
@@ -33,6 +32,7 @@ enum class PathRequestFlag : int
 	CHAIKIN = 1,
 	CATMULLROM = 2,
 };
+
 
 class ColorVar
 {
@@ -128,11 +128,16 @@ namespace Settings
 
 	namespace bot
 	{
-		extern bool Refresh;
+		extern bool NPCEXIST;
+		extern int TotalUnits;
+		extern int TotalPlayers;
+		extern int TotalObjects;
+		//extern int TotalUnits;
 
+		extern bool Refresh;
 		namespace Navigator
 		{
-			extern PathType pPathType;
+			extern PathTypes pPathType;
 			extern PathRequestFlag pPathRequestFlag;
 		}
 
@@ -169,7 +174,7 @@ namespace Settings
 		extern bool Player, LocalPlayer, Unit, Corpse, Object, GameObject, DynamicObject, Race, Horde, Alliance, DrawDeadEntity;
 		extern bool Enabled, Lines, Names, Lvl, Health, EnergyAndMana, Distance, WayPoints, GuidStr;
 		extern int MaxLvl, MinLvl;
-		extern ColorVar CorpseColor, GameObjectColor, ObjectColor, DynamicObjectColor;
+		extern ColorVar CorpseColor, GameObjectColor, UnlockedGameObjectColor, ObjectColor, DynamicObjectColor;
 		extern HealthColorVar PlayerColor, LocalPlayerColor, UnitColor, HordeColor, AllianceColor;
 
 		namespace EntityViewer
@@ -197,7 +202,7 @@ namespace Settings
 			extern HealthColorVar AllianceVisibleColor;
 			extern HealthColorVar PlayerColor, UnitColor;
 			extern ColorVar GameObjectColor;
-			extern TeamID EntityTeamid;
+			extern ColorVar UnlockedGameObjectColor;
 		}
 	}
 
@@ -278,8 +283,5 @@ namespace Settings
 	void LoadDefaultsOrSave(std::string path);
 	void LoadConfig(std::string path);
 	void LoadSettings();
-
-	//void SaveTeleporterInfo(std::string path);
-	//void LoadTeleporterInfo(std::string path);
 }
 
