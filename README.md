@@ -3,7 +3,7 @@ World of warcraft TBC classic multihack
 Source code is not up to date with the main branche there are some required modifcations needed to make this build work. Overtime i will will merge my build to this git.
 
 Compiled .DLL is in the /build folder.
-Current supported patch: WOTLK 47168.
+Current supported patch: WOTLK 47168.  3.4.3~ + is in /build/release folder.
 
 How to build the .DLL:
 Open C++, Build DebugX64 version, Open the game go to settings and set your directx version on dx11. Download a injector and inject.
