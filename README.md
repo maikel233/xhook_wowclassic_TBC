@@ -1,6 +1,7 @@
 # xhook wowclassic TBC
 World of warcraft TBC classic multihack 
-Source code is not up to date with the main branche there are some required modifcations needed to make this build work. Overtime i will will merge my build to this git.
+Source code is not up to date with the main branche there are some required modifcations needed to make this build work
+Take a look at the newer version: https://github.com/maikel233/-xhook_wowclassic_v2
 
 Compiled .DLL is in the /build folder.
 Current supported patch: WOTLK 47168.  3.4.3~ + is in /build/release folder.
